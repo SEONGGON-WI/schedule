@@ -3,7 +3,5 @@ module.exports = {
     'vuetify'
   ],
   publicPath: './',
-  devServer: {
-    
-  },
+
 }
