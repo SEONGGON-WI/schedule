@@ -1,0 +1,43 @@
+vue create project 
+vue add vuetify
+
+plugin 
+npm install material-design-icons-iconfont -D
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
+
+npm install @mdi/font
+import '@mdi/font/css/materialdesignicons.css'
+
+폴더 파일 작성 src/scss/variables.scss
+
+on template use scss
+<style lang="sass">
+  @import '~vuetify/src/scss/variables.scss'
+
+  @media #{map-get($display-breakpoints, 'md-and-down')}
+    .custom-class
+      display: none
+</style>
+
+
+
+vue.config.js
+	publicPath: './',
+
+
+vue add router
+main.js 
+	import VueRouter from 'vue-router'
+	Vue.use(VueRouter)
+	const routes = [{path: , name: , component:}]
+			path: , redirect:{name: }
+
+
+npm install --save axios
+main.js
+	import axios from 'axios'
+	Vue.prototype.$http = axios
+
+
+
+https://jess2.xyz/vue/vue-tip/
