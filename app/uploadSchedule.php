@@ -1,15 +1,15 @@
 <?php
+$response = json_decode(file_get_contents('php://input'), true);
 
-$name = $_POST['name'];
-$password = $_POST['password'];
-$data = $_POST['data'];
+$name = $response['name'];
+$password = $response['password'];
+$event = $response['event'];
 
 require 'sqlConnect.php';
-
 $dbConnect = new mysqlConnect();
-
-$result = $dbConnect->addSchedule($name, $password, $data);
+$result = $dbConnect->uploadSchedule($name, $password, $event);
 $dbConnect->dbClose();
 
-echo($result);
+echo(json_encode(['status' => 'true', 'data'=> $event]));
+// echo($event[0]['date']);
 ?>

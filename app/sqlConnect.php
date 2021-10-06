@@ -14,84 +14,89 @@ class mysqlConnect {
     $this->mysql->close();
   }
 
-  public function getScheduleTable() {
-    $query = "SELECT name FROM schedule";
+  public function getManagerPassword($name) {
+    $query = "SELECT password FROM manager WHERE name = '$name'";
     $result = $this->mysql->query($query);
-    $status = false;
-
-    $i = 0;
     if ($result->num_rows > 0) {
+      $table = $result->fetch_assoc();
+    }
+
+    if (!isset($table)) {
+      return;
+    }
+    return $table['password'];
+  }
+
+  public function getSchedule($name) {
+    $query = "SELECT date, comment FROM work_table WHERE name = '$name'";
+    $result = $this->mysql->query($query);
+    if ($result->num_rows > 0) {
+      $i = 0;
       while($row = $result->fetch_assoc()) {
         $table[$i] = $row;
         $i++;
       }
     }
-    if (isset($table)) {
-      $status = true;
-    }
-    return $status;
+
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
   }
 
-  public function getByNameScheduleTable($name, $password) {
-    $query = "SELECT * FROM schedule WHERE name = '$name'";
-    $result = $this->mysql->query($query);
-    if ($result->num_rows > 0) {
-      while($row = $result->fetch_assoc()) {
-        $data = $row;
-      }
+  public function uploadSchedule($name, $password, $event) {
+    // foreach ($event as $value) {
+    //   $sub_sql_array[] = "
+    //   (
+    //     '($name)',
+    //     '($value[date])',
+    //     '($value[comment])',
+    //     '($value[start_time])',
+    //     '($value[end_time])',
+    //     '($value[price])'
+    //   )";
+    // }
+
+    for ($i = 0; $i < count($event); $i++) {
+      $sub_sql_array[] = "
+      (
+        '($name)',
+        '($event[$i][date])',
+        '($event[$i][comment])',
+        '($event[$i][start_time])',
+        '($event[$i][end_time])',
+        '($event[$i][price])'
+      )";
     }
 
-    if ( !isset($data) ) {
-      return json_encode(array('status' => 'info' , 'message' => '検索されたデータがありません。'));
-    }
-    $hashedPassword = $data['password'];
-    if (password_verify($password, $hashedPassword)) {
-      return json_encode(array('status' => 'info' , 'data' => $data['data']));
-    }
-    return json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
+    $sql = "INSERT INTO schedule (name, date, comment, start_time, end_time, price) VALUES";
+
+    $sub_sql = implode(", ", $sub_sql_array);
+    $sql = $sql.$sub_sql;
+
+
+    // $query = "INSERT INTO schedule (name, date, comment, start_time, end_time, price) VALUES ?";
+    // $query = $query."('$name', '$event[date]', '$event[comment]', '$event[start_time]', '$event[end_time]', '$event[price]')";
+    $this->mysql->query($sql);
   }
 
-  public function addSchedule($name, $password, $data) {
-    try {
-      $result = $this->getScheduleTable();
-      if (!$result) {
-        $this->createScheduleTable();
-      }
-      $query = "SELECT password FROM schedule WHERE name = '$name'";
-      $result = $this->mysql->query($query);
-      if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-          $table = $row;
-        }
-      }
-
-      if ( !isset($table) ) {
-        $hashedPassword = password_hash( $password, PASSWORD_DEFAULT);
-        $query = "INSERT into schedule values";
-        $query = $query."('$name', '$hashedPassword', '$data')";
-        $this->mysql->query($query);
-      } else {
-        $hashedPassword = $table['password'];
-        if(password_verify($password, $hashedPassword)) {
-          $query = "UPDATE schedule SET data = '$data' WHERE name = '$name'";
-          $this->mysql->query($query);
-        } else {
-          return json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
-        }
-      }
-      return json_encode(array('status' => 'success' , 'message' => '登録が完了しました。'));
-
-    } catch(Exception $e) {
-      return json_encode(array('error' => 'error' , 'message' => '登録が失敗しました。'));
-    }
+  public function createManagerTable() {
+    $query = "CREATE TABLE IF NOT EXISTS manager (";
+    $query = $query."name varchar(32) not null,";
+    $query = $query."password varchar(64) not null,";
+    $query = $query."primary key(name));";
+    $this->mysql->query($query);
   }
 
   public function createScheduleTable() {
     $query = "CREATE TABLE IF NOT EXISTS schedule (";
-    $query = $query."name varchar(64) not null,";
-    $query = $query."password varchar(64) not null,";
-    $query = $query."data LONGTEXT not null,";
-    $query = $query."primary key(name));";
+    $query = $query."name varchar(32) not null,";
+    $query = $query."date DATE not null,";
+    $query = $query."comment TEXT not null,";
+    $query = $query."start_time TEXT not null,";
+    $query = $query."end_time TEXT not null,";
+    $query = $query."price TEXT not null,";
+    $query = $query."primary key(name, date));";
     $this->mysql->query($query);
   }
 }

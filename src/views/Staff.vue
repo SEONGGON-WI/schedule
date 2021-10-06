@@ -84,7 +84,7 @@
 import alert from '@/components/alert.vue'
 import StaffEdit from '@/components/StaffEdit.vue'
 import StaffDialog from '@/components/StaffDialog.vue';
-// import axios from "axios"
+import axios from "axios"
 
 export default {
   name: "schedule",
@@ -167,7 +167,15 @@ export default {
       console.log(password)
     },
     upload() {
-      this.dialog = false;
+      const url = "/schedule/app/uploadSchedule.php";
+      const data = {
+        name: this.name,
+        password: this.password,
+        event: this.calendar_events
+      }
+      axios.post(url, data).then(function(response) {
+        console.log(response);
+      }.bind(this))
     },
 
     close() {
