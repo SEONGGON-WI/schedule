@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 
 
 const routes = [
-  {path: '/', redirect:'/staff'},
+  {path: '/', redirect: {name: 'staff'}},
   // {path: , name: , component:},
   // {path: '/staff', name: 'staff', component: Staff},
   // {path: '/admin', name: 'admin', component: Admin},
