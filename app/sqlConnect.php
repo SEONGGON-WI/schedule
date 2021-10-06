@@ -14,7 +14,7 @@ class mysqlConnect {
     $this->mysql->close();
   }
 
-  public function getManagerPassword($name) {
+  public function getPassword($name) {
     $query = "SELECT password FROM manager WHERE name = '$name'";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
@@ -28,7 +28,7 @@ class mysqlConnect {
   }
 
   public function getSchedule($name) {
-    $query = "SELECT date, comment FROM work_table WHERE name = '$name'";
+    $query = "SELECT * FROM schedule WHERE name = '$name'";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -37,47 +37,10 @@ class mysqlConnect {
         $i++;
       }
     }
-
     if (!isset($table)) {
       return;
     } 
     return $table;
-  }
-
-  public function uploadSchedule($name, $password, $event) {
-    // foreach ($event as $value) {
-    //   $sub_sql_array[] = "
-    //   (
-    //     '($name)',
-    //     '($value[date])',
-    //     '($value[comment])',
-    //     '($value[start_time])',
-    //     '($value[end_time])',
-    //     '($value[price])'
-    //   )";
-    // }
-
-    for ($i = 0; $i < count($event); $i++) {
-      $sub_sql_array[] = "
-      (
-        '($name)',
-        '($event[$i][date])',
-        '($event[$i][comment])',
-        '($event[$i][start_time])',
-        '($event[$i][end_time])',
-        '($event[$i][price])'
-      )";
-    }
-
-    $sql = "INSERT INTO schedule (name, date, comment, start_time, end_time, price) VALUES";
-
-    $sub_sql = implode(", ", $sub_sql_array);
-    $sql = $sql.$sub_sql;
-
-
-    // $query = "INSERT INTO schedule (name, date, comment, start_time, end_time, price) VALUES ?";
-    // $query = $query."('$name', '$event[date]', '$event[comment]', '$event[start_time]', '$event[end_time]', '$event[price]')";
-    $this->mysql->query($sql);
   }
 
   public function createManagerTable() {
@@ -95,7 +58,8 @@ class mysqlConnect {
     $query = $query."comment TEXT not null,";
     $query = $query."start_time TEXT not null,";
     $query = $query."end_time TEXT not null,";
-    $query = $query."price TEXT not null,";
+    $query = $query."staff_price TEXT not null,";
+    $query = $query."admin_price TEXT not null,";
     $query = $query."primary key(name, date));";
     $this->mysql->query($query);
   }

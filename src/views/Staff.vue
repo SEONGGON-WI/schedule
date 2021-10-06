@@ -43,7 +43,6 @@
             </v-btn>
           </v-toolbar>
 
-
           <v-sheet height="90%" class="mx-3">
             <v-calendar
               ref="calendar"
@@ -115,18 +114,6 @@ export default {
     var date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
     this.setToday();
-
-    var day = "2021-10-09"
-    const firstTimestamp = new Date(`${day}T09:00:00`)
-    const startTime = new Date(firstTimestamp)
-      this.calendar_events.push({
-        date: day,
-        start: startTime,
-        comment: 'sibuya',
-        start_time: '',
-        end_time: '',
-        price: '',
-      });    
   },
   computed: {
   },
@@ -152,32 +139,57 @@ export default {
         comment: '',
         start_time: '',
         end_time: '',
-        price: '',
+        staff_price: ''
       });    
     },
-
     search() {
-      console.log("Search");
       let name = this.name;
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
       password = password.replace(/^\s+|\s+$/gm,'')
 
-      console.log(name)
-      console.log(password)
+      const url = "/schedule/app/staffSearchSchedule.php";
+      const data = {
+        name: name,
+        password: password
+      }
+      axios.post(url, data).then(function(response) {
+        if (response.data.status === 'success') {
+          this.fetch_data(response.data.data);
+        } else {
+          this.calendar_events = [];
+          this.alert(response.data.status, response.data.message, true);
+        }
+      }.bind(this))
+    },
+    fetch_data(data) {
+      var firstTimestamp = null
+      var startTime = null
+      this.calendar_events = [];
+      data.map(obj => {
+        firstTimestamp = new Date(`${obj.date}T09:00:00`)
+        startTime = new Date(firstTimestamp)
+        this.calendar_events.push({
+          date: obj.date,
+          start: startTime,
+          comment: obj.comment,
+          start_time: obj.start_time,
+          end_time: obj.end_time,
+          staff_price: obj.staff_price
+        })
+      })
     },
     upload() {
-      const url = "/schedule/app/uploadSchedule.php";
+      const url = "/schedule/app/staffUploadSchedule.php";
       const data = {
         name: this.name,
         password: this.password,
         event: this.calendar_events
       }
       axios.post(url, data).then(function(response) {
-        console.log(response);
+        this.alert(response.data.status, response.data.message, true);
       }.bind(this))
     },
-
     close() {
       this.dialog = false;
     },
@@ -191,7 +203,7 @@ export default {
       const index = this.edit_index;
       this.calendar_events[index].start_time = event.start_time;
       this.calendar_events[index].end_time = event.end_time;
-      this.calendar_events[index].price = event.price;
+      this.calendar_events[index].staff_price = event.staff_price;
       this.edit_show = false;
     }, 
     edit_close() {

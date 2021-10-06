@@ -1,12 +1,11 @@
 <?php
-$name = $_POST['name'];
-$password = $_POST['password'];
-
-require 'sqlConnect.php';
+$response = json_decode(file_get_contents('php://input'), true);
+$name = $response['name'];
+$password = $response['password'];
+include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $managerPassword= $dbConnect->getManagerPassword($name);
-
+  $managerPassword= $dbConnect->getPassword($name);
   if (empty($managerPassword)) {
     $result = json_encode(array('status' => 'info' , 'message' => '登録された名前がありません。'));
   } else {
@@ -14,7 +13,7 @@ try {
 
     if (password_verify($password, $hashedPassword)) {
       $data = $dbConnect->getSchedule($name);
-      if ($data == 0) {
+      if (empty($data)) {
         $result = json_encode(array('status' => 'info' , 'message' => '登録された日程がありません。'));
       } else {
         $result = json_encode(array('status' => 'success' , 'data' => $data));

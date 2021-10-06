@@ -69,11 +69,12 @@ export default {
     dialog: false,
   }),
   created() {
+    console.log(this.items);
     const day = this.items.date.split("-");
     this.date = day[0] +'年 '+ day[1] +'月 '+ day[2]+'日';
     this.start = this.items.start_time;
     this.end = this.items.end_time;
-    this.price = this.items.price;
+    this.price = this.items.staff_price;
     this.dialog = true;
   },
   methods: {
@@ -81,13 +82,13 @@ export default {
       if (this.start === undefined || this.end === undefined) {
         return;
       }
-      if (this.start.length != 4 && this.end.length != 4) {
+      if (this.start.length != 4 || this.end.length != 4) {
         return;
       }
       const data = {
         start_time: this.start,
         end_time: this.end,
-        price: this.price,
+        staff_price: this.price,
       }
       this.dialog = false;
       this.$emit("edit", data);
