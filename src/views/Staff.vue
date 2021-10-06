@@ -147,7 +147,6 @@ export default {
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
       password = password.replace(/^\s+|\s+$/gm,'')
-
       const url = "/schedule/app/staffSearchSchedule.php";
       const data = {
         name: name,

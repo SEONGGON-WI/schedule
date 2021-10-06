@@ -1,16 +1,12 @@
 <?php
 $response = json_decode(file_get_contents('php://input'), true);
-
 $name = $response['name'];
 $password = $response['password'];
 $event = $response['event'];
-
 include 'sqlConnect.php';
-
 try {
   $dbConnect = new mysqlConnect();
   $managerPassword= $dbConnect->getPassword($name);
-
   if (empty($managerPassword)) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $query = "INSERT into manager values";
@@ -22,7 +18,6 @@ try {
   if (password_verify($password, $hashedPassword)) {
     $del = "DELETE FROM schedule WHERE name ='$name' AND comment = ''";
     $dbConnect->mysql->query($del);
-
     $index = 0;
     $sql_array = [];
     foreach ($event as $values) {

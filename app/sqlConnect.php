@@ -20,7 +20,6 @@ class mysqlConnect {
     if ($result->num_rows > 0) {
       $table = $result->fetch_assoc();
     }
-
     if (!isset($table)) {
       return;
     }
@@ -29,6 +28,49 @@ class mysqlConnect {
 
   public function getSchedule($name) {
     $query = "SELECT * FROM schedule WHERE name = '$name'";
+    $result = $this->mysql->query($query);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
+  public function getAdmin($start_date, $end_date) {
+    $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date'";
+    $result = $this->mysql->query($query);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
+  public function searchAdmin($name, $comment, $start_date, $end_date) {
+    $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date'";
+
+    if ($name != '全員' && $comment != '') {
+      $sub_query = "AND name = '$name' AND comment = '$comment";
+    } else if ($name != '全員' && $comment == '') {
+      $sub_query = "AND name = '$name'";
+    } else if ($name == '全員' && $comment != '') {
+      $sub_query = "AND comment = '$comment'";
+    }
+
+
+
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -59,7 +101,8 @@ class mysqlConnect {
     $query = $query."start_time TEXT not null,";
     $query = $query."end_time TEXT not null,";
     $query = $query."staff_price TEXT not null,";
-    $query = $query."admin_price TEXT not null,";
+    $query = $query."hour_price TEXT not null,";
+    $query = $query."day_price TEXT not null,";
     $query = $query."primary key(name, date));";
     $this->mysql->query($query);
   }

@@ -56,9 +56,9 @@
                 <v-select 
                   class="mt-6"
                   v-model="name" 
-                  :items="get_name"
+                  :items="name_items"
                   label="名前"
-                  @change="search_schedule"
+                  @change="search"
                 ></v-select>
               </v-col>
 
@@ -66,9 +66,9 @@
                 <v-select 
                   class="mt-6"
                   v-model="comment" 
-                  :items="get_comment"
+                  :items="comment_items"
                   label="案件"
-                  @change="search_schedule"
+                  @change="search"
                 ></v-select>
               </v-col>
 
@@ -83,13 +83,14 @@
               ref="calendar"
               v-model="calendar"
               :type="calendar_type"
-              :events="events"
+              :events="calendar_events"
               :event-color="get_event_color"
               locale="ja-jp"
               event-more-text="..."
               interval-count=0
-              @click:date="addEvent"
-              @click:day="show_edit"
+              @click:date="get_data"
+              @click:day="edit"
+              @change="fetch"
             >
               <template v-slot:event="{ event }">
                 <div class="event_message mt-1 ml-1">
@@ -106,53 +107,47 @@
     </v-container>
   </v-main>
 
-  <edit-schedule
-    @remove="remove_items($event)"
-    @edit_close="edit_close"
+  <!-- <admin-edit
+    @edit="edit($event)"
+    @close="edit_close"
     v-if="edit_show"
     :date="edit_date"
     :items="edit_items"
-  ></edit-schedule>
+  ></admin-edit>
 
   <admin-dialog
-    :text="check_text"
-    :action="action"
-    @cancel="cancel"
     @save_data="save_data"
     @restore_data="restore_data"
+    @cancel="cancel"
     v-if="dialog"
-  ></admin-dialog>
+    :text="check_text"
+    :action="action"
+  ></admin-dialog> -->
 </v-app>
 </template>
 
 <script>
-import Alert from '@/components/alert.vue';
-import EditSchedule from '@/components/EditSchedule.vue';
-import AdminDialog from '@/components/AdminDialog.vue';
+import alert from '@/components/alert.vue';
+// import AdminEdit from '@/components/AdminEdit.vue';
+// import AdminDialog from '@/components/AdminDialog.vue';
 import axios from 'axios';
 
 export default {
-  name: 'Admin',
+  name: 'admin',
   components: {
-    Alert,
-    EditSchedule,
-    AdminDialog,
+    alert,
+    // AdminEdit,
+    // AdminDialog,
   },
   data: () => ({
-    item: [],
-    events: [],
+    item: [],  
+    colors: ['blue', 'indigo', 'cyan', 'green', 'orange', 'grey darken-1', 'pink', 'purple' ,'light-green' , 'brown' , 'blue-grey'],
+    search_date: {},
+
     name: '全員',
     name_items: ['全員'],
     comment: '',
     comment_items: [''],
-
-
-    
-    colors: ['blue', 'indigo', 'cyan', 'green', 'orange', 'grey darken-1', 'pink', 'purple' ,'light-green' , 'brown' , 'blue-grey'],
-
-    edit_show: false,
-    edit_date: '',
-    edit_items: [],
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
@@ -160,93 +155,112 @@ export default {
       {text: '月', value:'month'},
       {text: '週', value:'week'}
     ],
+    calendar_events: [],
+    calendar_events_temp: [],
+    edit_show: false,
+    edit_date: '',
+    edit_items: {},
+    edit_index: null,
     alert_show: false,
     alert_type: '',
     alert_text: '',
+    dialog: false,
   }),
   created() {
     var date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
+
+    const time = date.getFullYear()+"-"+(date.getMonth()+1);
+    this.search_date = {
+      start_date: time +"-01",
+      end_date: time +"-31"
+    }
     this.setToday();
-    this.get_schedule();
+    this.get_data();
   },
   computed: {
     get_agenda() {
-      return this.events.length + "件";
-    },
-    get_name() {
-      let name_items = ['全員'];
-      if(!this.item) {
-        return;
-      }
-      this.item.map((e) => {
-        name_items.push(e.name);
-      });
-      return name_items;
-    },
-    get_comment() {
-      let comment_items = [''];
-      if(!this.item) {
-        return;
-      }
-      this.item.map((e) => {
-        comment_items.push(e.comment);
-      });
-      return comment_items;
+      return this.calendar_events.length + "件";
     },
   },
   methods: {
-    fetch_data(data) {
-      if (!data) {
-        return;
+    fetch() {
+      this.search_date = {
+        start_time: this.$refs.calendar.lastStart.date,
+        end_time: this.$refs.calendar.lastEnd.date
       }
-      let event = [];
-      this.name_items = ['全員'];
-      this.comment_items = [''];
-      data.map((e, index) => {
-        this.name_items[index+1] = e.name;
-        var color = this.colors[this.rnd(0, this.colors.length - 1)];
-        JSON.parse(e.data).map((item, jndex) => {
-          this.comment_items[jndex+1] = item.comment;
-          var timeStamp = new Date(`${item.date}T00:00:00`);
-          var time = new Date(timeStamp);
-          event.push({
-            name: e.name,
-            date: item.date,
-            comment: item.comment,
-            color: color,
-            start: time
-          });
-        });
-      });
-      this.temporary_event = event;
-      this.events = event;
     },
-    async get_schedule() {
-      const url = "/vue/app/test.php";
-      let date = "12";
-      const data = {
-        'date': date
-      };
-      await axios.post(url, data)
-        .then(function(response){
-          console.log(response)
-        }.bind(this))
+    fetch_data(data) {
+      var firstTimestamp = null;
+      var startTime = null;
+      this.calendar_events = [];
+ 
+      this.name_items = ['全員', ...(data.map(e => e.name).filter((obj, index) => {
+        return (data.map(e => e.name)).indexOf(obj) === index;
+      }))];
+      this.comment_items = ['', ...(data.map(e => e.comment).filter((obj, index) => {
+        return (data.map(e => e.comment)).indexOf(obj) === index;
+      }))];
+      this.name_items.map(obj => {
+        var color = this.colors[this.rnd(0, this.colors.length - 1)]
+        data.map(element => {
+          if (element.name == obj) {
+            firstTimestamp = new Date(`${element.date}T09:00:00`)
+            startTime = new Date(firstTimestamp)
+            this.calendar_events.push({
+              name: obj,
+              date: element.date,
+              start: startTime,
+              comment: element.comment,
+              start_time: element.start_time,
+              end_time: element.end_time,
+              hour_price: element.hour_price,
+              day_price: element.day_price,
+              color: color
+            })
+          }
+        })
+      })
+      console.log(this.calendar_events);
+    },
+    async get_data() {
+      const url = "/schedule/app/adminGetSchedule.php";
+      const data = this.search_date;
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status === 'success') {
+          this.fetch_data(response.data.data);
+        } else {
+          this.calendar_events = [];
+          this.alert(response.data.status, response.data.message, true);
+        }
+      }.bind(this))
     },
 
-    search_schedule(key) {
-      const url = "/vue/app/test.php";
-      const data = {
-        'key': key
-      };
-      axios.post(url, data)
-        .then(function(response) {
-          console.log(response);
-        }.bind(this))
+    search() {
+      console.log(this.calendar_events);
     },
 
 
-    show_edit(data) {
+
+
+    
+    remove() {
+      console.log("remove")
+    },
+    save() {
+      console.log("save")
+    },
+    restore() {
+      console.log("restore")
+    },
+    clear() {
+      this.name = '全員';
+      this.comment = '';
+      this.get_schedule();
+    },
+
+
+    edit(data) {
       let item = [];
       this.edit_date = data.year +"年 "+ data.month +"月 "+ data.day +"日";
       this.events.map((e) => {
@@ -277,9 +291,13 @@ export default {
       });
       this.events = event;
     },
-
-    get_event_color(event) {
-      return event.color;
+    alert(type, text, show) {
+      this.alert_type = type
+      this.alert_text = text;
+      this.alert_show = show;
+    },
+    alert_close() {
+      this.alert_show = false;
     },
     setToday() {
       this.calendar = ''
@@ -290,22 +308,11 @@ export default {
     nextDate() {
       this.$refs.calendar.next()
     },
-    remove() {
-      console.log("remove")
+    get_event_color(event) {
+      return event.color;
     },
-    save() {
-      console.log("save")
-    },
-    restore() {
-      console.log("restore")
-    },
-    clear() {
-      this.name = '全員';
-      this.comment = '';
-      this.get_schedule();
-    },
-    alert_close() {
-      this.alert_show = false;
+    rnd (a, b) {
+      return Math.floor((b - a + 1) * Math.random()) + a
     },
   }
 }

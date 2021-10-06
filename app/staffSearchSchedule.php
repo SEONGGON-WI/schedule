@@ -10,7 +10,6 @@ try {
     $result = json_encode(array('status' => 'info' , 'message' => '登録された名前がありません。'));
   } else {
     $hashedPassword = $managerPassword;
-
     if (password_verify($password, $hashedPassword)) {
       $data = $dbConnect->getSchedule($name);
       if (empty($data)) {
