@@ -9,7 +9,7 @@ try {
   $index = 0;
   $sql_array = [];
   foreach ($event as $values) {
-    $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['comment']}', '{$values['hour_salary']}', '{$values['day_salary']}' )";
+    $sql_array[$index] = "( '{$values['name']}', '{$values['date']}', '{$values['comment']}', '{$values['hour_salary']}', '{$values['day_salary']}' )";
     $index++;
   }
   $sql = "INSERT INTO schedule ( name, date, comment, hour_salary, day_salary ) VALUES";
