@@ -1,10 +1,12 @@
 <?php
 $response = json_decode(file_get_contents('php://input'), true);
 $event = $response['event'];
+$start_date = $response['start_date'];
+$end_date = $response['end_date'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $del = "DELETE FROM schedule WHERE name ='$name' AND comment = ''";
+  $del = "DELETE FROM schedule WHERE date >= '$start_date' AND date <= '$end_date'";
   $dbConnect->mysql->query($del);
   $index = 0;
   $sql_array = [];
