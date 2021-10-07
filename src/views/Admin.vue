@@ -134,10 +134,8 @@ export default {
     AdminDialog,
   },
   data: () => ({
-    item: [],  
     colors: ['blue', 'indigo', 'cyan', 'green', 'orange', 'grey darken-1', 'pink', 'purple' ,'light-green' , 'brown' , 'blue-grey'],
     search_date: {},
-
     name: '全員',
     comment: '',
     calendar: '',
@@ -150,7 +148,6 @@ export default {
     calendar_events: [],
     edit_show: false,
     edit_items: {},
-    edit_index: null,
     edit_date: '',
     alert_show: false,
     alert_type: '',
