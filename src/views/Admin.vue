@@ -1,7 +1,13 @@
 <template>
 <v-app id="inspire">
   <v-app-bar app color="primary" dark fixed>
-    <v-toolbar-title class="ml-4">スケジュール</v-toolbar-title>
+    <v-toolbar-title class="mx-4">スケジュール</v-toolbar-title>
+    <v-toolbar-title class="mx-3" v-if="$refs.calendar">
+      {{ $refs.calendar.title }}
+    </v-toolbar-title>
+    <v-toolbar-title class="mx-3" v-else>
+      {{ calendar_date }}
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-btn class="accent mx-2" @click="click(1)">
       <v-icon>save</v-icon>登録
@@ -29,28 +35,21 @@
               <v-btn outlined class="mx-2" color="grey darken-2" @click="setToday">今日</v-btn>
               <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
               <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
-              <v-toolbar-title class="mx-1" v-if="$refs.calendar">
-                {{ $refs.calendar.title }}
-              </v-toolbar-title>
-              <v-toolbar-title class="mx-1" v-else>
-                {{ calendar_date }}
-              </v-toolbar-title>
-
-              <v-col cols="1">
+              <v-col cols="2">
                 <v-select 
+                  height="30"
                   class="mt-6 ml-2"
                   v-model="calendar_type" 
                   :items="calendar_type_item"
                 ></v-select>
               </v-col>
-
               <v-spacer></v-spacer>
-              <div class="total mr-2">
+              <div class="total mr-4">
                 {{ get_agenda }}
               </div>
-
               <v-col cols="2">
                 <v-select 
+                  height="30"
                   class="mt-6"
                   v-model="name" 
                   :items="get_name_items"
@@ -58,9 +57,9 @@
                   @change="search"
                 ></v-select>
               </v-col>
-
               <v-col cols="2">
                 <v-select 
+                  height="30"
                   class="mt-6"
                   v-model="comment" 
                   :items="get_comment_items"
@@ -68,8 +67,7 @@
                   @change="search"
                 ></v-select>
               </v-col>
-
-              <v-btn icon small @click.native="clear" class="mr-2">
+              <v-btn icon @click.native="clear" class="mr-2">
                 <v-icon>clear</v-icon>
               </v-btn>
             </v-toolbar>
@@ -83,17 +81,20 @@
               :events="calendar_events"
               :event-color="get_event_color"
               locale="ja-jp"
-              event-more-text="..."
+              event-more-text=". . ."
               interval-count=0
               @click:day="edit"
               @change="fetch"
             >
               <template v-slot:event="{ event }">
-                <div class="event_message mt-1 ml-1">
-                  {{ event.name }}
+                <div class="mt-1 ml-1" v-if="event.hour_salary || event.day_salary">
+                  {{ event.name }}_{{ event.comment }}_{{ event.hour_salary}}{{ event.day_salary}}
                 </div>
-                <div class="event_message mt-1 ml-1">
-                  {{ event.comment }}
+                <div class="mt-1 ml-1" v-else-if="event.comment">
+                  {{ event.name }}_{{ event.comment }}
+                </div>
+                <div class="mt-1 ml-1" v-else>
+                  {{ event.name }}
                 </div>
               </template>
             </v-calendar>
@@ -158,9 +159,6 @@ export default {
     create: false,
   }),
   created() {
-    // this.$store.commit('set_calendar_events', data)
-    // this.fetch_data(data);
-    
     const date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
     this.setToday();

@@ -1,9 +1,14 @@
 <template>
-<v-app id="inspire">
+<v-app id="inspire" style="postion: fiexd">
   <v-app-bar app color="primary" dark fixed>
-    <v-toolbar-title class="ml-4">スケジュール</v-toolbar-title>
+    <v-toolbar-title class="mx-4">スケジュール</v-toolbar-title>
+    <v-toolbar-title class="mx-3" v-if="$refs.calendar">
+      {{ $refs.calendar.title }}
+    </v-toolbar-title>
+    <v-toolbar-title class="mx-3" v-else>
+      {{ calendar_date }}
+    </v-toolbar-title>
   </v-app-bar>
-  
   <v-main class="mx-1" style="position: fixed !important; width: 100%; height: 100%;">
     <alert
       @close="alert_close"
@@ -19,12 +24,6 @@
             <v-btn outlined class="mx-2" color="grey darken-2" @click="setToday">今日</v-btn>
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
-            <v-toolbar-title class="mx-1" v-if="$refs.calendar">
-              {{ $refs.calendar.title }}
-            </v-toolbar-title>
-            <v-toolbar-title class="mx-1" v-else>
-              {{ calendar_date }}
-            </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-col cols="2">
               <v-text-field class="mt-6" v-model="name" label="名前"></v-text-field>
