@@ -8,7 +8,7 @@ try {
   $data = $dbConnect->getAdmin($start_date, $end_date);
 
   if (empty($data)) {
-    $result = json_encode(array('status' => 'info' , 'message' => '登録された日程がありません。'));
+    $result = json_encode(array('status' => 'warning' , 'message' => '登録された日程がありません。'));
   } else {
     $result = json_encode(array('status' => 'success' , 'data' => $data));
   }
