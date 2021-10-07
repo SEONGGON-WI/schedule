@@ -1,1 +1,94 @@
 //GLOBAL
+$font-size-root: 25px;
+$calendar-event-line-height : 40px;
+$calendar-event-font-size : 20px;
+
+
+.v-select__selections {
+  line-height: 35px !important;
+  font-size: 25px !important;
+}
+
+.botton_size {
+  font-size: 25px !important;
+}
+
+.title_text {
+  font-size: 25px !important;
+}
+
+.v-input {
+  font-size: 25px !important;
+}
+
+.v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
+  font-size: 25px !important;
+}
+
+.v-calendar-weekly__day:hover{
+  cursor:pointer !important;
+}
+
+.v-event-more{
+  left: 5% !important;
+}
+
+.v-calendar-weekly__day:hover{
+  cursor:pointer !important;
+}
+
+.v-calendar-weekly__day-label .v-btn__content{
+  font-size: 20px !important;
+}
+
+.v-calendar-daily_head-weekday{
+  background-color: #1976D2 !important;
+  color: white !important;
+  font-size: larger !important;
+}
+
+.v-calendar-weekly__head-weekday{
+  background-color: #1976D2 !important;
+  color: white !important;
+  font-size: larger !important;
+}
+
+.v-present .v-calendar-weekly__day-label .v-btn--round .v-btn__content{
+  color: white !important;
+}
+
+.v-present .v-calendar-weekly__day-label .v-btn--round{
+  width: 95% !important;
+  border-radius: 0% !important;
+  background-color: #82B1FF !important;
+}
+
+.v-calendar-weekly__day.v-past .v-calendar-weekly__day-label .v-btn--round{
+  width: 95% !important;
+  border-radius: 4px !important;
+}
+
+.v-calendar-weekly__day.v-future .v-calendar-weekly__day-label .v-btn--round{
+  width: 95% !important;
+  border-radius: 4px !important;
+}
+
+.v-present .v-calendar-daily_head-day-label .v-btn--round .v-btn__content{
+  color: white !important;
+}
+
+.v-present .v-calendar-daily_head-day-label .v-btn--round{
+  width: 95% !important;
+  border-radius: 4px !important;
+  background-color: #82B1FF !important;
+}
+
+.v-calendar-daily_head-day.v-past .v-calendar-daily_head-day-label .v-btn--round{
+  width: 95% !important;
+  border-radius: 4px !important;
+}
+
+.v-calendar-daily_head-day.v-future .v-calendar-daily_head-day-label .v-btn--round{
+  width: 95% !important;
+  border-radius: 4px !important;
+}

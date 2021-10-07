@@ -12,10 +12,10 @@
       </div>
       <v-spacer></v-spacer>
       <v-btn class="mx-2 mb-5 confirm_action" color="error" plain @click="close" outlined>
-        <v-icon>cancel</v-icon>いいえ
+        いいえ
       </v-btn>
       <v-btn class="mx-2 mb-5 confirm_action" color="info" plain @click="accept" outlined>
-        <v-icon>save</v-icon>はい
+        はい
       </v-btn>
       <v-spacer></v-spacer>
     </v-sheet>

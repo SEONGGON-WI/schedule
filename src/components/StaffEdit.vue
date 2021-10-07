@@ -1,51 +1,58 @@
 <template>
-  <v-dialog v-model="dialog" max-width="60%" persistent>
+  <v-dialog v-model="dialog" max-width="80%" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2">
+          <v-toolbar-title class="mx-2 title_text">
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn class="success mx-2" @click="edit">
-            <v-icon>save</v-icon>閉じる
+          <v-btn class="success mx-2 botton_size" @click="edit">
+            <v-icon>save</v-icon>保存
           </v-btn>
-          <v-btn class="error mx-2" @click="close">
+          <v-btn class="error mx-2 botton_size" @click="close">
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
-        
-        <v-main class="pa-0">
-          <v-row no-gutters>
-            <v-col cols="4">
-              <v-text-field
+
+        <v-data-table 
+          :headers="headers" 
+          :items="[items]" 
+          hide-default-footer 
+          disable-pagination
+          disable-sort
+        >
+          <template v-slot:item.start_time>
+            <v-text-field
+              height="30"
                 class="pa-1 mt-4"
                 v-model="start"
-                label="開始時間"
+                label="出勤時間"
                 placeholder="0900"
                 :rules="rules"
                 counter=4
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
+            ></v-text-field>
+          </template>
+          <template v-slot:item.end_time>
+            <v-text-field
+              height="30"
                 class="pa-1 mt-4"
                 v-model="end"
-                label="終了時間"
+                label="退勤時間"
                 placeholder="0600"
                 :rules="rules"
                 counter=4
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
+            ></v-text-field>
+          </template>
+          <template v-slot:item.staff_salary>
+            <v-text-field
+              height="30"
                 class="pa-1 mt-4"
                 v-model="salary"
                 label="給与"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-        </v-main>
+            ></v-text-field>
+          </template>
+        </v-data-table>
       </v-card>
     </v-container>
   </v-dialog>
@@ -59,6 +66,11 @@ export default {
     'items'
   ],
   data: () => ({
+    headers: [
+      { value:"start_time", text:"出勤時間", align: 'center'},
+      { value:"end_time", text:"退勤時間", align: 'center'},
+      { value:"staff_salary", text:"給与", align: 'center'},
+    ],
     date: '',
     start: '',
     end: '',
@@ -76,11 +88,10 @@ export default {
   },
   methods: {
     edit() {
-      if (this.start === undefined || this.end === undefined) {
-        return;
-      }
-      if (this.start.length != 4 || this.end.length != 4) {
-        return;
+      if( this.start || this.end) {
+        if (this.start.length != 4 && this.end.length != 4) {
+          return;
+        }
       }
       const data = {
         start_time: this.start,

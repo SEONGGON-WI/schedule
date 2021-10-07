@@ -1,16 +1,16 @@
 <template>
-  <v-dialog v-model="dialog" max-width="60%" persistent>
+  <v-dialog v-model="dialog" max-width="80%" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2">
+          <v-toolbar-title class="mx-2 title_text">
             {{ edit_date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn class="success mx-2" @click="edit">
+          <v-btn class="success mx-2 botton_size" @click="edit">
             <v-icon>save</v-icon>保存
           </v-btn>
-          <v-btn class="error mx-2" @click="close">
+          <v-btn class="error mx-2 botton_size" @click="close">
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
@@ -23,10 +23,11 @@
           disable-sort
         >
           <template v-slot:item.name="{ item }">
-            <label style="font-size: x-large !important;">{{ item.name }}</label>
+            <label class="title_text">{{ item.name }}</label>
           </template>
           <template v-slot:item.comment="{ item }">
             <v-text-field
+              height="30"
               class="mx-2 mt-4"
               v-model="item.comment"
               label="案件"
@@ -36,6 +37,7 @@
           </template>
           <template v-slot:item.hour_salary="{ item }">
             <v-text-field
+              height="30"
               class="mx-2 mt-4"
               v-model="item.hour_salary"
               label="時給"
@@ -43,13 +45,14 @@
           </template>
           <template v-slot:item.day_salary="{ item }">
             <v-text-field
+              height="30"
               class="mx-2 mt-4"
               v-model="item.day_salary"
               label="日給"
             ></v-text-field>
           </template>
           <template v-slot:item.action="{ item }">
-            <v-btn class="error ml-1" icon small color="white" @click="remove(item)">
+            <v-btn class="error ml-1" icon color="white" @click="remove(item)">
               <v-icon>delete</v-icon>
             </v-btn>
           </template>
