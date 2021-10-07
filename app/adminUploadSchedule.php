@@ -6,13 +6,26 @@ $end_date = $response['end_date'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $del = "DELETE FROM schedule WHERE date >= '$start_date' AND date <= '$end_date'";
-  $dbConnect->mysql->query($del);
+  $data = $dbConnect->getAdmin($start_date, $end_date);
+  $del = "DELETE FROM schedule WHERE";
   $index = 0;
   $sql_array = [];
-  foreach ($event as $values) {
-    $sql_array[$index] = "( '{$values['name']}', '{$values['date']}', '{$values['comment']}', '{$values['hour_salary']}', '{$values['day_salary']}' )";
-    $index++;
+  foreach ($data as $element) {
+    $duplicate = true;
+    foreach ($event as $values) {
+      if ($element['name'] == $values['name'] && $element['date'] == $values['date']) {
+        $duplicate = false;
+      }
+      $sql_array[$index] = "( '{$values['name']}', '{$values['date']}', '{$values['comment']}', '{$values['hour_salary']}', '{$values['day_salary']}' )";
+      $index++;
+    }
+    if ($duplicate) {
+      $del = $del." (name = '{$element['name']}' AND date = '{$element['date']}') OR";
+    }
+  }
+  if ($del != "DELETE FROM schedule WHERE") {
+    $del = substr($del, 0, -3);
+    $dbConnect->mysql->query($del);
   }
   $sql = "INSERT INTO schedule ( name, date, comment, hour_salary, day_salary ) VALUES";
   $sub_sql = "ON DUPLICATE KEY UPDATE comment = VALUES(comment), hour_salary = VALUES(hour_salary), day_salary = VALUES(day_salary)";
