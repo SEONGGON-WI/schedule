@@ -124,7 +124,7 @@
 .v-event {
   width: 99% !important;
   left: 0.5% !important;
-  height: 45px !important;
+  height: 31px !important;
   top: 1% !important;
 }
 .v-event-more{
@@ -172,6 +172,430 @@ export default {
     create: false,
   }),
   created() {
+    const event = [
+    {
+        "name": "1",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-03",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-04",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-05",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-06",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-07",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "6",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "6",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "6",
+        "date": "2021-10-08",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "7",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "7",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "7",
+        "date": "2021-10-09",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "8",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "8",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "8",
+        "date": "2021-10-10",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "9",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "9",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "9",
+        "date": "2021-10-11",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "10",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "10",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "10",
+        "date": "2021-10-12",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "11",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "11",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "11",
+        "date": "2021-10-13",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "12",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "12",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "12",
+        "date": "2021-10-14",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "13",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "13",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "13",
+        "date": "2021-10-15",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "14",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "14",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "14",
+        "date": "2021-10-16",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "15",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "15",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "15",
+        "date": "2021-10-17",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "16",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "16",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "16",
+        "date": "2021-10-18",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "17",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "17",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "17",
+        "date": "2021-10-19",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "18",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "18",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "18",
+        "date": "2021-10-20",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "19",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "19",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "19",
+        "date": "2021-10-21",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "20",
+        "date": "2021-10-01",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "20",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "20",
+        "date": "2021-10-22",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    }
+]
+    this.$store.commit('set_calendar_events', event)
+    this.fetch_data(event)
     const date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
     this.setToday();
