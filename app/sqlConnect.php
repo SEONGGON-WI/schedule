@@ -27,7 +27,7 @@ class mysqlConnect {
   }
 
   public function getSchedule($name) {
-    $query = "SELECT * FROM schedule WHERE name = '$name'";
+    $query = "SELECT name, date, comment, start_time, end_time, staff_salary  FROM schedule WHERE name = '$name' ORDER BY date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -43,7 +43,7 @@ class mysqlConnect {
   }
 
   public function getAdmin($start_date, $end_date) {
-    $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date'";
+    $query = "SELECT name, date, comment, hour_salary, day_salary FROM schedule WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY name, date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -100,9 +100,9 @@ class mysqlConnect {
     $query = $query."comment TEXT not null,";
     $query = $query."start_time TEXT not null,";
     $query = $query."end_time TEXT not null,";
-    $query = $query."staff_price TEXT not null,";
-    $query = $query."hour_price TEXT not null,";
-    $query = $query."day_price TEXT not null,";
+    $query = $query."staff_salary TEXT not null,";
+    $query = $query."hour_salary TEXT not null,";
+    $query = $query."day_salary TEXT not null,";
     $query = $query."primary key(name, date));";
     $this->mysql->query($query);
   }
