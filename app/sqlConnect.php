@@ -43,7 +43,7 @@ class mysqlConnect {
   }
 
   public function getAdmin($start_date, $end_date) {
-    $query = "SELECT name, date, comment, hour_salary, day_salary FROM schedule WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY name, date";
+    $query = "SELECT name, date, comment, hour_salary, day_salary FROM schedule WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY name*1, date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
