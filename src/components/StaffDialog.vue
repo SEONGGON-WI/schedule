@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-click-outside="cancel" v-model="dialog" max-width="70%" min-height="50%">
+  <v-dialog v-click-outside="close" v-model="dialog" max-width="70%" min-height="50%">
     <v-sheet
       class="text-center d-inline-block"
       color="blue-grey darken-3"
@@ -12,10 +12,10 @@
       </div>
       <v-spacer></v-spacer>
       <v-btn class="mx-2 mb-5 confirm_action" color="error" plain @click="close" outlined>
-        <v-icon>cancel</v-icon>いいえ
+        いいえ
       </v-btn>
       <v-btn class="mx-2 mb-5 confirm_action" color="info" plain @click="upload" outlined>
-        <v-icon>save</v-icon>はい
+        はい
       </v-btn>
       <v-spacer></v-spacer>
     </v-sheet>

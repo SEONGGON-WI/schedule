@@ -7,15 +7,14 @@
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn class="success mx-1" @click="edit">
+          <v-btn class="success mx-2" @click="edit">
             <v-icon>save</v-icon>閉じる
           </v-btn>
-          
-          <v-btn class="error mx-1" @click="close">
+          <v-btn class="error mx-2" @click="close">
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
-
+        
         <v-main class="pa-0">
           <v-row no-gutters>
             <v-col cols="4">
@@ -52,7 +51,6 @@
   </v-dialog>
 </template>
 <script>
-
 export default {
   name: "staffschedule",
   components: {
