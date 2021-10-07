@@ -202,6 +202,7 @@ export default {
       axios.post(url, data).then(function(response) {
         this.alert(response.data.status, response.data.message, true);
       }.bind(this))
+      this.dialog = false;
     },
     close() {
       this.dialog = false;
