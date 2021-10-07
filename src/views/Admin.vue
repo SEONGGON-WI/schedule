@@ -120,7 +120,13 @@
   ></admin-dialog>
 </v-app>
 </template>
-
+<style lang="scss">
+.v-event {
+  height: 5px !important;
+  left: 5px !important;
+  top: 1% !important;
+}
+</style>
 <script>
 import alert from '@/components/alert.vue';
 import AdminEdit from '@/components/AdminEdit.vue';
@@ -289,9 +295,9 @@ export default {
     },
     refresh() {
       this.create = false;
-      this.calendar_type = 'month'
       this.name = '全員'
       this.comment = ''
+      this.get_data();
     },
     clear() {
       this.name = '全員'
