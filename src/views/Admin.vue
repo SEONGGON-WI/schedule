@@ -103,13 +103,13 @@
     </v-container>
   </v-main>
 
-  <!-- <admin-edit
-    @edit="edit($event)"
+  <admin-edit
+    @accept="accept_edit($event)"
     @close="edit_close"
     v-if="edit_show"
-    :date="edit_date"
     :items="edit_items"
-  ></admin-edit> -->
+    :date="edit_date"
+  ></admin-edit>
 
   <admin-dialog
     @accept="accept"
@@ -122,7 +122,7 @@
 
 <script>
 import alert from '@/components/alert.vue';
-// import AdminEdit from '@/components/AdminEdit.vue';
+import AdminEdit from '@/components/AdminEdit.vue';
 import AdminDialog from '@/components/AdminDialog.vue';
 import axios from 'axios';
 
@@ -130,7 +130,7 @@ export default {
   name: 'admin',
   components: {
     alert,
-    // AdminEdit,
+    AdminEdit,
     AdminDialog,
   },
   data: () => ({
@@ -149,20 +149,258 @@ export default {
     ],
     calendar_events: [],
     edit_show: false,
-    edit_date: '',
     edit_items: {},
     edit_index: null,
+    edit_date: '',
     alert_show: false,
     alert_type: '',
     alert_text: '',
-    text: '',
     action: 0,
+    text: '',
     dialog: false,
+    create: false,
   }),
   created() {
+    const data = [
+    {
+        "name": "1",
+        "date": "2021-10-01",
+        "comment": "1",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-05",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-06",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-07",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-08",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "1",
+        "date": "2021-10-09",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-08",
+        "comment": "2",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-12",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-13",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-14",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-19",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-20",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-21",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-26",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "2",
+        "date": "2021-10-27",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-01",
+        "comment": "3",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-02",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-09",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-22",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-29",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "3",
+        "date": "2021-10-30",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-11",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-12",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-18",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "4",
+        "date": "2021-10-24",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-03",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-04",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-05",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-06",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-07",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-08",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    },
+    {
+        "name": "5",
+        "date": "2021-10-09",
+        "comment": "",
+        "hour_salary": "",
+        "day_salary": ""
+    }
+]
+    this.$store.commit('set_calendar_events', data)
+    this.fetch_data(data);
+
+
     const date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
-    this.setToday();
+    // this.setToday();
   },
   computed: {
     get_agenda() {
@@ -170,21 +408,27 @@ export default {
     },
     get_name_items() {
       const data = this.$store.getters.calendar_events;
-      const name_items = data.map(e => e.name);
+      const name_items = data.map(element => element.name);
       return ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
       })];
     },
     get_comment_items() {
       const data = this.$store.getters.calendar_events;
-      const comment_items = data.map(e => e.comment);
+      const comment_items = data.map(element => element.comment);
       return ['', ...comment_items.filter((obj, index) => {
         return comment_items.indexOf(obj) === index;
       })];
     },
   },
   methods: {
-    fetch() {
+    async fetch() {
+      if (this.create) {
+        this.save();
+      }
+      if (!this.create) {
+        this.create = true;
+      }
       this.search_date = {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
@@ -195,7 +439,7 @@ export default {
       var firstTimestamp = null;
       var startTime = null;
       var color = [];
-      let name_items = data.map(e => e.name);
+      let name_items = data.map(element => element.name);
       name_items = [...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
       })];
@@ -228,20 +472,20 @@ export default {
           this.fetch_data(response.data.data);
         } else {
           this.calendar_events = [];
+          this.$store.commit('set_calendar_events', []);
           this.alert(response.data.status, response.data.message, true);
         }
       }.bind(this))
     },
-
     search() {
       let data = this.$store.getters.calendar_events;
       const name = this.name;
       const comment = this.comment;
       if (name != '全員') {
-        data = data.filter(e => e.name == name);
+        data = data.filter(obj => obj.name == name);
       }
       if (comment != '') {
-        data = data.filter(e => e.comment == comment);
+        data = data.filter(obj => obj.comment == comment);
       }
       this.fetch_data(data)
     },
@@ -259,25 +503,33 @@ export default {
     save() {
       const url = "/schedule/app/adminUploadSchedule.php";
       const data = {
+        date: this.search_date,
         event: this.$store.getters.calendar_events
       }
       axios.post(url, data).then(function(response) {
-        this.alert(response.data.status, response.data.message, true);
+        if (response.data.status == "success") {
+          if (this.action != 0) {
+            this.alert(response.data.status, response.data.message, true);
+          }
+        } else {
+          this.alert(response.data.status, response.data.message, true);
+        }
       }.bind(this))
     },
     remove() {
       let data = this.$store.getters.calendar_events;
       const name = this.name;
       if (name != '全員') {
-        data = data.filter(e => e.name != name)
+        data = data.filter(obj => obj.name != name)
         this.$store.dispatch('setCalendarEvents', data)
         this.fetch_data(data)
       }
     },
     refresh() {
+      this.create = false;
+      this.calendar_type = 'month'
       this.name = '全員'
       this.comment = ''
-      this.get_data();
     },
     clear() {
       this.name = '全員'
@@ -285,38 +537,26 @@ export default {
       const data = this.$store.getters.calendar_events;
       this.fetch_data(data);
     },
-    edit(data) {
-      let item = [];
-      this.edit_date = data.year +"年 "+ data.month +"月 "+ data.day +"日";
-      this.events.map((e) => {
-        if (e.date == data.date) {
-          item.push(e);
-        }
-      });
-      this.items = item;
-      if (item.length != 0) {
+    edit(item) {
+      const lodash = require("lodash");
+      const data = this.$store.getters.calendar_events;
+      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == item.date));
+      this.edit_date = item.date
+      if (this.edit_items.length != 0) {
         this.edit_show = true;
       }
     },
-    edit_remove(item) {
-      this.edit = false;
-      let event = [];
-      this.item.map((e) => {
-        if (e.name != item.name || e.date != item.date) {
-          event.push(e);
-        }
-      });
-      this.temporary_event = event;
- 
-      event = [];
-      this.events.map((e) => {
-        if (e.name != item.name || e.date != item.date) {
-          event.push(e);
-        }
-      });
-      this.events = event;
+    accept_edit(item) {
+      const data = this.$store.getters.calendar_events
+      let event = data.filter(obj => obj.date != this.edit_date)
+      event.push(...item)
+      this.$store.commit('set_calendar_events', event);
+      this.edit_show = false;
+      this.search();
     },
-
+    edit_close() {
+      this.edit_show = false;
+    },
     accept() {
       this.dialog = false;
       if (this.action == 1) {
