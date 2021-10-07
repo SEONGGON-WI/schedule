@@ -23,7 +23,7 @@
           disable-sort
         >
           <template v-slot:item.name="{ item }">
-            <label class="title_text">{{ item.name }}</label>
+            <label>{{ item.name }}</label>
           </template>
           <template v-slot:item.comment="{ item }">
             <v-text-field
