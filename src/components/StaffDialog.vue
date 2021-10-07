@@ -10,12 +10,10 @@
       <div color="white" class="text--lighten-1 ma-2 confirm">
         登録しますか？
       </div>
-
       <v-spacer></v-spacer>
-      <v-btn class="mx-2 mb-5 confirm_action" color="error" plain @click="cancel" outlined>
+      <v-btn class="mx-2 mb-5 confirm_action" color="error" plain @click="close" outlined>
         <v-icon>cancel</v-icon>いいえ
       </v-btn>
-      
       <v-btn class="mx-2 mb-5 confirm_action" color="info" plain @click="upload" outlined>
         <v-icon>save</v-icon>はい
       </v-btn>
@@ -40,7 +38,7 @@ export default {
   computed: {
   },
   methods: {
-    cancel() {
+    close() {
       this.dialog = false;
       this.$emit("close");
     },
