@@ -21,11 +21,11 @@ try {
     $index = 0;
     $sql_array = [];
     foreach ($event as $values) {
-      $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['staff_price']}' )";
+      $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['staff_salary']}' )";
       $index++;
     }
-    $sql = "INSERT INTO schedule ( name, date, start_time, end_time, staff_price ) VALUES";
-    $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), staff_price = VALUES(staff_price)";
+    $sql = "INSERT INTO schedule ( name, date, start_time, end_time, staff_salary ) VALUES";
+    $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), staff_salary = VALUES(staff_salary)";
     $sub_sql_query = implode(', ', $sql_array);
     $sql = $sql.$sub_sql_query.$sub_sql;
     $dbConnect->mysql->query($sql);
@@ -34,7 +34,7 @@ try {
     $result = json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
   }
 } catch(Exception $e) {
-  $result = json_encode(array('error' => 'error' , 'message' => '登録が失敗しました。'));
+  $result = json_encode(array('error' => 'error' , 'message' => '登録を失敗しました。'));
 }
 $dbConnect->dbClose();
 echo($result);
