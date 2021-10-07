@@ -41,7 +41,7 @@
             <v-col cols="4">
               <v-text-field
                 class="pa-1 mt-4"
-                v-model="price"
+                v-model="salary"
                 label="給与"
               ></v-text-field>
             </v-col>
@@ -64,17 +64,16 @@ export default {
     date: '',
     start: '',
     end: '',
-    price: '',
+    salary: '',
     rules: [v => (v || '').length == 4 || '4桁を入力してください。'],
     dialog: false,
   }),
   created() {
-    console.log(this.items);
     const day = this.items.date.split("-");
     this.date = day[0] +'年 '+ day[1] +'月 '+ day[2]+'日';
     this.start = this.items.start_time;
     this.end = this.items.end_time;
-    this.price = this.items.staff_price;
+    this.salary = this.items.staff_salary;
     this.dialog = true;
   },
   methods: {
@@ -88,7 +87,7 @@ export default {
       const data = {
         start_time: this.start,
         end_time: this.end,
-        staff_price: this.price,
+        staff_salary: this.salary,
       }
       this.dialog = false;
       this.$emit("edit", data);

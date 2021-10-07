@@ -86,7 +86,7 @@ import StaffDialog from '@/components/StaffDialog.vue';
 import axios from "axios"
 
 export default {
-  name: "schedule",
+  name: "staff",
   components: {
     StaffEdit,
     StaffDialog,
@@ -139,7 +139,7 @@ export default {
         comment: '',
         start_time: '',
         end_time: '',
-        staff_price: ''
+        staff_salary: ''
       });    
     },
     search() {
@@ -174,9 +174,25 @@ export default {
           comment: obj.comment,
           start_time: obj.start_time,
           end_time: obj.end_time,
-          staff_price: obj.staff_price
+          staff_salary: obj.staff_salary
         })
       })
+    },
+    clear() {
+      this.name = '';
+      this.password = '';
+      this.calendar_events = [];
+      this.setToday();
+    },
+    edit(event) {
+      const index = this.edit_index;
+      this.calendar_events[index].start_time = event.start_time;
+      this.calendar_events[index].end_time = event.end_time;
+      this.calendar_events[index].staff_salary = event.staff_salary;
+      this.edit_show = false;
+    }, 
+    edit_close() {
+      this.edit_show = false;
     },
     upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
@@ -191,22 +207,6 @@ export default {
     },
     close() {
       this.dialog = false;
-    },
-    clear() {
-      this.name = '';
-      this.password = '';
-      this.calendar_events = [];
-      this.setToday();
-    },
-    edit(event) {
-      const index = this.edit_index;
-      this.calendar_events[index].start_time = event.start_time;
-      this.calendar_events[index].end_time = event.end_time;
-      this.calendar_events[index].staff_price = event.staff_price;
-      this.edit_show = false;
-    }, 
-    edit_close() {
-      this.edit_show = false;
     },
     alert(type, text, show) {
       this.alert_type = type
