@@ -79,8 +79,9 @@
 </template>
 <style lang="scss">
 .v-event {
+  width: 99% !important;
+  left: 0.5% !important;
   height: 100px !important;
-  left: 5px !important;
   top: 1% !important;
 }
 </style>

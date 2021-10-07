@@ -122,8 +122,15 @@
 </template>
 <style lang="scss">
 .v-event {
-  height: 5px !important;
-  left: 5px !important;
+  width: 99% !important;
+  left: 0.5% !important;
+  height: 45px !important;
+  top: 1% !important;
+}
+.v-event-more{
+  width: 90% !important;
+  left: 5% !important;
+  height: 20px !important;
   top: 1% !important;
 }
 </style>
@@ -141,7 +148,7 @@ export default {
     AdminDialog,
   },
   data: () => ({
-    colors: ['blue', 'indigo', 'cyan', 'green', 'orange', 'grey darken-1', 'pink', 'purple' ,'light-green' , 'brown' , 'blue-grey'],
+    colors: ['blue', 'indigo', 'cyan', 'green', 'orange', 'deep-orange darken-4', 'pink', 'purple' , 'grey', 'brown' , 'grey darken-4' , 'deep-purple darken-4'],
     search_date: {},
     name: '全員',
     comment: '',
@@ -205,14 +212,19 @@ export default {
     fetch_data(data) {
       var firstTimestamp = null;
       var startTime = null;
-      var color = [];
+      var color = '';
+      var color_index = 0;
       let name_items = data.map(element => element.name);
       name_items = [...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
       })];
       this.calendar_events = [];
       name_items.map(obj => {
-        color = this.colors[this.rnd(0, this.colors.length - 1)]
+        color = this.colors[color_index]
+        color_index ++;
+        if (color_index >= this.colors.length) {
+          color_index = 0;
+        }
         data.map(element => {
           if (element.name == obj) {
             firstTimestamp = new Date(`${element.date}T09:00:00`)
@@ -359,9 +371,6 @@ export default {
     },
     get_event_color(event) {
       return event.color;
-    },
-    rnd (a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a
     },
   }
 }

@@ -1,6 +1,6 @@
 //GLOBAL
 $font-size-root: 25px;
-$calendar-event-line-height : 40px;
+$calendar-event-line-height : 35px;
 $calendar-event-font-size : 20px;
 html { 
   width: 100% !important;
@@ -31,11 +31,6 @@ body {
   cursor:pointer !important;
 }
 
-.v-event-more{
-  font-weight: bold !important;
-  left: 5% !important;
-}
-
 .v-calendar-weekly__day:hover{
   cursor:pointer !important;
 }
@@ -61,18 +56,18 @@ body {
 }
 
 .v-present .v-calendar-weekly__day-label .v-btn--round{
-  width: 95% !important;
+  width: 100% !important;
   border-radius: 0% !important;
   background-color: #82B1FF !important;
 }
 
 .v-calendar-weekly__day.v-past .v-calendar-weekly__day-label .v-btn--round{
-  width: 95% !important;
+  width: 100% !important;
   border-radius: 4px !important;
 }
 
 .v-calendar-weekly__day.v-future .v-calendar-weekly__day-label .v-btn--round{
-  width: 95% !important;
+  width: 100% !important;
   border-radius: 4px !important;
 }
 
@@ -81,17 +76,17 @@ body {
 }
 
 .v-present .v-calendar-daily_head-day-label .v-btn--round{
-  width: 95% !important;
+  width: 100% !important;
   border-radius: 4px !important;
   background-color: #82B1FF !important;
 }
 
 .v-calendar-daily_head-day.v-past .v-calendar-daily_head-day-label .v-btn--round{
-  width: 95% !important;
+  width: 100% !important;
   border-radius: 4px !important;
 }
 
 .v-calendar-daily_head-day.v-future .v-calendar-daily_head-day-label .v-btn--round{
-  width: 95% !important;
+  width: 100% !important;
   border-radius: 4px !important;
 }
