@@ -58,33 +58,6 @@ class mysqlConnect {
     return $table;
   }
 
-  public function searchAdmin($name, $comment, $start_date, $end_date) {
-    $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date'";
-
-    if ($name != '全員' && $comment != '') {
-      $sub_query = "AND name = '$name' AND comment = '$comment";
-    } else if ($name != '全員' && $comment == '') {
-      $sub_query = "AND name = '$name'";
-    } else if ($name == '全員' && $comment != '') {
-      $sub_query = "AND comment = '$comment'";
-    }
-
-
-
-    $result = $this->mysql->query($query);
-    if ($result->num_rows > 0) {
-      $i = 0;
-      while($row = $result->fetch_assoc()) {
-        $table[$i] = $row;
-        $i++;
-      }
-    }
-    if (!isset($table)) {
-      return;
-    } 
-    return $table;
-  }
-
   public function createManagerTable() {
     $query = "CREATE TABLE IF NOT EXISTS manager (";
     $query = $query."name varchar(32) not null,";
