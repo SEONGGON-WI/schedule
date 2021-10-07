@@ -7,13 +7,13 @@ try {
   $dbConnect = new mysqlConnect();
   $managerPassword= $dbConnect->getPassword($name);
   if (empty($managerPassword)) {
-    $result = json_encode(array('status' => 'info' , 'message' => '登録された名前がありません。'));
+    $result = json_encode(array('status' => 'warning' , 'message' => '登録された名前がありません。'));
   } else {
     $hashedPassword = $managerPassword;
     if (password_verify($password, $hashedPassword)) {
       $data = $dbConnect->getSchedule($name);
       if (empty($data)) {
-        $result = json_encode(array('status' => 'info' , 'message' => '登録された日程がありません。'));
+        $result = json_encode(array('status' => 'warning' , 'message' => '登録された日程がありません。'));
       } else {
         $result = json_encode(array('status' => 'success' , 'data' => $data));
       }
