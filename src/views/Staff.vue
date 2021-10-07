@@ -78,7 +78,6 @@
 </v-main>
 </v-app>
 </template>
-
 <script>
 import alert from '@/components/alert.vue'
 import StaffEdit from '@/components/StaffEdit.vue'
@@ -102,7 +101,6 @@ export default {
     calendar_type: 'month',
     calendar_events: [],
     edit_show: false,
-    edit_date: '',
     edit_items: {},
     edit_index: null,
     alert_show: false,
