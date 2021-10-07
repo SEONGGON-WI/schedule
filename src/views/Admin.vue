@@ -3,19 +3,16 @@
   <v-app-bar app color="primary" dark fixed>
     <v-toolbar-title class="ml-4">スケジュール</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="error mx-2" color="white" @click="remove">
-      <v-icon>delete</v-icon>削除
-    </v-btn>
-
-    <v-btn class="accent mx-2" @click="save">
+    <v-btn class="accent mx-2" @click="click(1)">
       <v-icon>save</v-icon>登録
     </v-btn>
-
-    <v-btn class="success ml-2 mr-1" color="white" @click="restore">
-      <v-icon>settings_backup_restore</v-icon>復元
+    <v-btn class="error mx-2" color="white" @click="click(2)">
+      <v-icon>delete</v-icon>削除
+    </v-btn>
+    <v-btn class="success mx-2" color="white" @click="click(3)">
+      <v-icon>autorenew</v-icon>更新
     </v-btn>
   </v-app-bar>
-  
   <v-main class="mx-1" style="position: fixed !important; width: 100%; height: 100%;">
     <alert
       @close="alert_close"
@@ -56,7 +53,7 @@
                 <v-select 
                   class="mt-6"
                   v-model="name" 
-                  :items="name_items"
+                  :items="get_name_items"
                   label="名前"
                   @change="search"
                 ></v-select>
@@ -66,14 +63,14 @@
                 <v-select 
                   class="mt-6"
                   v-model="comment" 
-                  :items="comment_items"
+                  :items="get_comment_items"
                   label="案件"
                   @change="search"
                 ></v-select>
               </v-col>
 
-              <v-btn color="success" @click.native="clear" class="mx-2">
-                <v-icon>refresh</v-icon>クリア
+              <v-btn icon small @click.native="clear" class="mr-2">
+                <v-icon>clear</v-icon>
               </v-btn>
             </v-toolbar>
           </v-sheet>
@@ -88,7 +85,6 @@
               locale="ja-jp"
               event-more-text="..."
               interval-count=0
-              @click:date="get_data"
               @click:day="edit"
               @change="fetch"
             >
@@ -113,23 +109,21 @@
     v-if="edit_show"
     :date="edit_date"
     :items="edit_items"
-  ></admin-edit>
+  ></admin-edit> -->
 
   <admin-dialog
-    @save_data="save_data"
-    @restore_data="restore_data"
-    @cancel="cancel"
+    @accept="accept"
+    @close="close"
     v-if="dialog"
-    :text="check_text"
-    :action="action"
-  ></admin-dialog> -->
+    :text="text"
+  ></admin-dialog>
 </v-app>
 </template>
 
 <script>
 import alert from '@/components/alert.vue';
 // import AdminEdit from '@/components/AdminEdit.vue';
-// import AdminDialog from '@/components/AdminDialog.vue';
+import AdminDialog from '@/components/AdminDialog.vue';
 import axios from 'axios';
 
 export default {
@@ -137,7 +131,7 @@ export default {
   components: {
     alert,
     // AdminEdit,
-    // AdminDialog,
+    AdminDialog,
   },
   data: () => ({
     item: [],  
@@ -145,9 +139,7 @@ export default {
     search_date: {},
 
     name: '全員',
-    name_items: ['全員'],
     comment: '',
-    comment_items: [''],
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
@@ -156,7 +148,6 @@ export default {
       {text: '週', value:'week'}
     ],
     calendar_events: [],
-    calendar_events_temp: [],
     edit_show: false,
     edit_date: '',
     edit_items: {},
@@ -164,45 +155,53 @@ export default {
     alert_show: false,
     alert_type: '',
     alert_text: '',
+    text: '',
+    action: 0,
     dialog: false,
   }),
   created() {
-    var date = new Date();
+    const date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
-
-    const time = date.getFullYear()+"-"+(date.getMonth()+1);
-    this.search_date = {
-      start_date: time +"-01",
-      end_date: time +"-31"
-    }
     this.setToday();
-    this.get_data();
   },
   computed: {
     get_agenda() {
       return this.calendar_events.length + "件";
     },
+    get_name_items() {
+      const data = this.$store.getters.calendar_events;
+      const name_items = data.map(e => e.name);
+      return ['全員', ...name_items.filter((obj, index) => {
+        return name_items.indexOf(obj) === index;
+      })];
+    },
+    get_comment_items() {
+      const data = this.$store.getters.calendar_events;
+      const comment_items = data.map(e => e.comment);
+      return ['', ...comment_items.filter((obj, index) => {
+        return comment_items.indexOf(obj) === index;
+      })];
+    },
   },
   methods: {
     fetch() {
       this.search_date = {
-        start_time: this.$refs.calendar.lastStart.date,
-        end_time: this.$refs.calendar.lastEnd.date
+        start_date: this.$refs.calendar.lastStart.date,
+        end_date: this.$refs.calendar.lastEnd.date
       }
+      this.get_data();
     },
     fetch_data(data) {
       var firstTimestamp = null;
       var startTime = null;
+      var color = [];
+      let name_items = data.map(e => e.name);
+      name_items = [...name_items.filter((obj, index) => {
+        return name_items.indexOf(obj) === index;
+      })];
       this.calendar_events = [];
- 
-      this.name_items = ['全員', ...(data.map(e => e.name).filter((obj, index) => {
-        return (data.map(e => e.name)).indexOf(obj) === index;
-      }))];
-      this.comment_items = ['', ...(data.map(e => e.comment).filter((obj, index) => {
-        return (data.map(e => e.comment)).indexOf(obj) === index;
-      }))];
-      this.name_items.map(obj => {
-        var color = this.colors[this.rnd(0, this.colors.length - 1)]
+      name_items.map(obj => {
+        color = this.colors[this.rnd(0, this.colors.length - 1)]
         data.map(element => {
           if (element.name == obj) {
             firstTimestamp = new Date(`${element.date}T09:00:00`)
@@ -212,22 +211,20 @@ export default {
               date: element.date,
               start: startTime,
               comment: element.comment,
-              start_time: element.start_time,
-              end_time: element.end_time,
-              hour_price: element.hour_price,
-              day_price: element.day_price,
+              hour_salary: element.hour_salary,
+              day_salary: element.day_salary,
               color: color
             })
           }
         })
       })
-      console.log(this.calendar_events);
     },
     async get_data() {
       const url = "/schedule/app/adminGetSchedule.php";
       const data = this.search_date;
       await axios.post(url, data).then(function(response) {
         if (response.data.status === 'success') {
+          this.$store.commit('set_calendar_events', response.data.data)
           this.fetch_data(response.data.data);
         } else {
           this.calendar_events = [];
@@ -237,29 +234,57 @@ export default {
     },
 
     search() {
-      console.log(this.calendar_events);
+      let data = this.$store.getters.calendar_events;
+      const name = this.name;
+      const comment = this.comment;
+      if (name != '全員') {
+        data = data.filter(e => e.name == name);
+      }
+      if (comment != '') {
+        data = data.filter(e => e.comment == comment);
+      }
+      this.fetch_data(data)
     },
-
-
-
-
-    
-    remove() {
-      console.log("remove")
+    click(action) {
+      if (action == 1) {
+        this.text = "登録しますか？"
+      } else if (action == 2) {
+        this.text = "削除しますか？"
+      } else if (action == 3) {
+        this.text = "更新しますか？"
+      }
+      this.action = action;
+      this.dialog = true;
     },
     save() {
-      console.log("save")
+      const url = "/schedule/app/adminUploadSchedule.php";
+      const data = {
+        event: this.$store.getters.calendar_events
+      }
+      axios.post(url, data).then(function(response) {
+        this.alert(response.data.status, response.data.message, true);
+      }.bind(this))
     },
-    restore() {
-      console.log("restore")
+    remove() {
+      let data = this.$store.getters.calendar_events;
+      const name = this.name;
+      if (name != '全員') {
+        data = data.filter(e => e.name != name)
+        this.$store.dispatch('setCalendarEvents', data)
+        this.fetch_data(data)
+      }
+    },
+    refresh() {
+      this.name = '全員'
+      this.comment = ''
+      this.get_data();
     },
     clear() {
-      this.name = '全員';
-      this.comment = '';
-      this.get_schedule();
+      this.name = '全員'
+      this.comment = ''
+      const data = this.$store.getters.calendar_events;
+      this.fetch_data(data);
     },
-
-
     edit(data) {
       let item = [];
       this.edit_date = data.year +"年 "+ data.month +"月 "+ data.day +"日";
@@ -273,7 +298,7 @@ export default {
         this.edit_show = true;
       }
     },
-    remove_items(item) {
+    edit_remove(item) {
       this.edit = false;
       let event = [];
       this.item.map((e) => {
@@ -290,6 +315,22 @@ export default {
         }
       });
       this.events = event;
+    },
+
+    accept() {
+      this.dialog = false;
+      if (this.action == 1) {
+        this.save(); 
+      } else if (this.action == 2) {
+        this.remove(); 
+      } else if (this.action == 3) {
+        this.refresh(); 
+      }
+      this.action = 0;
+    },
+    close() {
+      this.dialog = false;
+      this.action = 0;
     },
     alert(type, text, show) {
       this.alert_type = type
