@@ -28,7 +28,7 @@ export default {
     setTimeout(function() {
       this.$emit('close');
       this.dialog = false;
-    }.bind(this), 5000);
+    }.bind(this), 3000);
   },
   computed: {
   },
