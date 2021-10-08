@@ -2,6 +2,7 @@
 $font-size-root: 25px;
 $calendar-event-line-height : 30px;
 $calendar-event-font-size : 20px;
+
 html { 
   width: 100% !important;
   height: 100% !important;
@@ -12,6 +13,14 @@ body {
   height: 100% !important;
   overflow: hidden !important;
   touch-action: none !important;
+}
+
+.confirm {
+  font-size: 50px !important;
+}
+
+.confirm_action {
+  font-size: 40px !important;
 }
 
 .v-select__selections {

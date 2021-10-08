@@ -81,7 +81,7 @@
 .v-event {
   width: 99% !important;
   left: 0.5% !important;
-  height: 100px !important;
+  height: 60% !important;
   top: 1% !important;
 }
 </style>
