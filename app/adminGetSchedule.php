@@ -7,9 +7,7 @@ try {
   $dbConnect = new mysqlConnect();
   $data = $dbConnect->getAdmin($start_date, $end_date);
 
-  if (empty($data)) {
-    $result = json_encode(array('status' => 'warning' , 'message' => '登録された日程がありません。'));
-  } else {
+  if (!empty($data)) {
     $result = json_encode(array('status' => 'success' , 'data' => $data));
   }
 } catch(Exception $e) {
