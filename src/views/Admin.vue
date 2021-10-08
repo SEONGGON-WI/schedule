@@ -26,7 +26,6 @@
       :type="alert_type"
       v-if="alert_show"
     ></alert>
-
     <v-container fluid class="fill-height pa-0">
       <v-row class="fill-height">
         <v-col>
@@ -73,7 +72,7 @@
             </v-toolbar>
           </v-sheet>
 
-          <v-sheet height="90%" class="mx-3">
+          <v-sheet height="95%" class="mx-3">
             <v-calendar
               ref="calendar"
               v-model="calendar"
@@ -81,7 +80,7 @@
               :events="calendar_events"
               :event-color="get_event_color"
               locale="ja-jp"
-              event-more-text=". . ."
+              event-more-text="•••"
               interval-count=0
               @click:day="edit"
               @change="fetch"
@@ -124,7 +123,7 @@
 .v-event {
   width: 99% !important;
   left: 0.5% !important;
-  height: 31px !important;
+  height: 25% !important;
   top: 1% !important;
 }
 .v-event-more{
@@ -723,8 +722,15 @@ export default {
     remove() {
       let data = this.$store.getters.calendar_events;
       const name = this.name;
+      const comment = this.comment;
       if (name != '全員') {
-        data = data.filter(obj => obj.name != name)
+        data = data.filter(obj => obj.name != name);
+      }
+      if (comment != '') {
+        data = data.filter(obj => obj.comment != comment);
+      }
+
+      if (name != '全員' || comment != '') {
         this.$store.dispatch('setCalendarEvents', data)
         this.fetch_data(data)
       }
@@ -742,6 +748,9 @@ export default {
       this.fetch_data(data);
     },
     edit(item) {
+      if (!this.calendar_events.find(e => e.date == item.date)) {
+        return;
+      }
       const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
       this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == item.date));
