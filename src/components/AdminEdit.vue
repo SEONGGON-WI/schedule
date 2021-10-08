@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="80%" persistent>
+  <v-dialog v-model="dialog" @keydown.enter="edit" @keydown.esc="close" max-width="80%" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
