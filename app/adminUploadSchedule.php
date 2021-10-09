@@ -17,7 +17,8 @@ try {
         if ($element['name'] == $values['name'] && $element['date'] == $values['date']) {
           $duplicate = false;
         }
-        $sql_array[$index] = "( '{$values['name']}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', 
+        $sql_array[$index] = "( '{$values['name']}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', 
+                              '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}', 
                               '{$values['admin_hour_salary']}', '{$values['admin_day_salary']}' )";
         $index++;
       }
@@ -29,8 +30,9 @@ try {
       $del = substr($del, 0, -3);
       $dbConnect->mysql->query($del);
     }
-    $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, admin_hour_salary, admin_day_salary ) VALUES";
-    $sub_sql = "ON DUPLICATE KEY UPDATE agenda = VALUES(agenda), start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), 
+    $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense, admin_hour_salary, admin_day_salary ) VALUES";
+    $sub_sql = "ON DUPLICATE KEY UPDATE agenda = VALUES(agenda), start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), 
+              staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary),  staff_expense = VALUES(staff_expense),
               admin_hour_salary = VALUES(admin_hour_salary), admin_day_salary = VALUES(admin_day_salary)";
     $sub_sql_query = implode(', ', $sql_array);
     $sql = $sql.$sub_sql_query.$sub_sql;
