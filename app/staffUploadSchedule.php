@@ -22,11 +22,11 @@ try {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
         $index++;
       }
-      $sql = "INSERT INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary ) VALUES";
-      $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary)";
+      $sql = "INSERT INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
       $sub_sql_query = implode(', ', $sql_array);
       $sql = $sql.$sub_sql_query.$sub_sql;
       $dbConnect->mysql->query($sql);
