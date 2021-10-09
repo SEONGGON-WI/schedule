@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" @keydown.enter="edit" @keydown.esc="close" max-width="80%" persistent>
+  <v-dialog v-model="dialog" @keydown.enter="edit" @keydown.esc="close" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
@@ -39,6 +39,7 @@
         >
           <template v-slot:item.start_time>
             <v-text-field
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               height="40"
               class="mx-2 mt-4"
               v-model="start"
@@ -54,6 +55,7 @@
 
           <template v-slot:item.end_time>
             <v-text-field
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               height="40"
               class="mx-2 mt-4"
               v-model="end"
@@ -69,6 +71,7 @@
 
           <template v-slot:item.total_time>
             <v-text-field
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               height="40"
               class="mx-2 mt-4"
               v-model="total"
@@ -88,6 +91,7 @@
         >
           <template v-slot:item.staff_hour_salary>
             <v-text-field
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               height="40"
               class="mx-2 mt-4"
               v-model="hour_salary"
@@ -99,6 +103,7 @@
           </template>
           <template v-slot:item.staff_day_salary>
             <v-text-field
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               height="40"
               class="mx-2 mt-4"
               v-model="day_salary"
@@ -110,6 +115,7 @@
           </template>
           <template v-slot:item.staff_expense>
             <v-text-field
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               height="40"
               class="mx-2 mt-4"
               v-model="expense"
