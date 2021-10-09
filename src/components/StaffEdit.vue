@@ -123,7 +123,7 @@
 </template>
 <script>
 export default {
-  name: "staffschedule",
+  name: "staffedit",
   components: {
   },
   props: [

@@ -152,7 +152,7 @@
                   label="日給"
                 ></v-text-field>
               </template>
-              <template v-slot:item.staff_expense>
+              <template v-slot:item.staff_expense="{ item }">
                 <v-text-field
                   height="40"
                   class="mx-2 mt-4"
@@ -170,7 +170,7 @@
 <script>
 
 export default {
-  name: "editschedule",
+  name: "adminedit",
   components: {
   },
   props: [
@@ -193,7 +193,7 @@ export default {
       { value:"total_time", text:"勤労時間", width: "10%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "10%", align: 'center'},
       { value:"staff_day_salary", text:"日給", width: "10%", align: 'center'},
-      { value:"staff_expense", text:"日給", width: "10%", align: 'center'}
+      { value:"staff_expense", text:"警備", width: "10%", align: 'center'}
     ],
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
