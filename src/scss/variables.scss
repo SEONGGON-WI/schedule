@@ -28,8 +28,20 @@ body {
   font-size: 25px !important;
 }
 
-.v-input {
+.v-input.v-input--selection-controls .v-input__control .v-input__slot label{
   font-size: 25px !important;
+}
+
+.v-input__control .v-input__slot .v-text-field__slot input {
+  font-size: 20px !important;
+}
+
+.v-input__control .v-input__slot .v-text-field__slot label {
+  font-size: 20px !important;
+}
+
+.v-input--is-disabled {
+  color: black !important;
 }
 
 .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
