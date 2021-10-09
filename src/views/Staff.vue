@@ -26,10 +26,10 @@
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
             <v-spacer></v-spacer>
             <v-col cols="2">
-              <v-text-field class="mt-6" v-model="name" label="名前"></v-text-field>
+              <v-text-field class="mt-6" v-model="name" label="名前" id="id"></v-text-field>
             </v-col>
             <v-col cols="2">
-              <v-text-field class="mt-6" v-model="password" label="パスワード"></v-text-field>
+              <v-text-field class="mt-6" v-model="password" label="パスワード" id="password"></v-text-field>
             </v-col>
             <v-btn class="accent mx-2" color="white" @click="search">
               <v-icon>search</v-icon>検索
@@ -53,7 +53,7 @@
               @click:day="select"
             >
             <template v-slot:event="{ event }">
-              <div class="event_message mt-1 ml-1">
+              <div class="event_message mt-2 ml-4">
                 {{ event.agenda }}
               </div>
             </template>
@@ -121,10 +121,19 @@ export default {
     var date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
     this.setToday();
+    document.addEventListener('keydown', (event) => {
+      this.keyBoardEvent(event)
+    }, false);
   },
   computed: {
   },
   methods: {
+    keyBoardEvent(event) {
+      if ( event.which != 13) {
+        return;
+      }
+      this.search();
+    },
     select({ date }) {
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
@@ -142,13 +151,14 @@ export default {
       const startTime = new Date(firstTimestamp)
       this.calendar_events.push({
         date: date,
-        start: startTime,
         agenda: '',
         start_time: '',
         end_time: '',
-        total_time: 0,
+        total_time: '',
         staff_hour_salary: '',
         staff_day_salary: '',
+        staff_expense: '',
+        start: startTime,
         color: this.colors[0],
       });    
     },
@@ -190,14 +200,14 @@ export default {
           total_time: obj.total_time,
           staff_hour_salary: obj.staff_hour_salary,
           staff_day_salary: obj.staff_day_salary,
+          staff_expense: obj.staff_expense,
           start: startTime,
           color: color
         })
       })
     },
     clear() {
-      this.name = '';
-      this.password = '';
+      this.access_time = '';
       this.calendar_events = [];
       this.setToday();
     },
@@ -208,6 +218,7 @@ export default {
       this.calendar_events[index].total_time = event.total_time;
       this.calendar_events[index].staff_hour_salary = event.staff_hour_salary;
       this.calendar_events[index].staff_day_salary = event.staff_day_salary;
+      this.calendar_events[index].staff_expense = event.staff_expense;
       this.edit_show = false;
     }, 
     edit_close() {
@@ -215,13 +226,10 @@ export default {
     },
     upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
-      const today = new Date();
-      var current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
       const access_time = this.access_time == '' ? 0 : this.access_time; 
       const data = {
         name: this.name,
         password: this.password,
-        current_date: current_date,
         access_time: access_time,
         event: this.calendar_events
       }
