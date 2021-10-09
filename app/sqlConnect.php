@@ -27,7 +27,7 @@ class mysqlConnect {
   }
 
   public function getSchedule($name) {
-    $query = "SELECT name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary FROM schedule WHERE name = '$name' ORDER BY date";
+    $query = "SELECT name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense FROM schedule WHERE name = '$name' ORDER BY date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -77,6 +77,7 @@ class mysqlConnect {
     $query = $query."total_time TEXT not null,";
     $query = $query."staff_hour_salary TEXT not null,";
     $query = $query."staff_day_salary TEXT not null,";
+    $query = $query."staff_expense TEXT not null,";
     $query = $query."admin_hour_salary TEXT not null,";
     $query = $query."admin_day_salary TEXT not null,";
     $query = $query."primary key(name, date));";
