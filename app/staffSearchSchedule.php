@@ -5,17 +5,17 @@ $password = $response['password'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $managerPassword= $dbConnect->getPassword($name);
-  if (empty($managerPassword)) {
+  $managerData = $dbConnect->getPassword($name);
+  if (empty($managerData)) {
     $result = json_encode(array('status' => 'warning' , 'message' => '登録された名前がありません。'));
   } else {
-    $hashedPassword = $managerPassword;
+    $hashedPassword = $managerData['password'];
     if (password_verify($password, $hashedPassword)) {
       $data = $dbConnect->getSchedule($name);
       if (empty($data)) {
         $result = json_encode(array('status' => 'warning' , 'message' => '登録された日程がありません。'));
       } else {
-        $result = json_encode(array('status' => 'success' , 'data' => $data));
+        $result = json_encode(array('status' => 'success' , 'data' => $data, 'access_time' => $managerData['access_time']));
       }
     } else {
       $result = json_encode(array('status' => 'warning' , 'message' => 'パスワードを確認してください。'));

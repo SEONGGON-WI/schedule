@@ -54,7 +54,7 @@
             >
             <template v-slot:event="{ event }">
               <div class="event_message mt-1 ml-1">
-                {{ event.comment }}
+                {{ event.agenda }}
               </div>
             </template>
           </v-calendar>
@@ -101,6 +101,7 @@ export default {
   props: {
   },
   data: () => ({
+    colors: ['grey darken-2','orange'],
     name: '',
     password: '',
     calendar: '',
@@ -113,6 +114,7 @@ export default {
     alert_show: false,
     alert_type: '',
     alert_text: '',
+    access_time: '',
     dialog: false,
   }),
   created() {
@@ -126,7 +128,7 @@ export default {
     select({ date }) {
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
-        if (this.calendar_events[index].comment == '') {
+        if (this.calendar_events[index].agenda == '') {
           this.calendar_events.splice(index, 1);
           return;
         } else {
@@ -141,10 +143,13 @@ export default {
       this.calendar_events.push({
         date: date,
         start: startTime,
-        comment: '',
+        agenda: '',
         start_time: '',
         end_time: '',
-        staff_salary: ''
+        total_time: 0,
+        staff_hour_salary: '',
+        staff_day_salary: '',
+        color: this.colors[0],
       });    
     },
     search() {
@@ -159,6 +164,7 @@ export default {
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status === 'success') {
+          this.access_time = response.data.access_time;
           this.fetch_data(response.data.data);
         } else {
           this.calendar_events = [];
@@ -169,17 +175,23 @@ export default {
     fetch_data(data) {
       var firstTimestamp = null
       var startTime = null
+      var color = ''
       this.calendar_events = [];
       data.map(obj => {
+        color = obj.agenda == '' ? this.colors[0] : this.colors[1];
         firstTimestamp = new Date(`${obj.date}T09:00:00`)
         startTime = new Date(firstTimestamp)
         this.calendar_events.push({
+          name: obj.name,
           date: obj.date,
-          start: startTime,
-          comment: obj.comment,
+          agenda: obj.agenda,
           start_time: obj.start_time,
           end_time: obj.end_time,
-          staff_salary: obj.staff_salary
+          total_time: obj.total_time,
+          staff_hour_salary: obj.staff_hour_salary,
+          staff_day_salary: obj.staff_day_salary,
+          start: startTime,
+          color: color
         })
       })
     },
@@ -193,7 +205,9 @@ export default {
       const index = this.edit_index;
       this.calendar_events[index].start_time = event.start_time;
       this.calendar_events[index].end_time = event.end_time;
-      this.calendar_events[index].staff_salary = event.staff_salary;
+      this.calendar_events[index].total_time = event.total_time;
+      this.calendar_events[index].staff_hour_salary = event.staff_hour_salary;
+      this.calendar_events[index].staff_day_salary = event.staff_day_salary;
       this.edit_show = false;
     }, 
     edit_close() {
@@ -201,9 +215,14 @@ export default {
     },
     upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
+      const today = new Date();
+      var current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
+      const access_time = this.access_time == '' ? 0 : this.access_time; 
       const data = {
         name: this.name,
         password: this.password,
+        current_date: current_date,
+        access_time: access_time,
         event: this.calendar_events
       }
       axios.post(url, data).then(function(response) {
