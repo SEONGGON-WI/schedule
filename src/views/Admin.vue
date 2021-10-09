@@ -60,8 +60,8 @@
                 <v-select 
                   height="30"
                   class="mt-6"
-                  v-model="comment" 
-                  :items="get_comment_items"
+                  v-model="agenda" 
+                  :items="get_agenda_items"
                   label="案件"
                   @change="search"
                 ></v-select>
@@ -86,14 +86,11 @@
               @change="fetch"
             >
               <template v-slot:event="{ event }">
-                <div class="mt-1 ml-1" v-if="event.hour_salary || event.day_salary">
-                  {{ event.name }}_{{ event.comment }}_{{ event.hour_salary}}{{ event.day_salary}}
-                </div>
-                <div class="mt-1 ml-1" v-else-if="event.comment">
-                  {{ event.name }}_{{ event.comment }}
+                <div class="mt-1 ml-1" v-if="event.agenda == ''">
+                  {{ event.name }}
                 </div>
                 <div class="mt-1 ml-1" v-else>
-                  {{ event.name }}
+                  {{ event.name }}_{{ event.agenda }}
                 </div>
               </template>
             </v-calendar>
@@ -147,10 +144,10 @@ export default {
     AdminDialog,
   },
   data: () => ({
-    colors: ['blue', 'indigo', 'cyan', 'green', 'orange', 'deep-orange darken-4', 'pink', 'purple' , 'grey', 'brown' , 'grey darken-4' , 'deep-purple darken-4'],
+    colors: ['grey darken-2','orange'],
     search_date: {},
     name: '全員',
-    comment: '',
+    agenda: '',
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
@@ -171,430 +168,6 @@ export default {
     create: false,
   }),
   created() {
-    const event = [
-    {
-        "name": "1",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "1",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "1",
-        "date": "2021-10-03",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "2",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "2",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "2",
-        "date": "2021-10-04",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "3",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "3",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "3",
-        "date": "2021-10-05",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "4",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "4",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "4",
-        "date": "2021-10-06",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "5",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "5",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "5",
-        "date": "2021-10-07",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "6",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "6",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "6",
-        "date": "2021-10-08",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "7",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "7",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "7",
-        "date": "2021-10-09",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "8",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "8",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "8",
-        "date": "2021-10-10",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "9",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "9",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "9",
-        "date": "2021-10-11",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "10",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "10",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "10",
-        "date": "2021-10-12",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "11",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "11",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "11",
-        "date": "2021-10-13",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "12",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "12",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "12",
-        "date": "2021-10-14",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "13",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "13",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "13",
-        "date": "2021-10-15",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "14",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "14",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "14",
-        "date": "2021-10-16",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "15",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "15",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "15",
-        "date": "2021-10-17",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "16",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "16",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "16",
-        "date": "2021-10-18",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "17",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "17",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "17",
-        "date": "2021-10-19",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "18",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "18",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "18",
-        "date": "2021-10-20",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "19",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "19",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "19",
-        "date": "2021-10-21",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "20",
-        "date": "2021-10-01",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "20",
-        "date": "2021-10-02",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    },
-    {
-        "name": "20",
-        "date": "2021-10-22",
-        "comment": "",
-        "hour_salary": "",
-        "day_salary": ""
-    }
-]
-    this.$store.commit('set_calendar_events', event)
-    this.fetch_data(event)
     const date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
     this.setToday();
@@ -610,11 +183,11 @@ export default {
         return name_items.indexOf(obj) === index;
       })];
     },
-    get_comment_items() {
+    get_agenda_items() {
       const data = this.$store.getters.calendar_events;
-      const comment_items = data.map(element => element.comment);
-      return ['', ...comment_items.filter((obj, index) => {
-        return comment_items.indexOf(obj) === index;
+      const agenda_items = data.map(element => element.agenda);
+      return ['', ...agenda_items.filter((obj, index) => {
+        return agenda_items.indexOf(obj) === index;
       })];
     },
   },
@@ -635,33 +208,24 @@ export default {
     fetch_data(data) {
       var firstTimestamp = null;
       var startTime = null;
-      var color = '';
-      var color_index = 0;
-      let name_items = data.map(element => element.name);
-      name_items = [...name_items.filter((obj, index) => {
-        return name_items.indexOf(obj) === index;
-      })];
       this.calendar_events = [];
-      name_items.map(obj => {
-        color = this.colors[color_index]
-        color_index ++;
-        if (color_index >= this.colors.length) {
-          color_index = 0;
-        }
-        data.map(element => {
-          if (element.name == obj) {
-            firstTimestamp = new Date(`${element.date}T09:00:00`)
-            startTime = new Date(firstTimestamp)
-            this.calendar_events.push({
-              name: obj,
-              date: element.date,
-              start: startTime,
-              comment: element.comment,
-              hour_salary: element.hour_salary,
-              day_salary: element.day_salary,
-              color: color
-            })
-          }
+      data.map(element => {
+        firstTimestamp = new Date(`${element.date}T09:00:00`)
+        startTime = new Date(firstTimestamp)
+        this.calendar_events.push({
+          name: element.name,
+          date: element.date,
+          agenda: element.agenda,
+          start_time: element.start_time,
+          end_time: element.end_time,
+          total_time: element.total_time,
+          staff_hour_salary: element.staff_hour_salary,
+          staff_day_salary: element.staff_day_salary,
+          staff_expense: element.staff_expense,
+          admin_hour_salary: element.admin_hour_salary,
+          admin_day_salary: element.admin_day_salary,
+          start: startTime,
+          color: element.agenda == ''? this.colors[0] : this.colors[1]
         })
       })
     },
@@ -669,25 +233,27 @@ export default {
       const url = "/schedule/app/adminGetSchedule.php";
       const data = this.search_date;
       await axios.post(url, data).then(function(response) {
-        if (response.data.status === 'success') {
-          this.$store.commit('set_calendar_events', response.data.data)
-          this.fetch_data(response.data.data);
-        } else {
-          this.calendar_events = [];
-          this.$store.commit('set_calendar_events', []);
-          this.alert(response.data.status, response.data.message, true);
+        if (response.data.status) {
+          if (response.data.status === 'success') {
+            this.$store.commit('set_calendar_events', response.data.data)
+            this.fetch_data(response.data.data);
+          } else {
+            this.calendar_events = [];
+            this.$store.commit('set_calendar_events', []);
+            this.alert(response.data.status, response.data.message, true);
+          }
         }
       }.bind(this))
     },
     search() {
       let data = this.$store.getters.calendar_events;
       const name = this.name;
-      const comment = this.comment;
+      const agenda = this.agenda;
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (comment != '') {
-        data = data.filter(obj => obj.comment == comment);
+      if (agenda != '') {
+        data = data.filter(obj => obj.agenda == agenda);
       }
       this.fetch_data(data)
     },
@@ -702,48 +268,49 @@ export default {
       this.action = action;
       this.dialog = true;
     },
-    save() {
+    async save() {
       const url = "/schedule/app/adminUploadSchedule.php";
       const data = {
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date,
         event: this.$store.getters.calendar_events
       }
-      axios.post(url, data).then(function(response) {
-        if (response.data.status == "success") {
-          if (this.action != 0) {
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status){
+          if (response.data.status == "success") {
+            if (this.action != 0) {
+              this.alert(response.data.status, response.data.message, true);
+            }
+          } else {
             this.alert(response.data.status, response.data.message, true);
           }
-        } else {
-          this.alert(response.data.status, response.data.message, true);
         }
       }.bind(this))
     },
-    remove() {
-      let data = this.$store.getters.calendar_events;
-      const name = this.name;
-      const comment = this.comment;
-      if (name != '全員') {
-        data = data.filter(obj => obj.name != name);
+    async remove() {
+      const url = "/schedule/app/adminRemoveSchedule.php";
+      const today = new Date();
+      const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
+      const data = {
+        current_date: current_date
       }
-      if (comment != '') {
-        data = data.filter(obj => obj.comment != comment);
-      }
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status){
+          this.alert(response.data.status, response.data.message, true);
+        }
+      }.bind(this))
 
-      if (name != '全員' || comment != '') {
-        this.$store.dispatch('setCalendarEvents', data)
-        this.fetch_data(data)
-      }
+      this.get_data();
     },
     refresh() {
       this.create = false;
       this.name = '全員'
-      this.comment = ''
+      this.agenda = ''
       this.get_data();
     },
     clear() {
       this.name = '全員'
-      this.comment = ''
+      this.agenda = ''
       const data = this.$store.getters.calendar_events;
       this.fetch_data(data);
     },
@@ -760,11 +327,13 @@ export default {
       }
     },
     accept_edit(item) {
+      console.log(item);
       const data = this.$store.getters.calendar_events
       let event = data.filter(obj => obj.date != this.edit_date)
       event.push(...item)
       this.$store.commit('set_calendar_events', event);
       this.edit_show = false;
+      this.save();
       this.search();
     },
     edit_close() {
