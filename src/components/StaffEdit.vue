@@ -15,38 +15,39 @@
           </v-btn>
         </v-toolbar>
         <v-row no-gutters>
-              <v-col cols="2" class="pt-4 ml-8">
-                <div>{{ items.name }}</div>
-              </v-col>
-              <v-col cols="2" class="pt-4 ml-8">
-                <div>{{ items.agenda }}</div>
-              </v-col>
-              <v-col cols="3">
-                <v-switch
+          <v-col cols="2" class="pt-4 ml-8">
+            <div>{{ items.name }}</div>
+          </v-col>
+          <v-col cols="2" class="pt-4 ml-8">
+            <div>{{ items.agenda }}</div>
+          </v-col>
+          <v-col cols="3">
+            <v-switch
               v-model="salary_change"
               inset
               :label="`給与形態 : ${salary_change ?  '日給' : '時給'}`"
             ></v-switch>
-              </v-col>
-            </v-row>
+          </v-col>
+        </v-row>
 
         <v-data-table 
-          :headers="headers" 
+          :headers="header" 
           :items="[items]" 
           hide-default-footer 
           disable-pagination
           disable-sort
         >
-        
           <template v-slot:item.start_time>
             <v-text-field
               height="40"
-              class="pa-1 mt-4"
+              class="mx-2 mt-4"
               v-model="start"
               label="出勤時間"
               placeholder="0900"
               :rules="rules"
               counter=4
+              :dense="salary_change"
+              :filled="salary_change"
               :disabled="salary_change"
             ></v-text-field>
           </template>
@@ -54,12 +55,14 @@
           <template v-slot:item.end_time>
             <v-text-field
               height="40"
-              class="pa-1 mt-4"
+              class="mx-2 mt-4"
               v-model="end"
               label="退勤時間"
               placeholder="1800"
               :rules="rules"
               counter=4
+              :dense="salary_change"
+              :filled="salary_change"
               :disabled="salary_change"
             ></v-text-field>
           </template>
@@ -67,29 +70,50 @@
           <template v-slot:item.total_time>
             <v-text-field
               height="40"
-              class="pa-1 mt-4"
+              class="mx-2 mt-4"
               v-model="total"
               label="勤労時間"
+              :dense="salary_change"
+              :filled="salary_change"
               :disabled="salary_change"
             ></v-text-field>
           </template>
-
+        </v-data-table>
+        <v-data-table 
+          :headers="headers" 
+          :items="[items]" 
+          hide-default-footer 
+          disable-pagination
+          disable-sort
+        >
           <template v-slot:item.staff_hour_salary>
             <v-text-field
               height="40"
-              class="pa-1 mt-4"
+              class="mx-2 mt-4"
               v-model="hour_salary"
               label="時給"
+              :dense="salary_change"
+              :filled="salary_change"
               :disabled="salary_change"
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary>
             <v-text-field
               height="40"
-              class="pa-1 mt-4"
+              class="mx-2 mt-4"
               v-model="day_salary"
               label="日給"
+              :dense="!salary_change"
+              :filled="!salary_change"
               :disabled="!salary_change"
+            ></v-text-field>
+          </template>
+          <template v-slot:item.staff_expense>
+            <v-text-field
+              height="40"
+              class="mx-2 mt-4"
+              v-model="expense"
+              label="警備"
             ></v-text-field>
           </template>
         </v-data-table>
@@ -106,12 +130,15 @@ export default {
     'items'
   ],
   data: () => ({
+    header: [
+      { value:"start_time", text:"出勤時間", width:"33%", align: 'center'},
+      { value:"end_time", text:"退勤時間", width:"33%", align: 'center'},
+      { value:"total_time", text:"勤労時間", width:"33%", align: 'center'},
+    ],
     headers: [
-      { value:"start_time", text:"出勤時間", align: 'center'},
-      { value:"end_time", text:"退勤時間", align: 'center'},
-      { value:"total_time", text:"勤労時間", align: 'center'},
-      { value:"staff_hour_salary", text:"時給", align: 'center'},
-      { value:"staff_day_salary", text:"日給", align: 'center'},
+      { value:"staff_hour_salary", text:"時給", width:"33%", align: 'center'},
+      { value:"staff_day_salary", text:"日給", width:"33%", align: 'center'},
+      { value:"staff_expense", text:"警備", width:"33%", align: 'center'},
     ],
     date: '',
     start: '',
@@ -119,6 +146,7 @@ export default {
     total: '',
     hour_salary: '',
     day_salary: '',
+    expense: '',
     rules: [v => v.length == 4 || v == '' || '4桁入力'],
     dialog: false,
     salary_change: false,
@@ -126,12 +154,19 @@ export default {
   created() {
     const day = this.items.date.split("-");
     this.date = day[0] +'年 '+ day[1] +'月 '+ day[2]+'日';
-    this.salary_change = this.items.staff_hour_salary ? false : true;
+    if (this.items.staff_hour_salary == '' && this.items.staff_day_salary == '') {
+      this.salary_change = false
+    } else if (this.items.staff_hour_salary != '') {
+      this.salary_change = false;
+    } else {
+      this.salary_change = true;
+    }
     this.start = this.items.start_time;
     this.end = this.items.end_time;
     this.total = this.items.total_time;
     this.hour_salary = this.items.staff_hour_salary;
     this.day_salary = this.items.staff_day_salary;
+    this.expense = this.items.staff_expense;
     this.dialog = true;
   },
   watch: {
@@ -150,6 +185,11 @@ export default {
         this.day_salary = element * this.total
       }
     },
+    total(element) {
+      if (!this.salary_change) {
+        this.day_salary = element * this.hour_salary
+      }
+    },
   },
   methods: {
     edit() {
@@ -161,7 +201,8 @@ export default {
         end_time: this.end.replace(/^\s+|\s+$/gm,''),
         total_time: this.total.replace(/^\s+|\s+$/gm,''),
         staff_hour_salary: this.hour_salary,
-        staff_day_salary: this.day_salary
+        staff_day_salary: this.day_salary,
+        staff_expense: this.expense
       }
       this.dialog = false;
       this.$emit("edit", data);
