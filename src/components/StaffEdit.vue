@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" @keydown.enter="edit" @keydown.esc="close" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
+  <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
@@ -40,6 +40,7 @@
           <template v-slot:item.start_time>
             <v-text-field
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              ref="start"
               height="40"
               class="mx-2 mt-4"
               v-model="start"
@@ -50,12 +51,14 @@
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
+              @keydown.enter="enter(1)"
             ></v-text-field>
           </template>
 
           <template v-slot:item.end_time>
             <v-text-field
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              ref="end"
               height="40"
               class="mx-2 mt-4"
               v-model="end"
@@ -66,12 +69,14 @@
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
+              @keydown.enter="enter(2)"
             ></v-text-field>
           </template>
 
           <template v-slot:item.total_time>
             <v-text-field
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              ref="total"
               height="40"
               class="mx-2 mt-4"
               v-model="total"
@@ -79,6 +84,7 @@
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
+              @keydown.enter="enter(3)"
             ></v-text-field>
           </template>
         </v-data-table>
@@ -92,6 +98,7 @@
           <template v-slot:item.staff_hour_salary>
             <v-text-field
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              ref="hour"
               height="40"
               class="mx-2 mt-4"
               v-model="hour_salary"
@@ -99,11 +106,13 @@
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
+              @keydown.enter="enter(4)"
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary>
             <v-text-field
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              ref="dat"
               height="40"
               class="mx-2 mt-4"
               v-model="day_salary"
@@ -111,15 +120,18 @@
               :dense="!salary_change"
               :filled="!salary_change"
               :disabled="!salary_change"
+              @keydown.enter="enter(5)"
             ></v-text-field>
           </template>
           <template v-slot:item.staff_expense>
             <v-text-field
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              ref="expense"
               height="40"
               class="mx-2 mt-4"
               v-model="expense"
               label="警備"
+              @keydown.enter="enter(6)"
             ></v-text-field>
           </template>
         </v-data-table>
@@ -198,6 +210,41 @@ export default {
     },
   },
   methods: {
+    enter(index) {
+      if (this.salary_change) {
+        switch (index) {
+          case 5:
+            this.$refs.expense.focus()
+            break;
+        
+          default:
+            this.edit();
+            break;
+        }
+      } else {
+        switch (index) {
+          case 1:
+            this.$refs.end.focus()
+            break;
+
+          case 2:
+            this.$refs.total.focus()
+            break;
+
+          case 3:
+            this.$refs.hour.focus()
+            break;
+
+          case 4:
+            this.$refs.expense.focus()
+            break;
+        
+          default:
+            this.edit();
+            break;
+        }
+      }
+    },
     edit() {
       if ((this.start || this.end) && (this.start.length != 4 || this.end.length != 4)) {
         return;

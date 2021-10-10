@@ -25,14 +25,15 @@
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
             <v-spacer></v-spacer>
-            <v-form ref="form" @submit.prevent="search">
+            <v-form ref="form" @submit.prevent="search" autocomplete="on">
               <v-row class="mt-1" no-gutters>
                   <input
                     class="form_area pa-2 mx-2 mb-4"
                     lang="en"
                     ref="name"
                     v-model="name"
-                    id="id"
+                    id="name"
+                    name="name"
                     @keydown.enter="id_enter"
                     placeholder="名前"
                   >
@@ -42,6 +43,7 @@
                     ref="password"
                     v-model="password"
                     id="password"
+                    name="password"
                     @keydown.enter="password_enter"
                     placeholder="パスワード"
                   >
