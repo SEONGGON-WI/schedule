@@ -25,20 +25,37 @@
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
             <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
             <v-spacer></v-spacer>
-            <v-col cols="2">
-              <v-text-field class="mt-6" v-model="name" label="名前" id="id"></v-text-field>
-            </v-col>
-            <v-col cols="2">
-              <v-text-field class="mt-6" v-model="password" label="パスワード" id="password"></v-text-field>
-            </v-col>
-            <v-btn class="accent mx-2" color="white" @click="search">
-              <v-icon>search</v-icon>検索
-            </v-btn>
+            <v-form ref="form" @submit.prevent="search">
+              <v-row class="mt-1" no-gutters>
+                  <input
+                    class="form_area pa-2 mx-2 mb-4"
+                    lang="en"
+                    ref="name"
+                    v-model="name"
+                    id="id"
+                    @keydown.enter="id_enter"
+                    placeholder="名前"
+                  >
+                  <input
+                    class="form_area pa-2 mx-2 mb-4"
+                    lang="en"
+                    ref="password"
+                    v-model="password"
+                    id="password"
+                    @keydown.enter="password_enter"
+                    placeholder="パスワード"
+                  >
+                  <v-btn 
+                    class="accent mx-2 mt-3"
+                    type="submit"
+                    color="white"
+                    @click="submit"
+                  ><v-icon>search</v-icon>検索
+                  </v-btn>
+              </v-row>
+            </v-form>
             <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == ''">
               <v-icon>save</v-icon>登録
-            </v-btn>
-            <v-btn class="success mx-2" color="white" @click="clear">
-              <v-icon>refresh</v-icon>クリア
             </v-btn>
           </v-toolbar>
 
@@ -84,6 +101,12 @@
   height: 60% !important;
   top: 1% !important;
 }
+
+.form_area {
+  width: 200px !important;
+  line-height: 1 !important;
+  border: 1px black solid !important;
+}
 </style>
 <script>
 import alert from '@/components/alert.vue'
@@ -121,19 +144,27 @@ export default {
     var date = new Date();
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
     this.setToday();
-    document.addEventListener('keydown', (event) => {
-      this.keyBoardEvent(event)
-    }, false);
+    // document.addEventListener('keydown', (event) => {
+    //   this.keyBoardEvent(event)
+    // }, false);
   },
   computed: {
   },
   methods: {
-    keyBoardEvent(event) {
-      if ( event.which != 13) {
-        return;
-      }
-      this.search();
+    id_enter(event) {
+      event.preventDefault()
+      this.$refs.password.focus()
     },
+    password_enter(event) {
+      event.preventDefault()
+      this.search()
+    },
+    // keyBoardEvent(event) {
+    //   if ( event.which != 13) {
+    //     return;
+    //   }
+    //   this.search();
+    // },
     select({ date }) {
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
@@ -206,11 +237,6 @@ export default {
         })
       })
     },
-    clear() {
-      this.access_time = '';
-      this.calendar_events = [];
-      this.setToday();
-    },
     edit(event) {
       const index = this.edit_index;
       this.calendar_events[index].start_time = event.start_time;
@@ -224,7 +250,7 @@ export default {
     edit_close() {
       this.edit_show = false;
     },
-    upload() {
+    async upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
       const access_time = this.access_time == '' ? 0 : this.access_time; 
       const data = {
@@ -236,6 +262,7 @@ export default {
       axios.post(url, data).then(function(response) {
         this.alert(response.data.status, response.data.message, true);
       }.bind(this))
+      this.search();
       this.dialog = false;
     },
     close() {
