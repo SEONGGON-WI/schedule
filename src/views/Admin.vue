@@ -9,13 +9,10 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="accent mx-2" @click="click(1)">
-      <v-icon>save</v-icon>登録
-    </v-btn>
-    <v-btn class="error mx-2" color="white" @click="click(2)">
+    <v-btn class="error mx-2" color="white" @click="click(1)">
       <v-icon>delete</v-icon>削除
     </v-btn>
-    <v-btn class="success mx-2" color="white" @click="click(3)">
+    <v-btn class="success mx-2" color="white" @click="click(2)">
       <v-icon>autorenew</v-icon>更新
     </v-btn>
   </v-app-bar>
@@ -40,6 +37,7 @@
                   class="mt-6 ml-2"
                   v-model="calendar_type" 
                   :items="calendar_type_item"
+                  append-icon="arrow_drop_down"
                 ></v-select>
               </v-col>
               <v-spacer></v-spacer>
@@ -54,6 +52,7 @@
                   :items="get_name_items"
                   label="名前"
                   @change="search"
+                  append-icon="arrow_drop_down"
                 ></v-select>
               </v-col>
               <v-col cols="2">
@@ -64,6 +63,7 @@
                   :items="get_agenda_items"
                   label="案件"
                   @change="search"
+                  append-icon="arrow_drop_down"
                 ></v-select>
               </v-col>
               <v-btn icon @click.native="clear" class="mr-2">
@@ -90,7 +90,7 @@
                   {{ event.name }}
                 </div>
                 <div class="mt-1 ml-1" v-else>
-                  {{ event.name }}_{{ event.agenda }}
+                  {{ event.name }} - {{ event.agenda }}
                 </div>
               </template>
             </v-calendar>
@@ -102,6 +102,8 @@
 
   <admin-edit
     @accept="accept_edit($event)"
+    @prev="prev_edit($event)"
+    @next="next_edit($event)"
     @close="edit_close"
     v-if="edit_show"
     :items="edit_items"
@@ -165,7 +167,6 @@ export default {
     action: 0,
     text: '',
     dialog: false,
-    create: false,
   }),
   created() {
     const date = new Date();
@@ -193,12 +194,6 @@ export default {
   },
   methods: {
     async fetch() {
-      if (this.create) {
-        this.save();
-      }
-      if (!this.create) {
-        this.create = true;
-      }
       this.search_date = {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
@@ -303,7 +298,6 @@ export default {
       this.get_data();
     },
     refresh() {
-      this.create = false;
       this.name = '全員'
       this.agenda = ''
       this.get_data();
@@ -327,13 +321,53 @@ export default {
       }
     },
     accept_edit(item) {
-      console.log(item);
       const data = this.$store.getters.calendar_events
       let event = data.filter(obj => obj.date != this.edit_date)
       event.push(...item)
       this.$store.commit('set_calendar_events', event);
       this.edit_show = false;
-      this.save();
+      this.search();
+    },
+    prev_edit(item) {
+      const edit_data = this.$store.getters.calendar_events
+      let event = edit_data.filter(obj => obj.date != this.edit_date)
+      event.push(...item)
+      this.$store.commit('set_calendar_events', event);
+
+      var date = this.edit_date.split("-")
+      var time = new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) -1)
+
+      date = time.getFullYear() +"-"+ (time.getMonth()+1) +"-"
+      if (parseInt(time.getDate()) < 10) {
+        date = date + "0" + time.getDate()
+      } else {
+        date = date + time.getDate()
+      }
+      this.edit_date = date
+      const lodash = require("lodash");
+      const data = this.$store.getters.calendar_events;
+      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == date));
+      this.search();
+    },
+    next_edit(item) {
+      const edit_data = this.$store.getters.calendar_events
+      let event = edit_data.filter(obj => obj.date != this.edit_date)
+      event.push(...item)
+      this.$store.commit('set_calendar_events', event);
+
+      var date = this.edit_date.split("-")
+      var time = new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) + 1)
+      date = time.getFullYear() +"-"+ (time.getMonth()+1) +"-"
+
+      if (parseInt(time.getDate()) < 10) {
+        date = date + "0" + time.getDate()
+      } else {
+        date = date + time.getDate()
+      }
+      this.edit_date = date
+      const lodash = require("lodash");
+      const data = this.$store.getters.calendar_events;
+      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == date));
       this.search();
     },
     edit_close() {
@@ -342,10 +376,8 @@ export default {
     accept() {
       this.dialog = false;
       if (this.action == 1) {
-        this.save(); 
-      } else if (this.action == 2) {
         this.remove(); 
-      } else if (this.action == 3) {
+      } else if (this.action == 2) {
         this.refresh(); 
       }
       this.action = 0;

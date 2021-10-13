@@ -168,6 +168,10 @@ export default {
     //   this.search();
     // },
     select({ date }) {
+      if (this.name == '' || this.password == '') {
+        return;
+      }
+
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
         if (this.calendar_events[index].agenda == '') {
@@ -254,17 +258,19 @@ export default {
     },
     async upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
+      const today = new Date();
+      const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
       const access_time = this.access_time == '' ? 0 : this.access_time; 
       const data = {
         name: this.name,
         password: this.password,
         access_time: access_time,
-        event: this.calendar_events
+        event: this.calendar_events,
+        current_date: current_date
       }
       axios.post(url, data).then(function(response) {
         this.alert(response.data.status, response.data.message, true);
       }.bind(this))
-      this.search();
       this.dialog = false;
     },
     close() {

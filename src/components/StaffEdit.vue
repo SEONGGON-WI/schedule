@@ -130,7 +130,7 @@
               height="40"
               class="mx-2 mt-4"
               v-model="expense"
-              label="警備"
+              label="経費"
               @keydown.enter="enter(6)"
             ></v-text-field>
           </template>
@@ -156,7 +156,7 @@ export default {
     headers: [
       { value:"staff_hour_salary", text:"時給", width:"33%", align: 'center'},
       { value:"staff_day_salary", text:"日給", width:"33%", align: 'center'},
-      { value:"staff_expense", text:"警備", width:"33%", align: 'center'}
+      { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
     start: '',
