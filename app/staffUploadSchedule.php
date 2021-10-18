@@ -21,7 +21,7 @@ try {
   if (password_verify($password, $hashedPassword)) {
     if ($access_time == $managerData['access_time']) {
       $dbConnect = new mysqlConnect();
-      $del = "DELETE FROM schedule WHERE agenda = '' AND date > '$current_date'";
+      $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date > '$current_date'";
       $dbConnect->mysql->query($del);
     }
     $index = 0;

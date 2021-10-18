@@ -50,22 +50,14 @@
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                   single-line
                   height="40"
-                  label="勤労時間"
+                  label="時間"
                   class="mx-2 mt-4"
                   v-model="item.total_time"
-                  disabled
+                  readonly
                 ></v-text-field>
               </template>
               <template v-slot:item.admin_hour_salary="{ item }">
                 <v-text-field
-                  v-if="!item.total_time"
-                  height="40"
-                  class="mx-2 mt-4"
-                  :value="item.admin_hour_salary = ''"
-                  :disabled="!item.total_time"
-                ></v-text-field>
-                <v-text-field
-                  v-else
                   ref="hour"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   single-line
@@ -81,7 +73,7 @@
                   height="40"
                   class="mx-2 mt-4"
                   :value="item.admin_day_salary = get_admin_day_salary(item)"
-                  :disabled="item.total_time != ''"
+                  :readonly="item.total_time != ''"
                 ></v-text-field>
                 <v-text-field
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
@@ -92,7 +84,7 @@
                   class="mx-2 mt-4"
                   v-model="item.admin_day_salary"
                   label="日給"
-                  :disabled="item.total_time != ''"
+                  :readonly="item.total_time != ''"
                 ></v-text-field>
               </template>
               <template v-slot:item.action="{ item }">
@@ -118,7 +110,7 @@
                   height="40"
                   class="mx-2 mt-4"
                   v-model="item.start_time"
-                  :disabled="!item.total_time"
+                  :readonly="!item.total_time"
                 ></v-text-field>
                 <v-text-field
                   v-else
@@ -130,7 +122,7 @@
                   label="出勤時間"
                   placeholder="0900"
                   :rules="rules"
-                  :disabled="!item.total_time"
+                  :readonly="!item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.end_time="{ item }">
@@ -140,7 +132,7 @@
                   height="40"
                   class="mx-2 mt-4"
                   v-model="item.end_time"
-                  :disabled="!item.total_time"
+                  :readonly="!item.total_time"
                 ></v-text-field>
                 <v-text-field
                   v-else
@@ -152,7 +144,7 @@
                   label="退勤時間"
                   placeholder="1800"
                   :rules="rules"
-                  :disabled="!item.total_time"
+                  :readonly="!item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.total_time="{ item }">
@@ -160,22 +152,13 @@
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   single-line
                   height="40"
-                  label="勤労時間"
+                  label="時間"
                   class="mx-2 mt-4"
                   v-model="item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.staff_hour_salary="{ item }">
                 <v-text-field
-                  v-if="!item.total_time"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  height="40"
-                  class="mx-2 mt-4"
-                  :value="item.staff_hour_salary = ''"
-                  :disabled="!item.total_time"
-                ></v-text-field>
-                <v-text-field
-                  v-else
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   single-line
                   height="40"
@@ -190,7 +173,7 @@
                   height="40"
                   class="mx-2 mt-4"
                   :value="item.staff_day_salary = get_staff_day_salary(item)"
-                  :disabled="item.total_time != ''"
+                  :readonly="item.total_time != ''"
                 ></v-text-field>
                 <v-text-field
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
@@ -200,7 +183,7 @@
                   class="mx-2 mt-4"
                   v-model="item.staff_day_salary"
                   label="日給"
-                  :disabled="item.total_time != ''"
+                  :readonly="item.total_time != ''"
                 ></v-text-field>
               </template>
               <template v-slot:item.staff_expense="{ item }">
@@ -237,11 +220,11 @@ export default {
   data: () => ({
     headers: [
       { value:"name", text:"名前", width: "20%", align: 'start'},
-      { value:"agenda", text:"案件", width: "20%", align: 'start'},
-      { value:"total_time", text:"勤労時間", width: "10%", align: 'center'},
-      { value:"admin_hour_salary", text:"時給", width: "10%", align: 'center'},
-      { value:"admin_day_salary", text:"日給", width: "10%", align: 'center'},
-      { value:"action", text:"削除", width:"5%", align: 'center'}
+      { value:"agenda", text:"案件", width: "30%", align: 'start'},
+      { value:"total_time", text:"時間", width: "10%", align: 'center'},
+      { value:"admin_hour_salary", text:"時給", width: "15%", align: 'center'},
+      { value:"admin_day_salary", text:"日給", width: "15%", align: 'center'},
+      { value:"action", text:"削除", width:"10%", align: 'center'}
     ],
     header: [
       { value:"name", text:"名前", width: "14%", align: 'start'},

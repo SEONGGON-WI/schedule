@@ -38,8 +38,8 @@ try {
     $sql = $sql.$sub_sql_query.$sub_sql;
     $dbConnect->mysql->query($sql);
 
-    $time = date('Y-m-d h:i:s', time());
-    $time_sql = "UPDATE manager SET access_time = '$time'";
+    // $time = date('Y-m-d h:i:s', time());
+    // $time_sql = "UPDATE manager SET access_time = '$time'";
 
     $result = json_encode(array('status' => 'success' , 'message' => '登録を完了しました。'));
   }
