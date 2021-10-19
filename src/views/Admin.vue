@@ -9,6 +9,9 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
+    <v-btn class="accent mx-2" color="white" @click="export_event()">
+      <v-icon>save</v-icon>出力
+    </v-btn>
     <v-btn class="error mx-2" color="white" @click="click(1)">
       <v-icon>delete</v-icon>削除
     </v-btn>
@@ -262,6 +265,27 @@ export default {
       }
       this.action = action;
       this.dialog = true;
+    },
+    export_event() {
+      const date = new Date();
+      const calendar_date = date.getFullYear()+"-"+(date.getMonth()+1)+date.getDay();
+      const export_data = JSON.stringify(this.$store.getters.calendar_events)
+      const export_file = `${calendar_date}_schedule.json`
+      let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+      let blob = new Blob([ bom,export_data ], { "type" : "text/json" });
+      // IE11 ( msSaveBlog が有効なら)
+      if (window.navigator.msSaveBlob) {
+          window.navigator.msSaveBlob(blob, export_file)
+          window.navigator.msSaveOrOpenBlob(blob, export_file)
+      }
+      // IE11 以外なら( Chrome, Firefox, Android, etc...)
+      else {
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', export_file)
+          link.click()
+      }
     },
     async save() {
       const url = "/schedule/app/adminUploadSchedule.php";
