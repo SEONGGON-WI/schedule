@@ -73,7 +73,8 @@
                   height="40"
                   class="mx-2 mt-4"
                   :value="item.admin_day_salary = get_admin_day_salary(item)"
-                  :readonly="item.total_time != ''"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
                 <v-text-field
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
@@ -84,7 +85,8 @@
                   class="mx-2 mt-4"
                   v-model="item.admin_day_salary"
                   label="日給"
-                  :readonly="item.total_time != ''"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.action="{ item }">
@@ -110,7 +112,8 @@
                   height="40"
                   class="mx-2 mt-4"
                   v-model="item.start_time"
-                  :readonly="!item.total_time"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
                 <v-text-field
                   v-else
@@ -119,10 +122,11 @@
                   height="40"
                   class="mx-2 mt-4"
                   v-model="item.start_time"
-                  label="出勤時間"
+                  label="出勤"
                   placeholder="0900"
                   :rules="rules"
-                  :readonly="!item.total_time"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.end_time="{ item }">
@@ -132,7 +136,8 @@
                   height="40"
                   class="mx-2 mt-4"
                   v-model="item.end_time"
-                  :readonly="!item.total_time"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
                 <v-text-field
                   v-else
@@ -141,10 +146,11 @@
                   height="40"
                   class="mx-2 mt-4"
                   v-model="item.end_time"
-                  label="退勤時間"
+                  label="退勤"
                   placeholder="1800"
                   :rules="rules"
-                  :readonly="!item.total_time"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.total_time="{ item }">
@@ -173,7 +179,8 @@
                   height="40"
                   class="mx-2 mt-4"
                   :value="item.staff_day_salary = get_staff_day_salary(item)"
-                  :readonly="item.total_time != ''"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
                 <v-text-field
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
@@ -183,7 +190,8 @@
                   class="mx-2 mt-4"
                   v-model="item.staff_day_salary"
                   label="日給"
-                  :readonly="item.total_time != ''"
+                  :dense="!item.total_time"
+                  :filled="!item.total_time"
                 ></v-text-field>
               </template>
               <template v-slot:item.staff_expense="{ item }">
@@ -219,23 +227,24 @@ export default {
   ],
   data: () => ({
     headers: [
-      { value:"name", text:"名前", width: "20%", align: 'start'},
+      { value:"name", text:"名前", width: "15%", align: 'start'},
       { value:"agenda", text:"案件", width: "30%", align: 'start'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "15%", align: 'center'},
-      { value:"admin_day_salary", text:"日給", width: "15%", align: 'center'},
+      { value:"admin_day_salary", text:"日給", width: "20%", align: 'center'},
       { value:"action", text:"削除", width:"10%", align: 'center'}
     ],
     header: [
       { value:"name", text:"名前", width: "14%", align: 'start'},
-      { value:"agenda", text:"案件", width: "20%", align: 'start'},
-      { value:"start_time", text:"出勤時間", width: "12%", align: 'center'},
-      { value:"end_time", text:"退勤時間", width: "12%", align: 'center'},
-      { value:"total_time", text:"勤労時間", width: "12%", align: 'center'},
-      { value:"staff_hour_salary", text:"時給", width: "10%", align: 'center'},
-      { value:"staff_day_salary", text:"日給", width: "10%", align: 'center'},
+      { value:"agenda", text:"案件", width: "16%", align: 'start'},
+      { value:"start_time", text:"出勤時間", width: "13%", align: 'center'},
+      { value:"end_time", text:"退勤時間", width: "13%", align: 'center'},
+      { value:"total_time", text:"時間", width: "11%", align: 'center'},
+      { value:"staff_hour_salary", text:"時給", width: "11%", align: 'center'},
+      { value:"staff_day_salary", text:"日給", width: "13%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "10%", align: 'center'}
     ],
+    remove_item: [],
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
     rules: [v => v.length == 4 || v == '' || '4桁入力'],
@@ -262,6 +271,7 @@ export default {
       this.$emit("next", this.items);
     },
     remove(item) {
+      this.remove_item.push({name: item.name})
       const index = this.items.findIndex(obj => obj.name == item.name);
       this.items.splice(index, 1);
     },
@@ -269,12 +279,15 @@ export default {
       const url = "/schedule/app/adminEditSchedule.php";
       const data = {
         date: this.date,
-        event: this.items
+        event: this.items,
+        remove_event: this.remove_item
       }
       await axios.post(url, data).then(function(response) {
+        this.remove_item = [];
         if (response.data.status != true){
           this.message = response.data.message
         }
+        this.remove_event = [];
       }.bind(this))
     },
     async accept() {

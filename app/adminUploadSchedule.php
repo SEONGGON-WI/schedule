@@ -5,6 +5,24 @@ $start_date = $response['start_date'];
 $end_date = $response['end_date'];
 include 'sqlConnect.php';
 try {
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ym');
+  $path = $rootPath.$logDate.".txt";
+  try {
+    if (!file_exists($path)) {
+      $log = @fopen($path,"a+");
+      @fwrite($log,"time,api,date\n");
+      @fclose($log);
+    }
+    $remoteAddr = $_SERVER['REMOTE_ADDR'];
+    $log = @fopen($path,"a+");
+    @fwrite($log,"$time,'upload',$start_date.' : '.$end_date\n");
+    @fclose($log);
+  } catch(Exception $e) {
+    $logError = true;
+  }
+
   $dbConnect = new mysqlConnect();
   $data = $dbConnect->getAdmin($start_date, $end_date);
   $del = "DELETE FROM schedule WHERE";

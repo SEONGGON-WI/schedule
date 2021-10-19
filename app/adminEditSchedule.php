@@ -2,11 +2,39 @@
 $response = json_decode(file_get_contents('php://input'), true);
 $date = $response['date'];
 $event = $response['event'];
+$remove_event = $response['remove_event'];
 include 'sqlConnect.php';
 try {
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ym');
+  $path = $rootPath.$logDate.".txt";
+  try {
+    if (!file_exists($path)) {
+      $log = @fopen($path,"a+");
+      @fwrite($log,"time,api,date\n");
+      @fclose($log);
+    }
+    $remoteAddr = $_SERVER['REMOTE_ADDR'];
+    $log = @fopen($path,"a+");
+    @fwrite($log,"$time,'edit',$date\n");
+    @fclose($log);
+  } catch(Exception $e) {
+    $logError = true;
+  }
+
   $dbConnect = new mysqlConnect();
-  $del = "DELETE FROM schedule WHERE date = '$date'";
-  $dbConnect->mysql->query($del);
+
+  $index = 0;
+  $sub_sql = "";
+  if ($remove_event != []) {
+    $del = "DELETE FROM schedule WHERE (date = '$date') AND";
+    foreach ($remove_event as $values) {
+      $sub_sql = $sub_sql." ( name = '".$values['name']."' ) OR";
+    }
+    $del = substr($del.$sub_sql, 0, -3);
+    $dbConnect->mysql->query($del);
+  }
 
   $index = 0;
   $sql_array = [];
