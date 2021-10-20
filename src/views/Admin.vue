@@ -480,69 +480,35 @@ export default {
       this.alert_show = show;
     },
     async csv_download() {
+       var config = {
+        responseType: "blob",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      };
+
       this.csvdownloading = true
       const data = this.search_date
-      await axios.post("/schedule/app/csvDownload.php", data)
-      .then(function (response) {
-        this.saveCSV(response.data.data)
+      await axios.post("/schedule/app/csvDownload.php", data, config).then(function (response) {
+        if(response.data.status != "error") {
+          this.downloadCSV(response)
+        }
       }.bind(this))
     },
-    saveCSV(data) {
-      let csv = ""
-      csv += "案件,"
-      csv += "名前,"
-      csv += "出勤時間,"
-      csv += "退勤時間,"
-      csv += "勤務時間,"
-      csv += "時給,"
-      csv += "日給,"
-      csv += "勤務回数,"
-      csv += "総給与,"
-      csv += ","
-      csv += "時給,"
-      csv += "日給,"
-      csv += "経費,"
-      csv += "勤務回数,"
-      csv += "総給与,"
-      csv += "総経費,"
-      csv += "\r\n"
-
-      data.map(e => {
-        e.admin_day_salary ? e.admin_total_salary = parseInt(e.cnt) * parseInt(e.admin_day_salary) : e.admin_total_salary = 0 ;
-        e.staff_day_salary ? e.staff_total_salary = parseInt(e.cnt) * parseInt(e.staff_day_salary) : e.staff_total_salary = 0 ;
-        e.staff_expense ? e.staff_total_expense = parseInt(e.cnt) * parseInt(e.staff_expense) : e.staff_total_expense = 0 ;
-      })
-
-      data.forEach(value => {
-        csv += value['agenda'] + ",";
-        csv += value['name'] + ",";
-        csv += value['start_time'] + ",";
-        csv += value['end_time'] + ",";
-        csv += value['total_time'] + ",";
-        csv += value['admin_hour_salary'] + ",";
-        csv += value['admin_day_salary'] + ",";
-        csv += value['cnt'] + ",";
-        csv += value['admin_total_salary'] + ",";
-        csv += ",";
-        csv += value['staff_hour_salary'] + ",";
-        csv += value['staff_day_salary'] + ",";
-        csv += value['staff_expense'] + ",";
-        csv += value['cnt'] + ",";
-        csv += value['staff_total_salary'] + ",";
-        csv += value['staff_total_expense'] + ",";
-        csv += "\r\n";
-      })
-
+    downloadCSV(res) {
+      var blob = new Blob([res.data], { type: "text/csv" });
       const file_name = this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
-      const csvElement = document.createElement("a")
-      csvElement.href = `data:text/csv;charset=utf-8,` + encodeURI("\ufeff" + csv)
-      csvElement.target = "_blank"
-      csvElement.download = file_name
 
-      document.body.appendChild(csvElement)
-      csvElement.click()
-      document.body.removeChild(csvElement)
-      this.csvdownloading = false
+      if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, file_name);
+        window.navigator.msSaveOrOpenBlob(blob, file_name);
+      }
+      // IE11 以外なら( Chrome, Firefox, Android, etc...)
+      else {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", file_name);
+        link.click();
+      }
     },
     setToday() {
       this.calendar = ''
