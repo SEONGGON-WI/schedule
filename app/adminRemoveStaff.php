@@ -1,10 +1,10 @@
 <?php
 $response = json_decode(file_get_contents('php://input'), true);
-$current_date = $response['current_date'];
+$name = $response['name'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $del = "DELETE FROM schedule WHERE agenda = '' AND date < '$current_date'";
+  $del = "DELETE FROM manager WHERE name = '$name'";
   $dbConnect->mysql->query($del);
   $result = json_encode(array('status' => 'success' , 'message' => '削除を完了しました。'));
 } catch(Exception $e) {

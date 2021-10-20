@@ -48,14 +48,14 @@
   </v-app-bar>
 
   <v-main style="position: fixed !important; width: 100%; height: 100%;">
+    <v-progress-linear :indeterminate="downloading" color="black"></v-progress-linear>
+
     <alert
-      @close="alert_close"
+      @close="alert_show = false"
       :text="alert_text"
       :type="alert_type"
       v-if="alert_show"
     ></alert>
-
-    <v-progress-linear :indeterminate="downloading" color="black"></v-progress-linear>
 
     <v-container fluid class="fill-height pa-0">
       <v-row class="fill-height">
@@ -138,7 +138,7 @@
     @accept="accept_edit($event)"
     @prev="prev_edit($event)"
     @next="next_edit($event)"
-    @close="edit_close"
+    @close="edit_show = false"
     v-if="edit_show"
     :items="edit_items"
     :date="edit_date"
@@ -150,6 +150,13 @@
     v-if="dialog"
     :text="text"
   ></admin-dialog>
+
+  <staff-list-dialog
+    v-if="staff_show"
+    @close="staff_show = false"
+  >
+
+  </staff-list-dialog>
 </v-app>
 </template>
 <style lang="scss">
@@ -170,6 +177,7 @@
 import alert from '@/components/alert.vue';
 import AdminEdit from '@/components/AdminEdit.vue';
 import AdminDialog from '@/components/AdminDialog.vue';
+import StaffListDialog from '@/components/staffListDialog.vue';
 import axios from 'axios';
 
 export default {
@@ -178,6 +186,7 @@ export default {
     alert,
     AdminEdit,
     AdminDialog,
+    StaffListDialog
   },
   data: () => ({
     menu_item: [
@@ -189,7 +198,6 @@ export default {
     system_show: false,
     staff_show: false,
     data_show: false,
-    csv_show: false,
     colors: ['grey darken-2','orange'],
     search_date: {},
     name: '全員',
@@ -245,7 +253,7 @@ export default {
           break;
         
         case 'staff':
-          console.log("staff")
+          this.staff_show = true
           break;
 
         case 'remove':
@@ -378,15 +386,12 @@ export default {
         current_date: current_date
       }
       await axios.post(url, data).then(function(response) {
-        if (response.data.status){
+        if (response.data.status === 'success') {
+          this.get_data()
+        } else {
           this.alert(response.data.status, response.data.message, true);
         }
       }.bind(this))
-
-      this.get_data();
-    },
-    refresh() {
-      this.get_data();
     },
     clear() {
       this.name = '全員'
@@ -456,15 +461,12 @@ export default {
       this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == date));
       this.search();
     },
-    edit_close() {
-      this.edit_show = false;
-    },
     accept() {
       this.dialog = false;
       if (this.action == 1) {
         this.remove(); 
       } else if (this.action == 2) {
-        this.refresh(); 
+        this.get_data(); 
       }
       this.action = 0;
     },
@@ -476,9 +478,6 @@ export default {
       this.alert_type = type
       this.alert_text = text;
       this.alert_show = show;
-    },
-    alert_close() {
-      this.alert_show = false;
     },
     async csv_download() {
       this.csvdownloading = true
