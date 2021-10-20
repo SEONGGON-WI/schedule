@@ -46,7 +46,6 @@ export default {
   components: {
   },
   props: [
-    
   ],
   data: () => ({
     items: [],

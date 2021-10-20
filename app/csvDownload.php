@@ -54,10 +54,6 @@ try {
     }
     echo $csv;
     return;
-  } else {
-    $result = json_encode(array('status' => 'error'));
-    echo $result;
-    return;
   }
 } catch(Exception $e) {
   return;

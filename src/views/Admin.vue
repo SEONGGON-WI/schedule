@@ -36,9 +36,6 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="accent mx-2" color="white" @click="export_event()">
-      <v-icon>save</v-icon>出力
-    </v-btn>
     <v-btn class="error mx-2" color="white" @click="click(1)">
       <v-icon>delete</v-icon>削除
     </v-btn>
@@ -192,6 +189,7 @@ export default {
     menu_item: [
       { icon: "settings", text: "システム設定", action: "system"},
       { icon: "people", text: "スタッフ管理", action: "staff"},
+      { icon: "backup_table", text: "データバックアップ", action: "backup"},
       { icon: "delete", text: "データ削除", action: "remove"},
       { icon: "file_download", text: "CSV出力", action: "download"}
     ],
@@ -256,6 +254,10 @@ export default {
           this.staff_show = true
           break;
 
+        case 'backup':
+          this.export_event()
+          break;
+          
         case 'remove':
           console.log("remove")
           break;
@@ -488,13 +490,14 @@ export default {
       this.csvdownloading = true
       const data = this.search_date
       await axios.post("/schedule/app/csvDownload.php", data, config).then(function (response) {
-        if(response.data.status != "error") {
-          this.downloadCSV(response)
-        }
+        this.downloadCSV(response)
       }.bind(this))
     },
     downloadCSV(res) {
       var blob = new Blob([res.data], { type: "text/csv" });
+      if (blob.size === 0) {
+        return;
+      }
       const file_name = this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
 
       if (window.navigator.msSaveBlob) {
