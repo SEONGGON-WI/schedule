@@ -1,6 +1,33 @@
 <template>
 <v-app id="inspire">
   <v-app-bar app color="primary" dark fixed>
+    <v-menu offset-y :nudge-width="200" bottom class="mx-2">
+      <template v-slot:activator="{ on, attrs }">
+        <v-app-bar-nav-icon v-bind="attrs" v-on="on">
+          <v-icon large>menu</v-icon>
+        </v-app-bar-nav-icon>
+      </template>
+      <v-card outlined>
+        <v-list>
+          <v-list-item
+            v-for="(item, i) in menu_item"
+            :key="i"
+            @click="menu_action(item.action)"
+            class="my-2"
+          >
+            <v-list-item-action>
+              <v-icon large>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ item.text }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-menu>
+
     <v-toolbar-title class="mx-4">スケジュール</v-toolbar-title>
     <v-toolbar-title class="mx-3" v-if="$refs.calendar">
       {{ $refs.calendar.title }}
@@ -19,13 +46,17 @@
       <v-icon>autorenew</v-icon>更新
     </v-btn>
   </v-app-bar>
-  <v-main class="mx-1" style="position: fixed !important; width: 100%; height: 100%;">
+
+  <v-main style="position: fixed !important; width: 100%; height: 100%;">
     <alert
       @close="alert_close"
       :text="alert_text"
       :type="alert_type"
       v-if="alert_show"
     ></alert>
+
+    <v-progress-linear :indeterminate="downloading" color="black"></v-progress-linear>
+
     <v-container fluid class="fill-height pa-0">
       <v-row class="fill-height">
         <v-col>
@@ -149,6 +180,16 @@ export default {
     AdminDialog,
   },
   data: () => ({
+    menu_item: [
+      { icon: "settings", text: "システム設定", action: "system"},
+      { icon: "people", text: "スタッフ管理", action: "staff"},
+      { icon: "delete", text: "データ削除", action: "remove"},
+      { icon: "file_download", text: "CSV出力", action: "download"}
+    ],
+    system_show: false,
+    staff_show: false,
+    data_show: false,
+    csv_show: false,
     colors: ['grey darken-2','orange'],
     search_date: {},
     name: '全員',
@@ -170,6 +211,7 @@ export default {
     action: 0,
     text: '',
     dialog: false,
+    downloading: false,
   }),
   created() {
     const date = new Date();
@@ -196,6 +238,28 @@ export default {
     },
   },
   methods: {
+    menu_action(type) {
+      switch (type) {
+        case 'system':
+          console.log("system")
+          break;
+        
+        case 'staff':
+          console.log("staff")
+          break;
+
+        case 'remove':
+          console.log("remove")
+          break;
+
+        case 'download':
+          this.csv_download()
+          break;
+        
+        default:
+          break;
+      }
+    },
     async fetch() {
       this.search_date = {
         start_date: this.$refs.calendar.lastStart.date,
@@ -415,6 +479,71 @@ export default {
     },
     alert_close() {
       this.alert_show = false;
+    },
+    async csv_download() {
+      this.csvdownloading = true
+      const data = this.search_date
+      await axios.post("/schedule/app/csvDownload.php", data)
+      .then(function (response) {
+        this.saveCSV(response.data.data)
+      }.bind(this))
+    },
+    saveCSV(data) {
+      let csv = ""
+      csv += "案件,"
+      csv += "名前,"
+      csv += "出勤時間,"
+      csv += "退勤時間,"
+      csv += "勤務時間,"
+      csv += "時給,"
+      csv += "日給,"
+      csv += "勤務回数,"
+      csv += "総給与,"
+      csv += ","
+      csv += "時給,"
+      csv += "日給,"
+      csv += "経費,"
+      csv += "勤務回数,"
+      csv += "総給与,"
+      csv += "総経費,"
+      csv += "\r\n"
+
+      data.map(e => {
+        e.admin_day_salary ? e.admin_total_salary = parseInt(e.cnt) * parseInt(e.admin_day_salary) : e.admin_total_salary = 0 ;
+        e.staff_day_salary ? e.staff_total_salary = parseInt(e.cnt) * parseInt(e.staff_day_salary) : e.staff_total_salary = 0 ;
+        e.staff_expense ? e.staff_total_expense = parseInt(e.cnt) * parseInt(e.staff_expense) : e.staff_total_expense = 0 ;
+      })
+
+      data.forEach(value => {
+        csv += value['agenda'] + ",";
+        csv += value['name'] + ",";
+        csv += value['start_time'] + ",";
+        csv += value['end_time'] + ",";
+        csv += value['total_time'] + ",";
+        csv += value['admin_hour_salary'] + ",";
+        csv += value['admin_day_salary'] + ",";
+        csv += value['cnt'] + ",";
+        csv += value['admin_total_salary'] + ",";
+        csv += ",";
+        csv += value['staff_hour_salary'] + ",";
+        csv += value['staff_day_salary'] + ",";
+        csv += value['staff_expense'] + ",";
+        csv += value['cnt'] + ",";
+        csv += value['staff_total_salary'] + ",";
+        csv += value['staff_total_expense'] + ",";
+        csv += "\r\n";
+      })
+
+      const file_name = this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+      const csvElement = document.createElement("a")
+      csvElement.href = `data:text/csv;charset=utf-8,` + encodeURI("\ufeff" + csv)
+      csvElement.target = "_blank"
+      csvElement.download = file_name
+
+      document.body.appendChild(csvElement)
+      csvElement.click()
+      document.body.removeChild(csvElement)
+      this.csvdownloading = false
     },
     setToday() {
       this.calendar = ''

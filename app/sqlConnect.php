@@ -58,6 +58,26 @@ class mysqlConnect {
     return $table;
   }
 
+  public function getCsv($start_date, $end_date) {
+    $sql = "SELECT name, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, staff_hour_salary, staff_day_salary, staff_expense, COUNT(name) AS cnt FROM schedule ";
+    $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' ";
+    $sql = $sql."GROUP BY name, agenda, total_time ,admin_hour_salary, admin_day_salary, staff_hour_salary, staff_day_salary, staff_expense ";
+    $sql = $sql."ORDER BY agenda, name*1";
+
+    $result = $this->mysql->query($sql);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
   public function createManagerTable() {
     $query = "CREATE TABLE IF NOT EXISTS manager (";
     $query = $query."name varchar(32) not null,";
