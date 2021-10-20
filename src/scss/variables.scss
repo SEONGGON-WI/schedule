@@ -30,6 +30,11 @@ body {
   font-size: 25px !important;
 }
 
+.text-center .v-input__control .v-input__slot {
+  padding-left: 4px !important;
+  padding-right: 0px !important;
+}
+
 .v-input.v-input--selection-controls .v-input__control .v-input__slot label{
   font-size: 25px !important;
 }

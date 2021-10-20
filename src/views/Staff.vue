@@ -51,7 +51,7 @@
                     class="accent mx-2 mt-3"
                     type="submit"
                     color="white"
-                    @click="submit"
+                    :disabled="name == '' || password == ''"
                   ><v-icon>search</v-icon>検索
                   </v-btn>
               </v-row>

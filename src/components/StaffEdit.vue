@@ -21,6 +21,7 @@
           <v-col cols="2" class="pt-4 ml-8">
             <div>{{ items.agenda }}</div>
           </v-col>
+          <v-spacer></v-spacer>
           <v-col cols="3">
             <v-switch
               v-model="salary_change"
@@ -39,52 +40,52 @@
         >
           <template v-slot:item.start_time>
             <v-text-field
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               ref="start"
-              height="40"
-              class="mx-2 mt-4"
               v-model="start"
-              label="出勤時間"
-              placeholder="0900"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :rules="rules"
-              counter=4
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
               @keydown.enter="enter(1)"
+              class="my-3"
+              label="出勤時間"
+              placeholder="0900"
+              counter=4
+              hide-details
             ></v-text-field>
           </template>
 
           <template v-slot:item.end_time>
             <v-text-field
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               ref="end"
-              height="40"
-              class="mx-2 mt-4"
               v-model="end"
-              label="退勤時間"
-              placeholder="1800"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :rules="rules"
-              counter=4
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
               @keydown.enter="enter(2)"
+              class="my-3"
+              label="退勤時間"
+              placeholder="1800"
+              counter=4
+              hide-details
             ></v-text-field>
           </template>
 
           <template v-slot:item.total_time>
             <v-text-field
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               ref="total"
-              height="40"
-              class="mx-2 mt-4"
               v-model="total"
-              label="勤労時間"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
               @keydown.enter="enter(3)"
+              class="my-3"
+              label="勤労時間"
+              hide-details
             ></v-text-field>
           </template>
         </v-data-table>
@@ -97,41 +98,41 @@
         >
           <template v-slot:item.staff_hour_salary>
             <v-text-field
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               ref="hour"
-              height="40"
-              class="mx-2 mt-4"
               v-model="hour_salary"
-              label="時給"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
               @keydown.enter="enter(4)"
+              class="my-3"
+              label="時給"
+              hide-details
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary>
             <v-text-field
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-              ref="dat"
-              height="40"
-              class="mx-2 mt-4"
+              ref="day"
               v-model="day_salary"
-              label="日給"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="!salary_change"
               :filled="!salary_change"
               :disabled="!salary_change"
               @keydown.enter="enter(5)"
+              class="my-3"
+              label="日給"
+              hide-details
             ></v-text-field>
           </template>
           <template v-slot:item.staff_expense>
             <v-text-field
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               ref="expense"
-              height="40"
-              class="mx-2 mt-4"
               v-model="expense"
-              label="経費"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               @keydown.enter="enter(6)"
+              class="my-3"
+              label="経費"
+              hide-details
             ></v-text-field>
           </template>
         </v-data-table>
