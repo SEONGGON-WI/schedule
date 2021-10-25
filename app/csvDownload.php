@@ -6,7 +6,6 @@ include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
   $data = $dbConnect->getCsv($start_date, $end_date);
-  $dbConnect->dbClose();
 
   if (!empty($data)) {
     header("Content-Type: application/octet-stream");
@@ -17,6 +16,27 @@ try {
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
+      $sql = "SELECT date FROM schedule ";
+      $sql = $sql."WHERE name = '{$value['name']}' AND agenda = '{$value['agenda']}' AND start_time = '{$value['start_time']}' AND end_time = '{$value['end_time']}' AND total_time = '{$value['total_time']}' ";
+      $sql = $sql."AND admin_hour_salary = '{$value['admin_hour_salary']}' AND admin_day_salary = '{$value['admin_day_salary']}' ";
+      $sql = $sql."AND staff_hour_salary = '{$value['staff_hour_salary']}' AND staff_day_salary = '{$value['staff_day_salary']}' ";
+      $table = [];
+      $result = $dbConnect->mysql->query($sql);
+      if ($result->num_rows > 0) {
+        $index = 0;
+        while($row = $result->fetch_assoc()) {
+          $table[$index] = $row;
+          $index++;
+        }
+      }
+      $working_day = '';
+      foreach ($table as $element) {
+        $day = [];
+        $day = explode("-", $element['date']);
+        $working_day .= $day[2].",";
+      }
+      $working_day = substr($working_day, 0, -1);
+
       if ($value['admin_day_salary']) {
         $admin_total_salary = (float)$value['admin_day_salary'] * (int)$value['cnt'];
       } else {
@@ -37,7 +57,7 @@ try {
       }
       
       $csv .= '"'
-          . $value['day'] . '","'
+          . $working_day . '","'
           . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
           . mb_convert_encoding($value['name'], 'SJIS', 'UTF-8') . '","'
           . $value['start_time'] . '","'
@@ -59,6 +79,7 @@ try {
           . $value['staff_total_expense'] . '"'
           . "\r\n";
     }
+    $dbConnect->dbClose();
     echo $csv;
     return;
   }
