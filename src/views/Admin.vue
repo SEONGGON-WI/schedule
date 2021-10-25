@@ -158,10 +158,11 @@
 </template>
 <style lang="scss">
 .v-event {
-  width: 99% !important;
-  left: 0.5% !important;
+  width: 94% !important;
+  left: 3% !important;
   height: 25% !important;
   top: 1% !important;
+  margin-bottom: 5px !important;
 }
 .v-event-more{
   width: 90% !important;
@@ -205,7 +206,7 @@ export default {
     system_show: false,
     staff_show: false,
     data_show: false,
-    colors: ['grey darken-2','orange'],
+    colors: ['grey darken-2','orange','teal accent-4'],
     search_date: {},
     name: '全員',
     agenda: '',
@@ -227,10 +228,18 @@ export default {
     text: '',
     dialog: false,
     downloading: false,
+    today: '',
   }),
   created() {
     const date = new Date();
+    const year = date.getFullYear();
+    const month = ("0" + (1 + date.getMonth())).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    this.today = year + "-" + month + "-" + day;
+    
     this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
+    this.search();
+
     this.setToday();
   },
   computed: {
@@ -293,8 +302,15 @@ export default {
       data.map(element => {
         firstTimestamp = new Date(`${element.date}T09:00:00`)
         startTime = new Date(firstTimestamp)
-        element.start = startTime,
-        element.color = element.agenda == ''? this.colors[0] : this.colors[1]
+
+        if ((element.date < this.today) && (element.staff_day_salary != '')) {
+          element.color = this.colors[2]
+        } else if (element.agenda != '') {
+          element.color = this.colors[1]
+        } else {
+          element.color = this.colors[0]
+        }
+        element.start = startTime;
         // this.calendar_events.push({
         //   name: element.name,
         //   date: element.date,
