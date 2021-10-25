@@ -13,7 +13,7 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"案件名","名前","出勤時間","退勤時間","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"時間","日數","時給","日給","月給","交通費"'. "\r\n";
+    $csv = '"日付","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"時間","日數","時給","日給","月給","交通費"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
@@ -27,8 +27,17 @@ try {
       } else {
         $staff_total_salary = '';
       }
+
+      if ($value['staff_total_expense'] == 0) {
+        $value['staff_total_expense'] = '';
+      }
+
+      if ($value['admin_total_expense'] == 0) {
+        $value['admin_total_expense'] = '';
+      }
       
       $csv .= '"'
+          . $value['day'] . '","'
           . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
           . mb_convert_encoding($value['name'], 'SJIS', 'UTF-8') . '","'
           . $value['start_time'] . '","'
@@ -40,7 +49,7 @@ try {
           . $value['admin_day_salary'] . '","'
           . '","'
           . $admin_total_salary . '","'
-          . '","'
+          . $value['admin_total_expense'] . '","'
           . '","'
           . $value['total_time'] . '","'
           . $value['cnt'] . '","'
