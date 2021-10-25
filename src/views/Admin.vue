@@ -169,6 +169,15 @@
   height: 20px !important;
   top: 1% !important;
 }
+@media screen and ( max-width: 1000px ) {
+  .v-event {
+    width: 94% !important;
+    left: 3% !important;
+    height: 14% !important;
+    top: 1% !important;
+    margin-bottom: 5px !important;
+  }
+}
 </style>
 <script>
 import alert from '@/components/alert.vue';
@@ -278,28 +287,32 @@ export default {
       this.get_data();
     },
     fetch_data(data) {
+      this.calendar_events = [];
       var firstTimestamp = null;
       var startTime = null;
-      this.calendar_events = [];
       data.map(element => {
         firstTimestamp = new Date(`${element.date}T09:00:00`)
         startTime = new Date(firstTimestamp)
-        this.calendar_events.push({
-          name: element.name,
-          date: element.date,
-          agenda: element.agenda,
-          start_time: element.start_time,
-          end_time: element.end_time,
-          total_time: element.total_time,
-          staff_hour_salary: element.staff_hour_salary,
-          staff_day_salary: element.staff_day_salary,
-          staff_expense: element.staff_expense,
-          admin_hour_salary: element.admin_hour_salary,
-          admin_day_salary: element.admin_day_salary,
-          start: startTime,
-          color: element.agenda == ''? this.colors[0] : this.colors[1]
-        })
+        element.start = startTime,
+        element.color = element.agenda == ''? this.colors[0] : this.colors[1]
+        // this.calendar_events.push({
+        //   name: element.name,
+        //   date: element.date,
+        //   agenda: element.agenda,
+        //   start_time: element.start_time,
+        //   end_time: element.end_time,
+        //   total_time: element.total_time,
+        //   staff_hour_salary: element.staff_hour_salary,
+        //   staff_day_salary: element.staff_day_salary,
+        //   staff_expense: element.staff_expense,
+        //   admin_hour_salary: element.admin_hour_salary,
+        //   admin_day_salary: element.admin_day_salary,
+        //   admin_expense: element.admin_expense,
+        //   start: startTime,
+        //   color: element.agenda == ''? this.colors[0] : this.colors[1]
+        // })
       })
+      this.calendar_events = data;
     },
     async get_data() {
       const url = "/schedule/app/adminGetSchedule.php";
@@ -328,17 +341,6 @@ export default {
         data = data.filter(obj => obj.agenda == agenda);
       }
       this.fetch_data(data)
-    },
-    click(action) {
-      if (action == 1) {
-        this.text = "登録しますか？"
-      } else if (action == 2) {
-        this.text = "削除しますか？"
-      } else if (action == 3) {
-        this.text = "更新しますか？"
-      }
-      this.action = action;
-      this.dialog = true;
     },
     export_event() {
       const date = new Date();
@@ -421,25 +423,32 @@ export default {
       this.edit_show = false;
       this.search();
     },
-    prev_edit(item) {
-      const edit_data = this.$store.getters.calendar_events
-      let event = edit_data.filter(obj => obj.date != this.edit_date)
-      event.push(...item)
-      this.$store.commit('set_calendar_events', event);
-
+    calculate_edit_date(type) {
       var date = this.edit_date.split("-")
-      var time = new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) -1)
-
-      date = time.getFullYear() +"-"+ (time.getMonth()+1) +"-"
+      var time = type === 'next' ? new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) + 1)
+                                 : new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) - 1);
+      date = time.getFullYear() +"-"
+      if (parseInt((time.getMonth()+1)) < 10) {
+        date = date + "0" + (time.getMonth()+1) + "-"
+      } else {
+        date = date + (time.getMonth()+1) + "-"
+      }
       if (parseInt(time.getDate()) < 10) {
         date = date + "0" + time.getDate()
       } else {
         date = date + time.getDate()
       }
-      this.edit_date = date
+      return date
+    },
+    prev_edit(item) {
+      const edit_data = this.$store.getters.calendar_events
+      let event = edit_data.filter(obj => obj.date != this.edit_date)
+      event.push(...item)
+      this.$store.commit('set_calendar_events', event);
+      this.edit_date = this.calculate_edit_date('prev')
       const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
-      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == date));
+      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
       this.search();
     },
     next_edit(item) {
@@ -447,21 +456,20 @@ export default {
       let event = edit_data.filter(obj => obj.date != this.edit_date)
       event.push(...item)
       this.$store.commit('set_calendar_events', event);
-
-      var date = this.edit_date.split("-")
-      var time = new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) + 1)
-      date = time.getFullYear() +"-"+ (time.getMonth()+1) +"-"
-
-      if (parseInt(time.getDate()) < 10) {
-        date = date + "0" + time.getDate()
-      } else {
-        date = date + time.getDate()
-      }
-      this.edit_date = date
+      this.edit_date = this.calculate_edit_date('next')
       const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
-      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == date));
+      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
       this.search();
+    },
+    click(action) {
+      if (action == 1) {
+        this.text = "削除しますか？"
+      } else if (action == 2) {
+        this.text = "更新しますか？"
+      }
+      this.action = action;
+      this.dialog = true;
     },
     accept() {
       this.dialog = false;

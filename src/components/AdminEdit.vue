@@ -87,8 +87,18 @@
                   hide-details
                 ></v-text-field>
               </template>
+              <template v-slot:item.admin_expense="{ item }">
+                <v-text-field
+                  v-model="item.admin_expense"
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  class="py-3"
+                  label="経費"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </template>
               <template v-slot:item.action="{ item }">
-                <v-btn class="error" icon color="white" @click="remove(item)">
+                <v-btn class="error" small icon color="white" @click="remove(item)">
                   <v-icon>delete</v-icon>
                 </v-btn>
               </template>
@@ -105,13 +115,14 @@
               <template v-slot:item.start_time="{ item }">
                 <v-text-field
                   v-model="item.start_time"
+                  @input="item.start_time = timeColon(item.start_time)"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  :rules="rules"
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
                   class="py-3"
                   label="出勤"
                   placeholder="0900"
+                  maxlength="5"
                   single-line
                   hide-details
                 ></v-text-field>
@@ -119,13 +130,14 @@
               <template v-slot:item.end_time="{ item }">
                 <v-text-field
                   v-model="item.end_time"
+                  @input="item.end_time = timeColon(item.end_time)"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  :rules="rules"
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
                   class="py-3"
                   label="退勤"
                   placeholder="1800"
+                  maxlength="5"
                   single-line
                   hide-details
                 ></v-text-field>
@@ -205,21 +217,22 @@ export default {
   ],
   data: () => ({
     headers: [
-      { value:"name", text:"名前", width: "15%", align: 'start'},
-      { value:"agenda", text:"案件", width: "30%", align: 'start'},
+      { value:"name", text:"名前", width: "18%", align: 'start'},
+      { value:"agenda", text:"案件", width: "29%", align: 'start'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
-      { value:"admin_hour_salary", text:"時給", width: "15%", align: 'center'},
-      { value:"admin_day_salary", text:"日給", width: "20%", align: 'center'},
-      { value:"action", text:"削除", width:"10%", align: 'center'}
+      { value:"admin_hour_salary", text:"時給", width: "13%", align: 'center'},
+      { value:"admin_day_salary", text:"日給", width: "15%", align: 'center'},
+      { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
+      { value:"action", text:"", width:"5%", align: 'center'}
     ],
     header: [
-      { value:"name", text:"名前", width: "14%", align: 'start'},
-      { value:"agenda", text:"案件", width: "16%", align: 'start'},
-      { value:"start_time", text:"出勤時間", width: "13%", align: 'center'},
-      { value:"end_time", text:"退勤時間", width: "13%", align: 'center'},
-      { value:"total_time", text:"時間", width: "11%", align: 'center'},
+      { value:"name", text:"名前", width: "18%", align: 'start'},
+      { value:"agenda", text:"案件", width: "17%", align: 'start'},
+      { value:"start_time", text:"出勤", width: "12%", align: 'center'},
+      { value:"end_time", text:"退勤", width: "12%", align: 'center'},
+      { value:"total_time", text:"時間", width: "8%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "11%", align: 'center'},
-      { value:"staff_day_salary", text:"日給", width: "13%", align: 'center'},
+      { value:"staff_day_salary", text:"日給", width: "12%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "10%", align: 'center'}
     ],
     remove_item: [],
@@ -234,17 +247,44 @@ export default {
   computed: {
   },
   methods: {
+    timeColon(time) {
+      let replaceTime = time.replace(":", "");
+      let hours = '00'
+      let minute = '00'
+
+      if(replaceTime.length >= 4 && replaceTime.length < 5) {
+        hours = replaceTime.substring(0, 2)
+        minute = replaceTime.substring(2, 4)
+        if(isFinite(hours + minute) == false) {
+          return "";
+        }
+        if (hours > 23 ) {
+          return "24:00";
+        }
+        if (minute > 59) {
+          return hours + ":00";
+        }
+        return hours + ":" + minute;
+      }
+      return time;
+    },
     get_admin_day_salary(item) {
       if (item.admin_hour_salary == '' || item.total_time == '') {
         return ''
       }
-      return String(item.admin_hour_salary * item.total_time)
+      let salary = item.admin_hour_salary * item.total_time
+      var m = Number((Math.abs(salary) * 100).toPrecision(15));
+      salary =  Math.round(m) / 100 * Math.sign(salary);
+      return String(salary)
     },
     get_staff_day_salary(item) {
       if (item.staff_hour_salary == '' || item.total_time == '') {
         return ''
       }
-      return String(item.staff_hour_salary * item.total_time)
+      let salary = item.staff_hour_salary * item.total_time
+      var m = Number((Math.abs(salary) * 100).toPrecision(15));
+      salary =  Math.round(m) / 100 * Math.sign(salary);
+      return String(salary)
     },
     async prevDate() {
       this.edit();

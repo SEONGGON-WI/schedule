@@ -168,10 +168,6 @@ export default {
     //   this.search();
     // },
     select({ date }) {
-      if (this.name == '' || this.password == '') {
-        return;
-      }
-
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
         if (this.calendar_events[index].agenda == '') {
@@ -184,6 +180,10 @@ export default {
           return;
         }
       }
+      if (this.name == '' || this.password == '') {
+        return;
+      }
+
       const firstTimestamp = new Date(`${date}T09:00:00`)
       const startTime = new Date(firstTimestamp)
       this.calendar_events.push({
@@ -269,6 +269,9 @@ export default {
         current_date: current_date
       }
       axios.post(url, data).then(function(response) {
+        if (response.data.status == 'success') {
+          this.access_time = response.data.access_time;
+        }
         this.alert(response.data.status, response.data.message, true);
       }.bind(this))
       this.dialog = false;

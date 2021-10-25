@@ -42,17 +42,18 @@
             <v-text-field
               ref="start"
               v-model="start"
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
               :rules="rules"
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
+              @input="timeColon(1)"
               @keydown.enter="enter(1)"
               class="my-3"
               label="出勤時間"
+              height="40"
               placeholder="0900"
-              counter=4
-              hide-details
+              maxlength="5"
             ></v-text-field>
           </template>
 
@@ -60,32 +61,31 @@
             <v-text-field
               ref="end"
               v-model="end"
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
               :rules="rules"
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
+              @input="timeColon(2)"
               @keydown.enter="enter(2)"
               class="my-3"
               label="退勤時間"
+              height="40"
               placeholder="1800"
-              counter=4
-              hide-details
+              maxlength="5"
             ></v-text-field>
           </template>
 
           <template v-slot:item.total_time>
             <v-text-field
               ref="total"
-              v-model="total"
-              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-              :dense="salary_change"
-              :filled="salary_change"
-              :disabled="salary_change"
-              @keydown.enter="enter(3)"
+              :value="total = get_total()"
+              dense
+              filled
+              disabled
               class="my-3"
               label="勤労時間"
-              hide-details
+              height="40"
             ></v-text-field>
           </template>
         </v-data-table>
@@ -104,10 +104,10 @@
               :dense="salary_change"
               :filled="salary_change"
               :disabled="salary_change"
-              @keydown.enter="enter(4)"
+              @keydown.enter="enter(3)"
               class="my-3"
               label="時給"
-              hide-details
+              height="40"
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary>
@@ -118,10 +118,10 @@
               :dense="!salary_change"
               :filled="!salary_change"
               :disabled="!salary_change"
-              @keydown.enter="enter(5)"
+              @keydown.enter="enter(3)"
               class="my-3"
               label="日給"
-              hide-details
+              height="40"
             ></v-text-field>
           </template>
           <template v-slot:item.staff_expense>
@@ -129,10 +129,10 @@
               ref="expense"
               v-model="expense"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-              @keydown.enter="enter(6)"
+              @keydown.enter="enter(5)"
               class="my-3"
               label="経費"
-              hide-details
+              height="40"
             ></v-text-field>
           </template>
         </v-data-table>
@@ -166,7 +166,7 @@ export default {
     hour_salary: '',
     day_salary: '',
     expense: '',
-    rules: [v => v.length == 4 || v == '' || '4桁入力'],
+    rules: [v => v.length == 5 || v == '' || '時間の様式に合わせてください。'],
     dialog: false,
     salary_change: false,
   }),
@@ -201,59 +201,82 @@ export default {
     },
     hour_salary(element) {
       if (!this.salary_change) {
-        this.day_salary = element * this.total
+        let salary = element * this.total
+        var m = Number((Math.abs(salary) * 100).toPrecision(15));
+        this.day_salary =  Math.round(m) / 100 * Math.sign(salary);
       }
     },
     total(element) {
       if (!this.salary_change) {
-        this.day_salary = element * this.hour_salary
+        let salary = element * this.hour_salary
+        var m = Number((Math.abs(salary) * 100).toPrecision(15));
+        this.day_salary =  Math.round(m) / 100 * Math.sign(salary);
       }
     },
   },
   methods: {
+    timeColon(type) {
+      let replaceTime = type === 1 ? this.start.replace(":", "") : this.end.replace(":", "");
+      let hours = '00'
+      let minute = '00'
+
+      if(replaceTime.length >= 4 && replaceTime.length < 5) {
+        hours = replaceTime.substring(0, 2)
+        minute = replaceTime.substring(2, 4)
+        if(isFinite(hours + minute) == false) {
+          type === 1 ? this.start = "" : this.end = "";
+          return false;
+        }
+        if (hours > 23 ) {
+          type === 1 ? this.start = "24:00" : this.end = "24:00";
+          return false;
+        }
+        if (minute > 59) {
+          type === 1 ? this.start = hours + ":00" : this.end = hours + ":00";
+          return false;
+        }
+        type === 1 ? this.start = hours + ":" + minute : this.end = hours + ":" + minute;
+      }
+    },
+    get_total() {
+      let time = ''
+      if (this.salary_change === false && this.start != '' && this.end != '') {
+        var start = new Date ("2021-12-31 " + this.start)
+        var end = new Date ("2021-12-31 " + this.end)
+        time = (end - start) / 1000 / 60 / 60 - 1
+
+        var m = Number((Math.abs(time) * 100).toPrecision(15));
+        time =  Math.round(m) / 100 * Math.sign(time);
+      }
+      return time
+    },
     enter(index) {
-      if (this.salary_change) {
-        switch (index) {
-          case 5:
-            this.$refs.expense.focus()
-            break;
-        
-          default:
-            this.edit();
-            break;
-        }
-      } else {
-        switch (index) {
-          case 1:
-            this.$refs.end.focus()
-            break;
+      switch (index) {
+        case 1:
+          this.$refs.end.focus()
+          break;
 
-          case 2:
-            this.$refs.total.focus()
-            break;
+        case 2:
+          this.$refs.hour.focus()
+          break;
 
-          case 3:
-            this.$refs.hour.focus()
-            break;
+        case 3:
+          this.$refs.expense.focus()
+          break;
 
-          case 4:
-            this.$refs.expense.focus()
-            break;
-        
-          default:
-            this.edit();
-            break;
-        }
+        default:
+          this.edit();
+          break;
       }
     },
     edit() {
-      if ((this.start || this.end) && (this.start.length != 4 || this.end.length != 4)) {
+      if ((this.start || this.end) && (this.start.length != 5 || this.end.length != 5)) {
         return;
       }
       const data = {
         start_time: this.start.replace(/^\s+|\s+$/gm,''),
         end_time: this.end.replace(/^\s+|\s+$/gm,''),
-        total_time: this.total.replace(/^\s+|\s+$/gm,''),
+        total_time: this.total,
         staff_hour_salary: this.hour_salary,
         staff_day_salary: this.day_salary,
         staff_expense: this.expense
