@@ -40,7 +40,7 @@ try {
     $time_sql = "UPDATE manager SET access_time = '$time' WHERE name = '$name'";
     $dbConnect->mysql->query($time_sql);
 
-     $result = json_encode(array('status' => 'success' , 'message' => '登録を完了しました。'));
+     $result = json_encode(array('status' => 'success' , 'message' => '登録を完了しました。', 'access_time' => $time));
   } else {
     $result = json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
   }
