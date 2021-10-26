@@ -37,7 +37,11 @@
         hide-default-footer 
         disable-pagination
         disable-sort
-      ></v-data-table>
+      >
+      <template v-slot:item.date="{ item }">
+        <div>{{ get_date(item.date) }} </div>
+      </template>
+      </v-data-table>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -52,13 +56,14 @@ export default {
   ],
   data: () => ({
     headers: [
+      { value:"date", text:"日付", width: "8%", align: 'center'},
       { value:"agenda", text:"案件", width: "20%", align: 'start'},
-      { value:"start_time", text:"出勤", width: "14%", align: 'center'},
-      { value:"end_time", text:"退勤", width: "14%", align: 'center'},
+      { value:"start_time", text:"出勤", width: "12%", align: 'center'},
+      { value:"end_time", text:"退勤", width: "12%", align: 'center'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
-      { value:"staff_hour_salary", text:"時給", width: "14%", align: 'center'},
-      { value:"staff_day_salary", text:"日給", width: "15%", align: 'center'},
-      { value:"staff_expense", text:"経費", width: "13%", align: 'center'}
+      { value:"staff_hour_salary", text:"時給", width: "12%", align: 'center'},
+      { value:"staff_day_salary", text:"日給", width: "14%", align: 'center'},
+      { value:"staff_expense", text:"経費", width: "12%", align: 'center'}
     ],
     total_agenda: 0,
     differ_name: '',
@@ -87,6 +92,14 @@ export default {
     },
   },
   methods: {
+    get_date(date) {
+      const day = date.split("-")
+      if (day[2] < 10) {
+        return day[2][1]
+      } else {
+        return day[2]
+      }
+    },
     change_name() {
       this.$emit("change", this.differ_name);
     },
