@@ -2,10 +2,7 @@
 <v-app id="inspire" style="postion: fiexd">
   <v-app-bar app color="primary" dark fixed>
     <v-toolbar-title class="mx-4">スケジュール</v-toolbar-title>
-    <v-toolbar-title class="mx-3" v-if="$refs.calendar">
-      {{ $refs.calendar.title }}
-    </v-toolbar-title>
-    <v-toolbar-title class="mx-3" v-else>
+    <v-toolbar-title class="mx-3">
       {{ calendar_date }}
     </v-toolbar-title>
   </v-app-bar>
@@ -70,6 +67,7 @@
               event-color="grey darken-1"
               locale="ja-jp"
               @click:day="select"
+              @change="fetch"
             >
             <template v-slot:event="{ event }">
               <div class="event_message mt-2 ml-4">
@@ -126,7 +124,7 @@ export default {
   props: {
   },
   data: () => ({
-    colors: ['grey darken-2','orange'],
+    colors: ['grey darken-2','orange','teal accent-4'],
     name: '',
     password: '',
     calendar: '',
@@ -140,11 +138,16 @@ export default {
     alert_type: '',
     alert_text: '',
     access_time: '',
+    today: '',
     dialog: false,
   }),
   created() {
-    var date = new Date();
-    this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = ("0" + (1 + date.getMonth())).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    this.today = year + "-" + month + "-" + day;
+    this.calendar_date = year + "年 " + month + "月";
     this.setToday();
     // document.addEventListener('keydown', (event) => {
     //   this.keyBoardEvent(event)
@@ -153,6 +156,9 @@ export default {
   computed: {
   },
   methods: {
+    async fetch() {
+      this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
+    },
     id_enter(event) {
       event.preventDefault()
       this.$refs.password.focus()
@@ -174,7 +180,8 @@ export default {
           this.calendar_events.splice(index, 1);
           return;
         } else {
-          this.edit_items = this.calendar_events[index];
+          const lodash = require("lodash");
+          this.edit_items = lodash.cloneDeep(this.calendar_events[index]);
           this.edit_index = index;
           this.edit_show = true;
           return;
@@ -222,26 +229,20 @@ export default {
     fetch_data(data) {
       var firstTimestamp = null
       var startTime = null
-      var color = ''
       this.calendar_events = [];
       data.map(obj => {
-        color = obj.agenda == '' ? this.colors[0] : this.colors[1];
         firstTimestamp = new Date(`${obj.date}T09:00:00`)
         startTime = new Date(firstTimestamp)
-        this.calendar_events.push({
-          name: obj.name,
-          date: obj.date,
-          agenda: obj.agenda,
-          start_time: obj.start_time,
-          end_time: obj.end_time,
-          total_time: obj.total_time,
-          staff_hour_salary: obj.staff_hour_salary,
-          staff_day_salary: obj.staff_day_salary,
-          staff_expense: obj.staff_expense,
-          start: startTime,
-          color: color
-        })
+        if ((obj.date < this.today) && (obj.staff_day_salary != '')) {
+          obj.color = this.colors[2]
+        } else if (obj.agenda != '') {
+          obj.color = this.colors[1]
+        } else {
+          obj.color = this.colors[0]
+        }
+        obj.start = startTime
       })
+      this.calendar_events = data;
     },
     edit(event) {
       const index = this.edit_index;
