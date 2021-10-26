@@ -394,8 +394,7 @@ export default {
     analytics() {
       const data = this.$store.getters.calendar_events;
       this.analytics_name = this.name
-      this.analytics_items = this.name == '全員' ? data : data.filter(obj => obj.name == this.name)
-
+      this.analytics_items = this.name == '全員' ? data.filter(obj => obj.agenda != '' ) : data.filter(obj => obj.name == this.name && obj.agenda != '' )
       const name_items = data.map(element => element.name);
       this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
