@@ -6,7 +6,7 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="name == '' || password == ''">
+    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="name == '' || search_condition">
       <v-icon>analytics</v-icon>集計
     </v-btn>
   </v-app-bar>
@@ -57,7 +57,7 @@
                   </v-btn>
               </v-row>
             </v-form>
-            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == ''">
+            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == '' || upload_condition">
               <v-icon>save</v-icon>登録
             </v-btn>
           </v-toolbar>
@@ -178,6 +178,8 @@ export default {
     alert_show: false,
     alert_type: '',
     alert_text: '',
+    search_condition: true,
+    upload_condition: true,
     access_time: '',
     today: '',
     dialog: false,
@@ -201,6 +203,11 @@ export default {
       this.search_date = {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
+      }
+      if (this.$refs.calendar.lastEnd.date < this.today ) {
+        this.upload_condition = true
+      } else {
+        this.upload_condition = false
       }
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       if (this.name != '' || this.password != '') {
@@ -268,9 +275,11 @@ export default {
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status === 'success') {
+          this.search_condition = false
           this.access_time = response.data.access_time;
           this.fetch_data(response.data.data);
         } else {
+          this.search_condition = true
           this.calendar_events = [];
           this.alert(response.data.status, response.data.message, true);
         }
