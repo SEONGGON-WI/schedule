@@ -17,9 +17,10 @@ try {
 
     foreach ($data as $value) {
       $sql = "SELECT date FROM schedule ";
-      $sql = $sql."WHERE name = '{$value['name']}' AND agenda = '{$value['agenda']}' AND start_time = '{$value['start_time']}' AND end_time = '{$value['end_time']}' AND total_time = '{$value['total_time']}' ";
-      $sql = $sql."AND admin_hour_salary = '{$value['admin_hour_salary']}' AND admin_day_salary = '{$value['admin_day_salary']}' ";
-      $sql = $sql."AND staff_hour_salary = '{$value['staff_hour_salary']}' AND staff_day_salary = '{$value['staff_day_salary']}' ";
+      $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' AND name = '{$value['name']}' AND agenda = '{$value['agenda']}' AND start_time = '{$value['start_time']}' AND end_time = '{$value['end_time']}' AND total_time = '{$value['total_time']}' ";
+      $sql = $sql."AND admin_hour_salary = '{$value['admin_hour_salary']}' AND admin_day_salary = '{$value['admin_day_salary']}' AND admin_expense = '{$value['admin_expense']}' ";
+      $sql = $sql."AND staff_hour_salary = '{$value['staff_hour_salary']}' AND staff_day_salary = '{$value['staff_day_salary']}' AND staff_expense = '{$value['staff_expense']}' ";
+      $sql = $sql."ORDER BY date";
       $table = [];
       $result = $dbConnect->mysql->query($sql);
       if ($result->num_rows > 0) {
@@ -35,7 +36,7 @@ try {
         $day = explode("-", $element['date']);
         $working_day .= $day[2].",";
       }
-      $working_day = substr($working_day, 0, -1);
+      // $working_day = substr($working_day, 0, -1);
 
       if ($value['admin_day_salary']) {
         $admin_total_salary = (float)$value['admin_day_salary'] * (int)$value['cnt'];
