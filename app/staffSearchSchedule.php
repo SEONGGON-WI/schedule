@@ -2,6 +2,8 @@
 $response = json_decode(file_get_contents('php://input'), true);
 $name = $response['name'];
 $password = $response['password'];
+$start_date = $response['start_date'];
+$end_date = $response['end_date'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
@@ -11,7 +13,7 @@ try {
   } else {
     $hashedPassword = $managerData['password'];
     if (password_verify($password, $hashedPassword)) {
-      $data = $dbConnect->getSchedule($name);
+      $data = $dbConnect->getSchedule($name, $start_date, $end_date);
       if (empty($data)) {
         $result = json_encode(array('status' => 'warning' , 'message' => '登録された日程がありません。'));
       } else {
