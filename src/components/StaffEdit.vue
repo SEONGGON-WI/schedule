@@ -46,7 +46,7 @@
               :rules="rules"
               :dense="salary_change"
               :filled="salary_change"
-              :disabled="salary_change"
+              :readonly="salary_change"
               @input="timeColon(1)"
               @keydown.enter="enter(1)"
               class="my-3"
@@ -65,7 +65,7 @@
               :rules="rules"
               :dense="salary_change"
               :filled="salary_change"
-              :disabled="salary_change"
+              :readonly="salary_change"
               @input="timeColon(2)"
               @keydown.enter="enter(2)"
               class="my-3"
@@ -82,7 +82,7 @@
               :value="item.total_time = get_total(item)"
               dense
               filled
-              disabled
+              readonly
               class="my-3"
               label="勤労時間"
               height="40"
@@ -103,7 +103,7 @@
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="salary_change"
               :filled="salary_change"
-              :disabled="salary_change"
+              :readonly="salary_change"
               @keydown.enter="enter(3)"
               class="my-3"
               label="時給"
@@ -117,7 +117,7 @@
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="!salary_change"
               :filled="!salary_change"
-              :disabled="!salary_change"
+              :readonly="!salary_change"
               @keydown.enter="enter(3)"
               class="my-3"
               label="日給"
