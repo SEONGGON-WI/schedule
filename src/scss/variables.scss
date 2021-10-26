@@ -1,6 +1,6 @@
 //GLOBAL
 $font-size-root: 25px;
-$calendar-event-line-height: 30px;
+$calendar-event-line-height: 20px;
 $calendar-event-font-size: 20px;
 
 $data-table-mobile-row-min-height: 120px;
@@ -17,19 +17,19 @@ body {
   touch-action: none !important;
 }
 
+tbody tr td {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
 .confirm {
   font-size: 50px !important;
 }
 
 .confirm_action {
   font-size: 40px !important;
-}
-
-tbody tr td {
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-  padding-left: 8px !important;
-  padding-right: 8px !important;
 }
 
 .v-select__selections {
@@ -71,19 +71,19 @@ tbody tr td {
 }
 
 .v-calendar-weekly__day-label .v-btn__content{
-  font-size: 20px !important;
+  font-size: 15px !important;
 }
 
 .v-calendar-daily_head-weekday{
   background-color: #1976D2 !important;
   color: white !important;
-  font-size: larger !important;
+  font-size: 20px !important;
 }
 
 .v-calendar-weekly__head-weekday{
   background-color: #1976D2 !important;
   color: white !important;
-  font-size: larger !important;
+  font-size: 20px !important;
 }
 
 .v-present .v-calendar-weekly__day-label .v-btn--round .v-btn__content{
@@ -94,16 +94,34 @@ tbody tr td {
   width: 100% !important;
   border-radius: 0% !important;
   background-color: #E53935 !important;
+  height: 30px !important;
+}
+
+.v-present .v-calendar-weekly__day-label {
+  margin-top: 0px !important;
+  height: 40px !important;
 }
 
 .v-calendar-weekly__day.v-past .v-calendar-weekly__day-label .v-btn--round{
   width: 100% !important;
   border-radius: 4px !important;
+  height: 30px !important;
+}
+
+.v-calendar-weekly__day.v-past .v-calendar-weekly__day-label {
+  margin-top: 0px !important;
+  height: 40px !important;
 }
 
 .v-calendar-weekly__day.v-future .v-calendar-weekly__day-label .v-btn--round{
   width: 100% !important;
   border-radius: 4px !important;
+  height: 30px !important;
+}
+
+.v-calendar-weekly__day.v-future .v-calendar-weekly__day-label {
+  margin-top: 0px !important;
+  height: 40px !important;
 }
 
 .v-present .v-calendar-daily_head-day-label .v-btn--round .v-btn__content{
@@ -114,14 +132,32 @@ tbody tr td {
   width: 100% !important;
   border-radius: 4px !important;
   background-color: #E53935 !important;
+  height: 30px !important;
+}
+
+.v-present .v-calendar-daily_head-day-label {
+  margin-top: 0px !important;
+  height: 40px !important;
 }
 
 .v-calendar-daily_head-day.v-past .v-calendar-daily_head-day-label .v-btn--round{
   width: 100% !important;
   border-radius: 4px !important;
+  height: 30px !important;
+}
+
+.v-calendar-daily_head-day.v-past .v-calendar-daily_head-day-label {
+  margin-top: 0px !important;
+  height: 40px !important;
 }
 
 .v-calendar-daily_head-day.v-future .v-calendar-daily_head-day-label .v-btn--round{
   width: 100% !important;
   border-radius: 4px !important;
+  height: 30px !important;
+}
+
+.v-calendar-daily_head-day.v-future .v-calendar-daily_head-day-label {
+  margin-top: 0px !important;
+  height: 40px !important;
 }
