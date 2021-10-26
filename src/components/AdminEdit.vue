@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
+  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent scrollable>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
@@ -201,11 +201,6 @@
     </v-container>
   </v-dialog>
 </template>
-<style lang="scss">
-.v-textarea .v-input__control .v-input__slot .v-text-field__slot textarea{
-  font-size : 25px !important;
-}
-</style>
 <script>
 import axios from 'axios';
 export default {
@@ -272,18 +267,14 @@ export default {
       if (item.admin_hour_salary == '' || item.total_time == '') {
         return ''
       }
-      let salary = item.admin_hour_salary * item.total_time
-      var m = Number((Math.abs(salary) * 100).toPrecision(15));
-      salary =  Math.round(m) / 100 * Math.sign(salary);
+      let salary = Math.floor(item.admin_hour_salary * item.total_time)
       return String(salary)
     },
     get_staff_day_salary(item) {
       if (item.staff_hour_salary == '' || item.total_time == '') {
         return ''
       }
-      let salary = item.staff_hour_salary * item.total_time
-      var m = Number((Math.abs(salary) * 100).toPrecision(15));
-      salary =  Math.round(m) / 100 * Math.sign(salary);
+      let salary = Math.floor(item.staff_hour_salary * item.total_time)
       return String(salary)
     },
     async prevDate() {

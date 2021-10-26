@@ -29,15 +29,12 @@
     </v-menu>
 
     <v-toolbar-title class="mx-4">スケジュール</v-toolbar-title>
-    <v-toolbar-title class="mx-3" v-if="$refs.calendar">
-      {{ $refs.calendar.title }}
-    </v-toolbar-title>
-    <v-toolbar-title class="mx-3" v-else>
+    <v-toolbar-title class="mx-3">
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="error mx-2" color="white" @click="click(1)">
-      <v-icon>delete</v-icon>削除
+    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()">
+      <v-icon>analytics</v-icon>集計
     </v-btn>
     <v-btn class="success mx-2" color="white" @click="click(2)">
       <v-icon>autorenew</v-icon>更新
@@ -103,7 +100,7 @@
             </v-toolbar>
           </v-sheet>
 
-          <v-sheet height="95%" class="mx-3">
+          <v-sheet height="90%" class="mx-3">
             <v-calendar
               ref="calendar"
               v-model="calendar"
@@ -117,10 +114,10 @@
               @change="fetch"
             >
               <template v-slot:event="{ event }">
-                <div class="mt-1 ml-1" v-if="event.agenda == ''">
+                <div class="pt-1 ml-1" v-if="event.agenda == ''">
                   {{ event.name }}
                 </div>
-                <div class="mt-1 ml-1" v-else>
+                <div class="pt-1 ml-1" v-else>
                   {{ event.name }} - {{ event.agenda }}
                 </div>
               </template>
@@ -135,11 +132,21 @@
     @accept="accept_edit($event)"
     @prev="prev_edit($event)"
     @next="next_edit($event)"
-    @close="edit_show = false"
+    @close="close_edit"
     v-if="edit_show"
     :items="edit_items"
     :date="edit_date"
   ></admin-edit>
+
+  <admin-analytics
+    @change="change_analytics($event)"
+    @close="close_analytics"
+    v-if="analytics_show"
+    :items="analytics_items"
+    :name_items="analytics_name_items"
+    :name="analytics_name"
+    :date="calendar_date"
+  ></admin-analytics>
 
   <admin-dialog
     @accept="accept"
@@ -157,12 +164,24 @@
 </v-app>
 </template>
 <style lang="scss">
+.v-textarea .v-input__control .v-input__slot .v-text-field__slot textarea{
+  font-size : 25px !important;
+}
 .v-event {
   width: 94% !important;
   left: 3% !important;
   height: 25% !important;
   top: 1% !important;
-  margin-bottom: 5px !important;
+  margin-bottom: 0px 0px 0px 0px !important;
+}
+@media screen and ( max-width: 1000px ) {
+  .v-event {
+    width: 94% !important;
+    left: 3% !important;
+    height: 10% !important;
+    top: 1% !important;
+    margin-bottom: 5px !important;
+  }
 }
 .v-event-more{
   width: 90% !important;
@@ -170,13 +189,28 @@
   height: 20px !important;
   top: 1% !important;
 }
+.custom_dialog {
+  max-height: 80% !important;
+  width: 80% !important;
+  position: fixed !important;
+  top: 10% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  align-content: normal !important;
+  justify-content: normal !important;
+}
 @media screen and ( max-width: 1000px ) {
-  .v-event {
-    width: 94% !important;
-    left: 3% !important;
-    height: 14% !important;
-    top: 1% !important;
-    margin-bottom: 5px !important;
+  .custom_dialog {
+    max-height: 80% !important;
+    width: 90% !important;
+    position: fixed !important;
+    top: 10% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    align-content: normal !important;
+    justify-content: normal !important;
   }
 }
 </style>
@@ -185,6 +219,7 @@ import alert from '@/components/alert.vue';
 import AdminEdit from '@/components/AdminEdit.vue';
 import AdminDialog from '@/components/AdminDialog.vue';
 import StaffListDialog from '@/components/staffListDialog.vue';
+import AdminAnalytics from '@/components/AdminAnalytics.vue'
 import axios from 'axios';
 
 export default {
@@ -193,13 +228,13 @@ export default {
     alert,
     AdminEdit,
     AdminDialog,
-    StaffListDialog
+    StaffListDialog,
+    AdminAnalytics,
   },
   data: () => ({
     menu_item: [
       { icon: "settings", text: "システム設定", action: "system"},
       { icon: "people", text: "スタッフ管理", action: "staff"},
-      { icon: "backup_table", text: "データバックアップ", action: "backup"},
       { icon: "delete", text: "データ削除", action: "remove"},
       { icon: "file_download", text: "CSV出力", action: "download"}
     ],
@@ -219,8 +254,12 @@ export default {
     ],
     calendar_events: [],
     edit_show: false,
-    edit_items: {},
+    edit_items: [],
     edit_date: '',
+    analytics_show: false,
+    analytics_items: [],
+    analytics_name_items: [],
+    analytics_name: '',
     alert_show: false,
     alert_type: '',
     alert_text: '',
@@ -236,10 +275,7 @@ export default {
     const month = ("0" + (1 + date.getMonth())).slice(-2);
     const day = ("0" + date.getDate()).slice(-2);
     this.today = year + "-" + month + "-" + day;
-    
-    this.calendar_date = date.getMonth()+1+"月 "+date.getFullYear();
-    this.search();
-
+    this.calendar_date = year + "年 " + month + "月";
     this.setToday();
   },
   computed: {
@@ -272,12 +308,8 @@ export default {
           this.staff_show = true
           break;
 
-        case 'backup':
-          this.export_event()
-          break;
-          
         case 'remove':
-          console.log("remove")
+          this.click(1)
           break;
 
         case 'download':
@@ -293,6 +325,7 @@ export default {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
       }
+      this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       this.get_data();
     },
     fetch_data(data) {
@@ -310,7 +343,7 @@ export default {
         } else {
           element.color = this.colors[0]
         }
-        element.start = startTime;
+        element.start = startTime
         // this.calendar_events.push({
         //   name: element.name,
         //   date: element.date,
@@ -358,9 +391,29 @@ export default {
       }
       this.fetch_data(data)
     },
+    analytics() {
+      const data = this.$store.getters.calendar_events;
+      this.analytics_name = this.name
+      this.analytics_items = this.name == '全員' ? data : data.filter(obj => obj.name == this.name)
+
+      const name_items = data.map(element => element.name);
+      this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
+        return name_items.indexOf(obj) === index;
+      })];
+      this.analytics_show = true
+    },
+    change_analytics(name) {
+      const data = this.$store.getters.calendar_events;
+      this.analytics_name = name
+      this.analytics_items = name == '全員' ? data : data.filter(obj => obj.name == name)
+    },
+    close_analytics() {
+      this.analytics_name = ''
+      this.analytics_items = []
+      this.analytics_show = false
+    },
     export_event() {
-      const date = new Date();
-      const calendar_date = date.getFullYear()+"-"+(date.getMonth()+1)+date.getDay();
+      const calendar_date = this.today
       const export_data = JSON.stringify(this.$store.getters.calendar_events)
       const export_file = `${calendar_date}_schedule.json`
       let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
@@ -379,25 +432,25 @@ export default {
           link.click()
       }
     },
-    async save() {
-      const url = "/schedule/app/adminUploadSchedule.php";
-      const data = {
-        start_date: this.search_date.start_date,
-        end_date: this.search_date.end_date,
-        event: this.$store.getters.calendar_events
-      }
-      await axios.post(url, data).then(function(response) {
-        if (response.data.status){
-          if (response.data.status == "success") {
-            if (this.action != 0) {
-              this.alert(response.data.status, response.data.message, true);
-            }
-          } else {
-            this.alert(response.data.status, response.data.message, true);
-          }
-        }
-      }.bind(this))
-    },
+    // async save() {
+    //   const url = "/schedule/app/adminUploadSchedule.php";
+    //   const data = {
+    //     start_date: this.search_date.start_date,
+    //     end_date: this.search_date.end_date,
+    //     event: this.$store.getters.calendar_events
+    //   }
+    //   await axios.post(url, data).then(function(response) {
+    //     if (response.data.status){
+    //       if (response.data.status == "success") {
+    //         if (this.action != 0) {
+    //           this.alert(response.data.status, response.data.message, true);
+    //         }
+    //       } else {
+    //         this.alert(response.data.status, response.data.message, true);
+    //       }
+    //     }
+    //   }.bind(this))
+    // },
     async remove() {
       const url = "/schedule/app/adminRemoveSchedule.php";
       const today = new Date();
@@ -425,7 +478,15 @@ export default {
       }
       const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
-      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == item.date));
+      if (this.name != '全員') {
+        this.edit_items = lodash.cloneDeep(data.filter(obj => {
+          if (obj.date == item.date && obj.name == this.name) {
+            return obj
+          }
+        }));
+      } else {
+        this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == item.date));
+      }
       this.edit_date = item.date
       if (this.edit_items.length != 0) {
         this.edit_show = true;
@@ -433,11 +494,25 @@ export default {
     },
     accept_edit(item) {
       const data = this.$store.getters.calendar_events
-      let event = data.filter(obj => obj.date != this.edit_date)
+      let event = []
+      if (this.name != '全員') {
+        event = data.filter(obj => {
+          if (obj.date != this.edit_date || obj.name != this.name) {
+            return obj
+          }
+        });
+      } else {
+        event = data.filter(obj => obj.date != this.edit_date)
+      }
       event.push(...item)
       this.$store.commit('set_calendar_events', event);
       this.edit_show = false;
       this.search();
+    },
+    close_edit() {
+      this.edit_show = false
+      this.edit_items = []
+      this.edit_date = ''
     },
     calculate_edit_date(type) {
       var date = this.edit_date.split("-")
@@ -458,24 +533,60 @@ export default {
     },
     prev_edit(item) {
       const edit_data = this.$store.getters.calendar_events
-      let event = edit_data.filter(obj => obj.date != this.edit_date)
+      let event = []
+      if (this.name != '全員') {
+        event = edit_data.filter(obj => {
+          if (obj.date != this.edit_date || obj.name != this.name) {
+            return obj
+          }
+        });
+      } else {
+        event = edit_data.filter(obj => obj.date != this.edit_date)
+      }
       event.push(...item)
+
       this.$store.commit('set_calendar_events', event);
       this.edit_date = this.calculate_edit_date('prev')
-      const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
-      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
+      const lodash = require("lodash");
+      if (this.name != '全員') {
+        this.edit_items = lodash.cloneDeep(data.filter(obj => {
+          if (obj.date == this.edit_date && obj.name == this.name) {
+            return obj
+          }
+        }));
+      } else {
+        this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
+      }
       this.search();
     },
     next_edit(item) {
       const edit_data = this.$store.getters.calendar_events
-      let event = edit_data.filter(obj => obj.date != this.edit_date)
+      let event = []
+      if (this.name != '全員') {
+        event = edit_data.filter(obj => {
+          if (obj.date != this.edit_date || obj.name != this.name) {
+            return obj
+          }
+        });
+      } else {
+        event = edit_data.filter(obj => obj.date != this.edit_date)
+      }
       event.push(...item)
+
       this.$store.commit('set_calendar_events', event);
       this.edit_date = this.calculate_edit_date('next')
-      const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
-      this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
+      const lodash = require("lodash");
+      if (this.name != '全員') {
+        this.edit_items = lodash.cloneDeep(data.filter(obj => {
+          if (obj.date == this.edit_date && obj.name == this.name) {
+            return obj
+          }
+        }));
+      } else {
+        this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
+      }
       this.search();
     },
     click(action) {
