@@ -38,10 +38,10 @@
           disable-pagination
           disable-sort
         >
-          <template v-slot:item.start_time>
+          <template v-slot:item.start_time="{ item }">
             <v-text-field
               ref="start"
-              v-model="start"
+              v-model="item.start_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
               :rules="rules"
               :dense="salary_change"
@@ -57,10 +57,10 @@
             ></v-text-field>
           </template>
 
-          <template v-slot:item.end_time>
+          <template v-slot:item.end_time="{ item }">
             <v-text-field
               ref="end"
-              v-model="end"
+              v-model="item.end_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
               :rules="rules"
               :dense="salary_change"
@@ -76,10 +76,10 @@
             ></v-text-field>
           </template>
 
-          <template v-slot:item.total_time>
+          <template v-slot:item.total_time="{ item }">
             <v-text-field
               ref="total"
-              :value="total = get_total()"
+              :value="item.total_time = get_total(item)"
               dense
               filled
               disabled
@@ -96,10 +96,10 @@
           disable-pagination
           disable-sort
         >
-          <template v-slot:item.staff_hour_salary>
+          <template v-slot:item.staff_hour_salary="{ item }">
             <v-text-field
               ref="hour"
-              v-model="hour_salary"
+              v-model="item.staff_hour_salary"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="salary_change"
               :filled="salary_change"
@@ -110,10 +110,10 @@
               height="40"
             ></v-text-field>
           </template>
-          <template v-slot:item.staff_day_salary>
+          <template v-slot:item.staff_day_salary="{ item }">
             <v-text-field
               ref="day"
-              v-model="day_salary"
+              :value="item.staff_day_salary = get_staff_day_salary(item)"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               :dense="!salary_change"
               :filled="!salary_change"
@@ -124,10 +124,10 @@
               height="40"
             ></v-text-field>
           </template>
-          <template v-slot:item.staff_expense>
+          <template v-slot:item.staff_expense="{ item }">
             <v-text-field
               ref="expense"
-              v-model="expense"
+              v-model="item.staff_expense"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               @keydown.enter="enter(5)"
               class="my-3"
@@ -160,12 +160,6 @@ export default {
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
-    start: '',
-    end: '',
-    total: '',
-    hour_salary: '',
-    day_salary: '',
-    expense: '',
     rules: [v => v.length == 5 || v == '' || '時間の様式に合わせてください。'],
     dialog: false,
     salary_change: false,
@@ -180,43 +174,33 @@ export default {
     } else {
       this.salary_change = true;
     }
-    this.start = this.items.start_time;
-    this.end = this.items.end_time;
-    this.total = this.items.total_time;
-    this.hour_salary = this.items.staff_hour_salary;
-    this.day_salary = this.items.staff_day_salary;
-    this.expense = this.items.staff_expense;
     this.dialog = true;
   },
   watch: {
     salary_change(element) {
       if (element) {
-        this.start = '';
-        this.end = '';
-        this.total = '';
-        this.hour_salary = '';
+        this.items.start_time = '';
+        this.items.end_time = '';
+        this.items.total_time = '';
+        this.items.staff_hour_salary = '';
       } else {
-        this.day_salary = '';
+        this.items.staff_day_salary = '';
       }
     },
-    hour_salary(element) {
-      if (!this.salary_change) {
-        let salary = element * this.total
-        var m = Number((Math.abs(salary) * 100).toPrecision(15));
-        this.day_salary =  Math.round(m) / 100 * Math.sign(salary);
-      }
-    },
-    total(element) {
-      if (!this.salary_change) {
-        let salary = element * this.hour_salary
-        var m = Number((Math.abs(salary) * 100).toPrecision(15));
-        this.day_salary =  Math.round(m) / 100 * Math.sign(salary);
-      }
-    },
+    // hour_salary(element) {
+    //   if (!this.salary_change) {
+    //     this.items.staff_day_salary = Math.floor(element * this.items.total_time)
+    //   }
+    // },
+    // total(element) {
+    //   if (!this.salary_change) {
+    //     this.items.staff_day_salary = Math.floor(element * this.items.staff_hour_salary)
+    //   }
+    // },
   },
   methods: {
     timeColon(type) {
-      let replaceTime = type === 1 ? this.start.replace(":", "") : this.end.replace(":", "");
+      let replaceTime = type === 1 ? this.items.start_time.replace(":", "") : this.items.end_time.replace(":", "");
       let hours = '00'
       let minute = '00'
 
@@ -224,31 +208,40 @@ export default {
         hours = replaceTime.substring(0, 2)
         minute = replaceTime.substring(2, 4)
         if(isFinite(hours + minute) == false) {
-          type === 1 ? this.start = "" : this.end = "";
+          type === 1 ? this.items.start_time = "" : this.items.end_time = "";
           return false;
         }
         if (hours > 23 ) {
-          type === 1 ? this.start = "24:00" : this.end = "24:00";
+          type === 1 ? this.items.start_time = "24:00" : this.items.end_time = "24:00";
           return false;
         }
         if (minute > 59) {
-          type === 1 ? this.start = hours + ":00" : this.end = hours + ":00";
+          type === 1 ? this.items.start_time = hours + ":00" : this.items.end_time = hours + ":00";
           return false;
         }
-        type === 1 ? this.start = hours + ":" + minute : this.end = hours + ":" + minute;
+        type === 1 ? this.items.start_time = hours + ":" + minute : this.items.end_time = hours + ":" + minute;
+        type === 1 ? this.enter(1) : this.enter(2);
       }
     },
-    get_total() {
+    get_total(item) {
       let time = ''
-      if (this.salary_change === false && this.start != '' && this.end != '') {
-        var start = new Date ("2021-12-31 " + this.start)
-        var end = new Date ("2021-12-31 " + this.end)
-        time = (end - start) / 1000 / 60 / 60 - 1
+      if (this.salary_change === false && item.start_time != '' && item.end_time != '') {
+        var start = item.start_time.split(":")
+        var end = item.end_time.split(":")
 
-        var m = Number((Math.abs(time) * 100).toPrecision(15));
-        time =  Math.round(m) / 100 * Math.sign(time);
+        var start_date = new Date (2020,11,31,start[0],start[1],0)
+        var end_date = new Date (2020,11,31,end[0],end[1],0)
+        time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
+        time = Number(time).toFixed(2)
       }
       return time
+    },
+    get_staff_day_salary(item) {
+      if (item.staff_hour_salary == '' || item.total_time == '') {
+        return ''
+      }
+      let salary = Math.floor(item.staff_hour_salary * item.total_time)
+      return String(salary)
     },
     enter(index) {
       switch (index) {
@@ -270,19 +263,11 @@ export default {
       }
     },
     edit() {
-      if ((this.start || this.end) && (this.start.length != 5 || this.end.length != 5)) {
+      if ((this.items.start_time || this.items.end_time) && (this.items.start_time.length != 5 || this.items.end_time.length != 5)) {
         return;
       }
-      const data = {
-        start_time: this.start.replace(/^\s+|\s+$/gm,''),
-        end_time: this.end.replace(/^\s+|\s+$/gm,''),
-        total_time: this.total,
-        staff_hour_salary: this.hour_salary,
-        staff_day_salary: this.day_salary,
-        staff_expense: this.expense
-      }
       this.dialog = false;
-      this.$emit("edit", data);
+      this.$emit("edit", this.items);
     },
     close() {
       this.dialog = false;
