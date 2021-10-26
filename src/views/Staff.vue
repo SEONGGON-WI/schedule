@@ -5,6 +5,10 @@
     <v-toolbar-title class="mx-3">
       {{ calendar_date }}
     </v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="name == '' || password == ''">
+      <v-icon>analytics</v-icon>集計
+    </v-btn>
   </v-app-bar>
   <v-main class="mx-1" style="position: fixed !important; width: 100%; height: 100%;">
     <alert
@@ -84,6 +88,15 @@
           v-if="edit_show"
           :items="edit_items"
         ></staff-edit>
+
+        <staff-analytics
+          @close="close_analytics"
+          v-if="analytics_show"
+          :items="analytics_items"
+          :name="name"
+          :date="calendar_date"
+        ></staff-analytics>
+
         <staff-dialog
           @upload="upload"
           @close="close"
@@ -101,17 +114,41 @@
   height: 60% !important;
   top: 1% !important;
 }
-
 .form_area {
   width: 200px !important;
   line-height: 1 !important;
   border: 1px black solid !important;
+}
+.custom_dialog {
+  max-height: 80% !important;
+  width: 80% !important;
+  position: fixed !important;
+  top: 10% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  align-content: normal !important;
+  justify-content: normal !important;
+}
+@media screen and ( max-width: 1000px ) {
+  .custom_dialog {
+    max-height: 80% !important;
+    width: 90% !important;
+    position: fixed !important;
+    top: 10% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    align-content: normal !important;
+    justify-content: normal !important;
+  }
 }
 </style>
 <script>
 import alert from '@/components/alert.vue'
 import StaffEdit from '@/components/StaffEdit.vue'
 import StaffDialog from '@/components/StaffDialog.vue';
+import StaffAnalytics from '@/components/StaffAnalytics.vue'
 import axios from "axios"
 
 export default {
@@ -119,6 +156,7 @@ export default {
   components: {
     StaffEdit,
     StaffDialog,
+    StaffAnalytics,
     alert,
   },
   props: {
@@ -127,6 +165,7 @@ export default {
     colors: ['grey darken-2','orange','teal accent-4'],
     name: '',
     password: '',
+    search_date: {},
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
@@ -134,6 +173,8 @@ export default {
     edit_show: false,
     edit_items: {},
     edit_index: null,
+    analytics_items: [],
+    analytics_show: false,
     alert_show: false,
     alert_type: '',
     alert_text: '',
@@ -157,7 +198,14 @@ export default {
   },
   methods: {
     async fetch() {
+      this.search_date = {
+        start_date: this.$refs.calendar.lastStart.date,
+        end_date: this.$refs.calendar.lastEnd.date
+      }
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
+      if (this.name != '' || this.password != '') {
+        this.search();
+      }
     },
     id_enter(event) {
       event.preventDefault()
@@ -214,7 +262,9 @@ export default {
       const url = "/schedule/app/staffSearchSchedule.php";
       const data = {
         name: name,
-        password: password
+        password: password,
+        start_date: this.search_date.start_date,
+        end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status === 'success') {
@@ -243,6 +293,16 @@ export default {
         obj.start = startTime
       })
       this.calendar_events = data;
+    },
+    analytics() {
+      const lodash = require("lodash");
+      const data = lodash.cloneDeep(this.calendar_events);
+      this.analytics_items = data.filter(obj => obj.name == this.name && obj.agenda != '')
+      this.analytics_show = true
+    },
+    close_analytics() {
+      this.analytics_items = []
+      this.analytics_show = false
     },
     edit(event) {
       const index = this.edit_index;
