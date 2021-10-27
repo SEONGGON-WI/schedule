@@ -34,17 +34,27 @@ try {
       foreach ($table as $element) {
         $day = [];
         $day = explode("-", $element['date']);
+        if ((int)$day[2] < 10) {
+          $day[2] = substr($day[2], 1);
+        }
         $working_day .= $day[2].",";
       }
       // $working_day = substr($working_day, 0, -1);
 
+      if ($value['total_time'] != '') {
+        $explode_time = explode(".", $value['total_time']);
+        $clock_time = $explode_time[0].":".((int)$explode_time[1] * 0.6);
+      } else {
+        $clock_time = '';
+      }
+
       if ($value['admin_day_salary']) {
-        $admin_total_salary = (float)$value['admin_day_salary'] * (int)$value['cnt'];
+        $admin_total_salary = (int)$value['admin_day_salary'] * (int)$value['cnt'];
       } else {
         $admin_total_salary = '';
       }
       if ($value['staff_day_salary']) {
-        $staff_total_salary = (float)$value['staff_day_salary'] * (int)$value['cnt'];
+        $staff_total_salary = (int)$value['staff_day_salary'] * (int)$value['cnt'];
       } else {
         $staff_total_salary = '';
       }
@@ -56,14 +66,40 @@ try {
       if ($value['admin_total_expense'] == 0) {
         $value['admin_total_expense'] = '';
       }
-      
+
+      if ($value['admin_hour_salary'] != '' ) {
+        $value['admin_hour_salary'] = number_format((int)$value['admin_hour_salary']);
+      }
+      if ($value['admin_day_salary'] != '' ) {
+        $value['admin_day_salary'] = number_format((int)$value['admin_day_salary']);
+      }
+      if ($admin_total_salary != '' ) {
+        $admin_total_salary = number_format((int)$admin_total_salary);
+      }
+      if ($value['admin_total_expense'] != '' ) {
+        $value['admin_total_expense'] = number_format((int)$value['admin_total_expense']);
+      }
+
+      if ($value['staff_hour_salary'] != '' ) {
+        $value['staff_hour_salary'] = number_format((int)$value['staff_hour_salary']);
+      }
+      if ($staff_total_salary != '' ) {
+        $staff_total_salary = number_format((int)$staff_total_salary);
+      }
+      if ($value['staff_day_salary'] != '' ) {
+        $value['staff_day_salary'] = number_format((int)$value['staff_day_salary']);
+      }
+      if ($value['staff_total_expense'] != '' ) {
+        $value['staff_total_expense'] = number_format((int)$value['staff_total_expense']);
+      }   
+
       $csv .= '"'
           . $working_day . '","'
           . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
           . mb_convert_encoding($value['name'], 'SJIS', 'UTF-8') . '","'
           . $value['start_time'] . '","'
           . $value['end_time'] . '","'
-          . $value['total_time'] . '","'
+          . $clock_time . '","'
           . $value['total_time'] . '","'
           . $value['cnt'] . '","'
           . $value['admin_hour_salary'] . '","'
