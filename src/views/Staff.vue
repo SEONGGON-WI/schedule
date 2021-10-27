@@ -323,15 +323,12 @@ export default {
     },
     async upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
-      const today = new Date();
-      const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
       const access_time = this.access_time == '' ? 0 : this.access_time; 
       const data = {
         name: this.name,
         password: this.password,
         access_time: access_time,
         event: this.calendar_events,
-        current_date: current_date,
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date,
       }

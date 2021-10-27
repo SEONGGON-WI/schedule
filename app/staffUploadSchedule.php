@@ -3,7 +3,8 @@ $response = json_decode(file_get_contents('php://input'), true);
 $name = $response['name'];
 $password = $response['password'];
 $access_time = $response['access_time'];
-$current_date = $response['current_date'];
+$start_date = $response['start_date'];
+$end_date = $response['end_date'];
 $event = $response['event'];
 include 'sqlConnect.php';
 try {
@@ -21,7 +22,7 @@ try {
   if (password_verify($password, $hashedPassword)) {
     if ($access_time == $managerData['access_time']) {
       $dbConnect = new mysqlConnect();
-      $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date > '$current_date'";
+      $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";
       $dbConnect->mysql->query($del);
     }
     $index = 0;
