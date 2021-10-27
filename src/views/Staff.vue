@@ -23,8 +23,8 @@
         <v-col>
           <v-toolbar class="pa-0" flat>
             <v-btn outlined class="mx-2" color="grey darken-2" @click="setToday">今日</v-btn>
-            <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
-            <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
+            <v-btn icon text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
+            <v-btn icon text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
             <v-spacer></v-spacer>
             <v-form ref="form" @submit.prevent="search" autocomplete="on">
               <v-row class="mt-1" no-gutters>
@@ -57,7 +57,7 @@
                   </v-btn>
               </v-row>
             </v-form>
-            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == '' || upload_condition">
+            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == ''">
               <v-icon>save</v-icon>登録
             </v-btn>
           </v-toolbar>
@@ -93,7 +93,6 @@
           @close="close_analytics"
           v-if="analytics_show"
           :items="analytics_items"
-          :name="name"
           :date="calendar_date"
         ></staff-analytics>
 
@@ -179,7 +178,6 @@ export default {
     alert_type: '',
     alert_text: '',
     search_condition: true,
-    upload_condition: true,
     access_time: '',
     today: '',
     dialog: false,
@@ -203,11 +201,6 @@ export default {
       this.search_date = {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
-      }
-      if (this.$refs.calendar.lastEnd.date < this.today ) {
-        this.upload_condition = true
-      } else {
-        this.upload_condition = false
       }
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       if (this.name != '' || this.password != '') {
@@ -277,11 +270,13 @@ export default {
         if (response.data.status === 'success') {
           this.search_condition = false
           this.access_time = response.data.access_time;
+          this.$store.commit('set_staff_name', name);
           this.fetch_data(response.data.data);
         } else {
           this.search_condition = true
+          this.$store.commit('set_staff_name', '');
           this.calendar_events = [];
-          this.alert(response.data.status, response.data.message, true);
+          // this.alert(response.data.status, response.data.message, true);
         }
       }.bind(this))
     },
@@ -336,7 +331,9 @@ export default {
         password: this.password,
         access_time: access_time,
         event: this.calendar_events,
-        current_date: current_date
+        current_date: current_date,
+        start_date: this.search_date.start_date,
+        end_date: this.search_date.end_date,
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == 'success') {
