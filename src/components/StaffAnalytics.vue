@@ -44,7 +44,7 @@ export default {
   components: {
   },
   props: [
-    'items', 'name', 'date'
+    'items', 'date'
   ],
   data: () => ({
     headers: [
@@ -58,12 +58,12 @@ export default {
       { value:"staff_expense", text:"経費", width: "12%", align: 'center'}
     ],
     total_agenda: 0,
-    differ_name: '',
+    name: '',
     dialog: false,
   }),
   created() {
     this.total_agenda = this.items.length + "件"
-    this.differ_name = this.name
+    this.name = this.$store.getters.staff_name
     this.dialog = true;
   },
   watch: {
