@@ -15,7 +15,7 @@ try {
     if (password_verify($password, $hashedPassword)) {
       $data = $dbConnect->getSchedule($name, $start_date, $end_date);
       if (empty($data)) {
-        $result = json_encode(array('status' => 'warning' , 'message' => '登録された日程がありません。'));
+        $result = json_encode(array('status' => 'success' , 'data' => ''));
       } else {
         $result = json_encode(array('status' => 'success' , 'data' => $data, 'access_time' => $managerData['access_time']));
       }

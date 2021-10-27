@@ -43,6 +43,9 @@ try {
 
       if ($value['total_time'] != '') {
         $explode_time = explode(".", $value['total_time']);
+        if (strlen($explode_time[1]) != 2) {
+          $explode_time[1] = $explode_time[1]."0";
+        }
         $clock_time = $explode_time[0].":".((int)$explode_time[1] * 0.6);
       } else {
         $clock_time = '';
