@@ -57,8 +57,8 @@
           <v-sheet>
             <v-toolbar class="pa-0" flat>
               <v-btn outlined class="mx-2" color="grey darken-2" @click="setToday">今日</v-btn>
-              <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
-              <v-btn fab text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
+              <v-btn icon text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
+              <v-btn icon text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
               <v-col cols="2">
                 <v-select 
                   height="30"
