@@ -1,13 +1,12 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib/framework';
-import 'material-design-icons-iconfont/dist/material-design-icons.css';
-import '@mdi/font/css/materialdesignicons.css'
+import 'material-icons/iconfont/material-icons.css'
 
 Vue.use(Vuetify);
 
 const opts = {
   icons: {
-    iconfont: 'mdi', // default - only for display purposes
+    iconfont: 'md', // default - only for display purposes
   },
 }
 
