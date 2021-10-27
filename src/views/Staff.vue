@@ -267,7 +267,7 @@ export default {
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
-        if (response.data.status === 'success') {
+        if (response.data.status === 'success' && response.data.data != '') {
           this.search_condition = false
           this.access_time = response.data.access_time;
           this.$store.commit('set_staff_name', name);
@@ -276,7 +276,9 @@ export default {
           this.search_condition = true
           this.$store.commit('set_staff_name', '');
           this.calendar_events = [];
-          // this.alert(response.data.status, response.data.message, true);
+          if (response.data.data != '') {
+            this.alert(response.data.status, response.data.message, true);
+          }
         }
       }.bind(this))
     },

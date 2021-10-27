@@ -225,7 +225,7 @@ export default {
     },
     get_total(item) {
       let time = ''
-      if (this.salary_change === false && item.start_time != '' && item.end_time != '') {
+      if (this.salary_change === false && item.start_time != '' && item.end_time != '' && item.start_time.length == 5 && item.end_time.length == 5) {
         var start = item.start_time.split(":")
         var end = item.end_time.split(":")
 
@@ -233,6 +233,9 @@ export default {
         var end_date = new Date (2020,11,31,end[0],end[1],0)
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
         time = Number(time).toFixed(2)
+        if ((parseFloat(item.total_time) - parseFloat(time)) == 1) {
+          return Number(item.total_time).toFixed(2)
+        }
       }
       return time
     },
