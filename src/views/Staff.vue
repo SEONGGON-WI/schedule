@@ -332,9 +332,7 @@ export default {
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
-        if (response.data.status != 'success') {
-          this.alert(response.data.status, response.data.message, true);
-        }
+        this.alert(response.data.status, response.data.message, true);
       }.bind(this))
       this.dialog = false;
     },
