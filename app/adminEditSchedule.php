@@ -5,24 +5,6 @@ $event = $response['event'];
 $remove_event = $response['remove_event'];
 include 'sqlConnect.php';
 try {
-  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
-  $time = date('Y/m/d-H:i');
-  $logDate = date('Ym');
-  $path = $rootPath.$logDate.".txt";
-  try {
-    if (!file_exists($path)) {
-      $log = @fopen($path,"a+");
-      @fwrite($log,"time,api,date\n");
-      @fclose($log);
-    }
-    $remoteAddr = $_SERVER['REMOTE_ADDR'];
-    $log = @fopen($path,"a+");
-    @fwrite($log,"$time,'edit',$date\n");
-    @fclose($log);
-  } catch(Exception $e) {
-    $logError = true;
-  }
-
   $dbConnect = new mysqlConnect();
 
   $index = 0;

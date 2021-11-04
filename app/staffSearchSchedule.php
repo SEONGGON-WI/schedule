@@ -17,7 +17,7 @@ try {
       if (empty($data)) {
         $result = json_encode(array('status' => 'success' , 'data' => ''));
       } else {
-        $result = json_encode(array('status' => 'success' , 'data' => $data, 'access_time' => $managerData['access_time']));
+        $result = json_encode(array('status' => 'success' , 'data' => $data));
       }
     } else {
       $result = json_encode(array('status' => 'warning' , 'message' => 'パスワードを確認してください。'));

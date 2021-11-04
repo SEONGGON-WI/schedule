@@ -2,7 +2,7 @@
 $response = json_decode(file_get_contents('php://input'), true);
 $name = $response['name'];
 $password = $response['password'];
-$access_time = $response['access_time'];
+$search_condition = $response['search_condition'];
 $start_date = $response['start_date'];
 $end_date = $response['end_date'];
 $event = $response['event'];
@@ -20,28 +20,59 @@ try {
   }
   $hashedPassword = $managerData['password'];
   if (password_verify($password, $hashedPassword)) {
-    if ($access_time == $managerData['access_time']) {
+    $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+    $time = date('Y/m/d-H:i');
+    $logDate = date('Ym');
+    $path = $rootPath.$logDate.".txt";
+    try {
+      if (!file_exists($path)) {
+        $log = @fopen($path,"a+");
+        @fwrite($log,"time,api,date\n");
+        @fclose($log);
+      }
+      $remoteAddr = $_SERVER['REMOTE_ADDR'];
+      $log = @fopen($path,"a+");
+      @fwrite($log,"$time,'staffUpload',$name\n");
+      @fclose($log);
+    } catch(Exception $e) {
+      $logError = true;
+    }
+
+    if ($search_condition == false) {
       $dbConnect = new mysqlConnect();
       $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";
       $dbConnect->mysql->query($del);
+
+      $index = 0;
+      $sql_array = [];
+      foreach ($event as $values) {
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $index++;
+      }
+      $sql = "INSERT INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
+      $sub_sql_query = implode(', ', $sql_array);
+      $sql = $sql.$sub_sql_query.$sub_sql;
+      $dbConnect->mysql->query($sql);
     }
-    $index = 0;
-    $sql_array = [];
-    foreach ($event as $values) {
-      $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
-      $index++;
+    if ($search_condition == true) {
+      $index = 0;
+      $sql_array = [];
+      foreach ($event as $values) {
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $index++;
+      }
+      $sql = "INSERT IGNORE INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      $sub_sql_query = implode(', ', $sql_array);
+      $sql = $sql.$sub_sql_query;
+      $dbConnect->mysql->query($sql);
     }
-    $sql = "INSERT INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
-    $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
-    $sub_sql_query = implode(', ', $sql_array);
-    $sql = $sql.$sub_sql_query.$sub_sql;
-    $dbConnect->mysql->query($sql);
 
     $time = date('Y-m-d h:i:s', time());
     $time_sql = "UPDATE manager SET access_time = '$time' WHERE name = '$name'";
     $dbConnect->mysql->query($time_sql);
 
-     $result = json_encode(array('status' => 'success' , 'message' => '登録を完了しました。', 'access_time' => $time));
+     $result = json_encode(array('status' => 'success' , 'message' => '登録を完了しました。'));
   } else {
     $result = json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
   }
