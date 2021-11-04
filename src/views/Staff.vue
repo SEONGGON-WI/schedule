@@ -178,7 +178,6 @@ export default {
     alert_type: '',
     alert_text: '',
     search_condition: true,
-    access_time: '',
     today: '',
     dialog: false,
   }),
@@ -202,6 +201,7 @@ export default {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
       }
+      this.search_condition = true
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       if (this.name != '' || this.password != '') {
         this.search();
@@ -269,8 +269,6 @@ export default {
       axios.post(url, data).then(function(response) {
         if (response.data.status === 'success' && response.data.data != '') {
           this.search_condition = false
-          this.access_time = response.data.access_time;
-          this.$store.commit('set_staff_name', name);
           this.fetch_data(response.data.data);
         } else {
           this.search_condition = true
@@ -325,20 +323,18 @@ export default {
     },
     async upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
-      const access_time = this.access_time == '' ? 0 : this.access_time; 
       const data = {
         name: this.name,
         password: this.password,
-        access_time: access_time,
+        search_condition: this.search_condition,
         event: this.calendar_events,
         start_date: this.search_date.start_date,
-        end_date: this.search_date.end_date,
+        end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
-        if (response.data.status == 'success') {
-          this.access_time = response.data.access_time;
+        if (response.data.status != 'success') {
+          this.alert(response.data.status, response.data.message, true);
         }
-        this.alert(response.data.status, response.data.message, true);
       }.bind(this))
       this.dialog = false;
     },

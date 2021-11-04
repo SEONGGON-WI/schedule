@@ -111,13 +111,22 @@
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary="{ item }">
-            <v-text-field
-              ref="day"
+          <v-text-field
+              v-if="!salary_change"
               :value="item.staff_day_salary = get_staff_day_salary(item)"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-              :dense="!salary_change"
-              :filled="!salary_change"
-              :readonly="!salary_change"
+              dense
+              filled
+              readonly
+              class="my-3"
+              label="日給"
+              height="40"
+            ></v-text-field>
+            <v-text-field
+              v-else
+              v-model="item.staff_day_salary"
+              ref="day"
+              :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               @keydown.enter="enter(3)"
               class="my-3"
               label="日給"
