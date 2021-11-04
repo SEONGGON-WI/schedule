@@ -24,6 +24,12 @@ try {
     $time = date('Y/m/d-H:i');
     $logDate = date('Ym');
     $path = $rootPath.$logDate.".txt";
+
+    if($search_condition == true) {
+      $condition = "true";
+    } else {
+      $condition = "false";
+    }
     try {
       if (!file_exists($path)) {
         $log = @fopen($path,"a+");
@@ -32,7 +38,7 @@ try {
       }
       $remoteAddr = $_SERVER['REMOTE_ADDR'];
       $log = @fopen($path,"a+");
-      @fwrite($log,"$time,'staffUpload',$name\n");
+      @fwrite($log,"$time,'staffUpload',$name_$condition\n");
       @fclose($log);
     } catch(Exception $e) {
       $logError = true;
