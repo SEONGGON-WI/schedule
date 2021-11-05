@@ -37,7 +37,7 @@ try {
     $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
   }
 } catch(Exception $e) {
-  $result = json_encode(array('error' => false , 'message' => '登録を失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
 }
 $dbConnect->dbClose();
 echo($result);
