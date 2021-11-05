@@ -23,7 +23,7 @@
             <template v-slot:top>
               <v-text-field
                 v-model="search"
-                label="キーワードースタッフ検索"
+                label="キーワードで検索"
                 class="mx-4 pt-4"
                 clearable
               ></v-text-field>
