@@ -32,11 +32,14 @@
     <v-toolbar-title class="mx-3">
       {{ calendar_date }}
     </v-toolbar-title>
+    <v-toolbar-title class="mx-3">
+      {{ get_agenda }}
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-btn class="mx-2" color="yellow darken-4" @click="analytics()">
       <v-icon>analytics</v-icon>集計
     </v-btn>
-    <v-btn class="success mx-2" color="white" @click="click(2)">
+    <v-btn class="success mx-2" color="white" @click="load()">
       <v-icon>autorenew</v-icon>更新
     </v-btn>
   </v-app-bar>
@@ -69,9 +72,17 @@
                 ></v-select>
               </v-col>
               <v-spacer></v-spacer>
-              <div class="total mr-4">
-                {{ get_agenda }}
-              </div>
+              <v-col cols="2">
+                <v-select 
+                  height="30"
+                  class="mt-6"
+                  v-model="client" 
+                  :items="get_client_items"
+                  label="顧客"
+                  @change="search"
+                  append-icon="arrow_drop_down"
+                ></v-select>
+              </v-col>
               <v-col cols="2">
                 <v-select 
                   height="30"
@@ -129,9 +140,9 @@
   </v-main>
 
   <admin-edit
-    @accept="accept_edit($event)"
-    @prev="prev_edit($event)"
-    @next="next_edit($event)"
+    @accept="accept_edit()"
+    @prev="prev_edit()"
+    @next="next_edit()"
     @close="close_edit"
     v-if="edit_show"
     :items="edit_items"
@@ -155,12 +166,16 @@
     :text="text"
   ></admin-dialog>
 
+  <client-list-dialog
+    v-if="client_show"
+    :agenda_items="get_agenda_items"
+    @close="client_show = false"
+  ></client-list-dialog>
+
   <staff-list-dialog
     v-if="staff_show"
     @close="staff_show = false"
-  >
-
-  </staff-list-dialog>
+  ></staff-list-dialog>
 </v-app>
 </template>
 <style lang="scss">
@@ -218,9 +233,11 @@
 import alert from '@/components/alert.vue';
 import AdminEdit from '@/components/AdminEdit.vue';
 import AdminDialog from '@/components/AdminDialog.vue';
+import ClientListDialog from '../components/clientListDialog.vue';
 import StaffListDialog from '@/components/staffListDialog.vue';
-import AdminAnalytics from '@/components/AdminAnalytics.vue'
+import AdminAnalytics from '@/components/AdminAnalytics.vue';
 import axios from 'axios';
+
 
 export default {
   name: 'admin',
@@ -228,21 +245,23 @@ export default {
     alert,
     AdminEdit,
     AdminDialog,
+    ClientListDialog,
     StaffListDialog,
     AdminAnalytics,
   },
   data: () => ({
     menu_item: [
-      { icon: "settings", text: "システム設定", action: "system"},
+      { icon: "business", text: "クライアント管理", action: "client"},
       { icon: "people", text: "スタッフ管理", action: "staff"},
       { icon: "delete", text: "データ削除", action: "remove"},
       { icon: "file_download", text: "CSV出力", action: "download"}
     ],
-    system_show: false,
+    client_show: false,
     staff_show: false,
     data_show: false,
     colors: ['grey darken-2','orange','teal accent-4'],
     search_date: {},
+    client: '',
     name: '全員',
     agenda: '',
     calendar: '',
@@ -277,10 +296,18 @@ export default {
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
+    this.load();
   },
   computed: {
     get_agenda() {
       return this.calendar_events.length + "件";
+    },
+    get_client_items() {
+      let clients = this.$store.getters.client_agenda;
+      const client_items = clients.map(element => element.client);
+      return ['', ...client_items.filter((obj, index) => {
+        return client_items.indexOf(obj) === index;
+      })];
     },
     get_name_items() {
       const data = this.$store.getters.calendar_events;
@@ -300,8 +327,8 @@ export default {
   methods: {
     menu_action(type) {
       switch (type) {
-        case 'system':
-          console.log("system")
+        case 'client':
+          this.client_show = true
           break;
         
         case 'staff':
@@ -326,7 +353,8 @@ export default {
         end_date: this.$refs.calendar.lastEnd.date
       }
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
-      this.get_data();
+      await this.get_data();
+      this.search()
     },
     fetch_data(data) {
       this.calendar_events = [];
@@ -370,7 +398,6 @@ export default {
         if (response.data.status) {
           if (response.data.status === 'success') {
             this.$store.commit('set_calendar_events', response.data.data)
-            this.search();
           } else {
             this.calendar_events = [];
             this.$store.commit('set_calendar_events', []);
@@ -379,10 +406,27 @@ export default {
         }
       }.bind(this))
     },
+    async get_client() {
+      const url = "/schedule/app/adminGetClient.php";
+      const data = {}
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status) {
+          if (response.data.status === 'success') {
+            this.$store.commit('set_client_agenda', response.data.data)
+          } else {
+            this.$store.commit('set_client_agenda', []);
+          }
+        }
+      }.bind(this))
+    },
     search() {
       let data = this.$store.getters.calendar_events;
+      const client = this.client;
       const name = this.name;
       const agenda = this.agenda;
+      if (client != '') {
+        data = data.filter(obj => obj.client == client);
+      }
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
@@ -431,25 +475,6 @@ export default {
           link.click()
       }
     },
-    // async save() {
-    //   const url = "/schedule/app/adminUploadSchedule.php";
-    //   const data = {
-    //     start_date: this.search_date.start_date,
-    //     end_date: this.search_date.end_date,
-    //     event: this.$store.getters.calendar_events
-    //   }
-    //   await axios.post(url, data).then(function(response) {
-    //     if (response.data.status){
-    //       if (response.data.status == "success") {
-    //         if (this.action != 0) {
-    //           this.alert(response.data.status, response.data.message, true);
-    //         }
-    //       } else {
-    //         this.alert(response.data.status, response.data.message, true);
-    //       }
-    //     }
-    //   }.bind(this))
-    // },
     async remove() {
       const url = "/schedule/app/adminRemoveSchedule.php";
       const today = new Date();
@@ -463,49 +488,43 @@ export default {
         } else {
           this.alert(response.data.status, response.data.message, true);
         }
-      }.bind(this))
+      }.bind(this)).finally(
+        this.search()
+      )
     },
     clear() {
+      this.client = ''
       this.name = '全員'
       this.agenda = ''
       const data = this.$store.getters.calendar_events;
       this.fetch_data(data);
     },
-    edit(item) {
+    async edit(item) {
+      await this.get_data()
       if (!this.calendar_events.find(e => e.date == item.date)) {
         return;
       }
       const lodash = require("lodash");
       const data = this.$store.getters.calendar_events;
+      let edit_items = lodash.cloneDeep(data)
+      edit_items = edit_items.filter(obj => obj.date == item.date);
       if (this.name != '全員') {
-        this.edit_items = lodash.cloneDeep(data.filter(obj => {
-          if (obj.date == item.date && obj.name == this.name) {
-            return obj
-          }
-        }));
-      } else {
-        this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == item.date));
+        edit_items = edit_items.filter(obj => obj.name == this.name);
       }
+      if (this.client != '') {
+        edit_items = edit_items.filter(obj => obj.client == this.client);
+      } 
+      this.edit_items = edit_items
       this.edit_date = item.date
       if (this.edit_items.length != 0) {
+
         this.edit_show = true;
       }
+      await this.search()
     },
-    accept_edit(item) {
-      const data = this.$store.getters.calendar_events
-      let event = []
-      if (this.name != '全員') {
-        event = data.filter(obj => {
-          if (obj.date != this.edit_date || obj.name != this.name) {
-            return obj
-          }
-        });
-      } else {
-        event = data.filter(obj => obj.date != this.edit_date)
-      }
-      event.push(...item)
-      this.$store.commit('set_calendar_events', event);
+    async accept_edit() {
       this.edit_show = false;
+      await this.get_data()
       this.search();
     },
     close_edit() {
@@ -530,63 +549,53 @@ export default {
       }
       return date
     },
-    prev_edit(item) {
-      const edit_data = this.$store.getters.calendar_events
-      let event = []
-      if (this.name != '全員') {
-        event = edit_data.filter(obj => {
-          if (obj.date != this.edit_date || obj.name != this.name) {
-            return obj
-          }
-        });
-      } else {
-        event = edit_data.filter(obj => obj.date != this.edit_date)
-      }
-      event.push(...item)
-
-      this.$store.commit('set_calendar_events', event);
-      this.edit_date = this.calculate_edit_date('prev')
+    async get_edit() {
+      await this.get_data()
       const data = this.$store.getters.calendar_events;
       const lodash = require("lodash");
+      let edit_items = lodash.cloneDeep(data)
+      edit_items = edit_items.filter(obj => obj.date == this.edit_date);
       if (this.name != '全員') {
-        this.edit_items = lodash.cloneDeep(data.filter(obj => {
-          if (obj.date == this.edit_date && obj.name == this.name) {
-            return obj
-          }
-        }));
-      } else {
-        this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
+        edit_items = edit_items.filter(obj => obj.name == this.name);
       }
+      if (this.client != '') {
+        edit_items = edit_items.filter(obj => obj.client == this.client);
+      }
+      this.edit_items = edit_items
       this.search();
+
+      // const url = "/schedule/app/adminGetSchedule.php";
+      // const data = this.search_date;
+      // await axios.post(url, data).then(function(response) {
+      //   if (response.data.status) {
+      //     if (response.data.status === 'success') {
+      //       this.$store.commit('set_calendar_events', response.data.data)
+      //       const lodash = require("lodash");
+      //       if (this.name != '全員') {
+      //         this.edit_items = lodash.cloneDeep(response.data.data.filter(obj => {
+      //           if (obj.date == this.edit_date && obj.name == this.name) {
+      //             return obj
+      //           }
+      //         }));
+      //       } else {
+      //         this.edit_items = lodash.cloneDeep(response.data.data.filter(obj => obj.date == this.edit_date));
+      //       }
+      //       this.search();
+      //     } else {
+      //       this.calendar_events = [];
+      //       this.$store.commit('set_calendar_events', []);
+      //       this.alert(response.data.status, response.data.message, true);
+      //     }
+      //   }
+      // }.bind(this))
     },
-    next_edit(item) {
-      const edit_data = this.$store.getters.calendar_events
-      let event = []
-      if (this.name != '全員') {
-        event = edit_data.filter(obj => {
-          if (obj.date != this.edit_date || obj.name != this.name) {
-            return obj
-          }
-        });
-      } else {
-        event = edit_data.filter(obj => obj.date != this.edit_date)
-      }
-      event.push(...item)
-
-      this.$store.commit('set_calendar_events', event);
+    prev_edit() {
+      this.edit_date = this.calculate_edit_date('prev')
+      this.get_edit()
+    },
+    next_edit() {
       this.edit_date = this.calculate_edit_date('next')
-      const data = this.$store.getters.calendar_events;
-      const lodash = require("lodash");
-      if (this.name != '全員') {
-        this.edit_items = lodash.cloneDeep(data.filter(obj => {
-          if (obj.date == this.edit_date && obj.name == this.name) {
-            return obj
-          }
-        }));
-      } else {
-        this.edit_items = lodash.cloneDeep(data.filter(obj => obj.date == this.edit_date));
-      }
-      this.search();
+      this.get_edit()
     },
     click(action) {
       if (action == 1) {
@@ -602,7 +611,7 @@ export default {
       if (this.action == 1) {
         this.remove(); 
       } else if (this.action == 2) {
-        this.get_data(); 
+        this.load(); 
       }
       this.action = 0;
     },
@@ -646,6 +655,21 @@ export default {
         link.setAttribute("download", file_name);
         link.click();
       }
+    },
+    async load() {
+      await this.get_client()
+      const url = "/schedule/app/adminUploadSchedule.php";
+      const data = {
+        client: this.$store.getters.client_agenda
+      }
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status != "success") {
+          this.alert(response.data.status, response.data.message, true);
+        }
+      }.bind(this))
+
+      await this.get_data()
+      await this.search()
     },
     setToday() {
       this.calendar = ''
