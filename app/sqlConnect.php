@@ -58,6 +58,22 @@ class mysqlConnect {
     return $table;
   }
 
+  public function getClient() {
+    $query = "SELECT client, agenda FROM client ORDER BY client*1, agenda";
+    $result = $this->mysql->query($query);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
   public function getStaff() {
     $query = "SELECT name, access_time FROM manager ORDER BY name*1";
     $result = $this->mysql->query($query);
@@ -107,6 +123,7 @@ class mysqlConnect {
     $query = "CREATE TABLE IF NOT EXISTS schedule (";
     $query = $query."name varchar(32) not null,";
     $query = $query."date DATE not null,";
+    $query = $query."client DATE not null,";
     $query = $query."agenda TEXT not null,";
     $query = $query."start_time TEXT not null,";
     $query = $query."end_time TEXT not null,";
@@ -118,6 +135,14 @@ class mysqlConnect {
     $query = $query."admin_day_salary TEXT not null,";
     $query = $query."admin_expense TEXT not null,";
     $query = $query."primary key(name, date));";
+    $this->mysql->query($query);
+  }
+
+  public function createClientTable() {
+    $query = "CREATE TABLE IF NOT EXISTS client (";
+    $query = $query."client varchar(32) not null,";
+    $query = $query."agenda varchar(32) not null,";
+    $query = $query."primary key(client, agenda));";
     $this->mysql->query($query);
   }
 }
