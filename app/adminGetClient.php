@@ -6,6 +6,8 @@ try {
 
   if (!empty($data)) {
     $result = json_encode(array('status' => 'success' , 'data' => $data));
+  } else {
+    $result = json_encode(array('status' => 'error'));
   }
 } catch(Exception $e) {
   $result = json_encode(array('status' => 'error' , 'message' => '検索に失敗しました。'));
