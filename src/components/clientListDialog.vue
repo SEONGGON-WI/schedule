@@ -25,7 +25,7 @@
             <v-col cols="6">
               <v-autocomplete
                 v-model="agenda" 
-                :items="agenda_items"
+                :items="agenda_list"
                 :multiple="true"
                 :hide-selected="true"
                 :search-input.sync="search"
@@ -46,7 +46,7 @@
             :headers="headers" 
             :items="items" 
             item-key="name"
-            :search="search"
+            :search="search_table"
             :footer-props="footer"
             :options.sync="options"
             no-data-text="データがありません"
@@ -95,12 +95,15 @@ export default {
     },
     client: '',
     agenda: '',
+    agenda_list: [],
     search: '',
     search_table: '',
     dialog: false,
   }),
   created() {
     this.dialog = true;
+    this.agenda_list = JSON.parse(JSON.stringify(this.agenda_items))
+    this.agenda_list.shift()
     this.fetch_data()
   },
   computed: {
@@ -113,14 +116,24 @@ export default {
       this.sy_search = null;
       this.setClient();
     },
+    calculate_agenda() {
+      let list = []
+      this.agenda_list.map(element => {
+        if (this.items.find(e => e.agenda == element) == undefined) {
+          list.push(element)
+        }
+      })
+      this.agenda_list = list
+    },
     async fetch_data() {
       const url = "/schedule/app/adminGetClient.php";
       const data = {}
       await axios.post(url, data).then(function(response) {
         if (response.data.status === 'success') {
           this.items = response.data.data
+          this.calculate_agenda()
         } else {
-          this.message = response.data.message
+          this.items = [];
         }
       }.bind(this))
     },
