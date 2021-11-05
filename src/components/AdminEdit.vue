@@ -213,7 +213,8 @@ export default {
   data: () => ({
     headers: [
       { value:"name", text:"名前", width: "18%", align: 'start'},
-      { value:"agenda", text:"案件", width: "29%", align: 'start'},
+      { value:"client", text:"顧客", width: "10%", align: 'start'},
+      { value:"agenda", text:"案件", width: "19%", align: 'start'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "13%", align: 'center'},
       { value:"admin_day_salary", text:"日給", width: "15%", align: 'center'},
@@ -279,11 +280,11 @@ export default {
     },
     async prevDate() {
       this.edit();
-      this.$emit("prev", this.items);
+      this.$emit("prev");
     },
     async nextDate() {
       this.edit();
-      this.$emit("next", this.items);
+      this.$emit("next");
     },
     remove(item) {
       this.remove_item.push({name: item.name})
@@ -308,7 +309,7 @@ export default {
     async accept() {
       this.edit();
       this.dialog = false;
-      this.$emit("accept", this.items);
+      this.$emit("accept");
     },
     close() {
       this.dialog = false;
