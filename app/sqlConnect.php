@@ -91,10 +91,10 @@ class mysqlConnect {
   }
 
   public function getCsv($start_date, $end_date) {
-    $sql = "SELECT name, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(name) AS cnt, sum(staff_expense) AS staff_total_expense, sum(admin_expense) AS admin_total_expense FROM schedule ";
+    $sql = "SELECT name, client, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(name) AS cnt, sum(staff_expense) AS staff_total_expense, sum(admin_expense) AS admin_total_expense FROM schedule ";
     $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
-    $sql = $sql."GROUP BY name, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
-    $sql = $sql."ORDER BY agenda, name*1";
+    $sql = $sql."GROUP BY name, client, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
+    $sql = $sql."ORDER BY client, agenda, name*1";
 
     $result = $this->mysql->query($sql);
     if ($result->num_rows > 0) {

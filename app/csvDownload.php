@@ -12,7 +12,7 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"日付","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"時間","日數","時給","日給","月給","交通費"'. "\r\n";
+    $csv = '"日付","クライアント","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"時間","日數","時給","日給","月給","交通費"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
@@ -98,6 +98,7 @@ try {
 
       $csv .= '"'
           . $working_day . '","'
+          . mb_convert_encoding($value['client'], 'SJIS', 'UTF-8') . '","'
           . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
           . mb_convert_encoding($value['name'], 'SJIS', 'UTF-8') . '","'
           . $value['start_time'] . '","'
