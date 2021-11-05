@@ -22,9 +22,8 @@ try {
   if (password_verify($password, $hashedPassword)) {
     $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
     $time = date('Y/m/d-H:i');
-    $logDate = date('Ym');
+    $logDate = date('Ymd');
     $path = $rootPath.$logDate.".txt";
-
     if($search_condition == true) {
       $condition = "search";
     } else {
@@ -33,12 +32,12 @@ try {
     try {
       if (!file_exists($path)) {
         $log = @fopen($path,"a+");
-        @fwrite($log,"time,api,date\n");
+        @fwrite($log,"time, api, name, condition\n");
         @fclose($log);
       }
       $remoteAddr = $_SERVER['REMOTE_ADDR'];
       $log = @fopen($path,"a+");
-      @fwrite($log,"$time,'staffUpload',$name_$condition\n");
+      @fwrite($log,"$time, staffUpload, $name, $condition\n");
       @fclose($log);
     } catch(Exception $e) {
       $logError = true;
@@ -83,6 +82,24 @@ try {
     $result = json_encode(array('status' => false , 'message' => 'パスワードを確認してください。'));
   }
 } catch(Exception $e) {
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ymd');
+  $path = $rootPath."error_".$logDate.".txt";
+  if($search_condition == true) {
+    $condition = "search";
+  } else {
+    $condition = "";
+  }
+  if (!file_exists($path)) {
+    $log = @fopen($path,"a+");
+    @fwrite($log,"time, api, error\n");
+    @fclose($log);
+  }
+  $remoteAddr = $_SERVER['REMOTE_ADDR'];
+  $log = @fopen($path,"a+");
+  @fwrite($log,"$time, staffUpload, $e\n");
+  @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
 }
 $dbConnect->dbClose();

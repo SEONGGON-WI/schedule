@@ -300,7 +300,7 @@ export default {
       }
       await axios.post(url, data).then(function(response) {
         this.remove_item = [];
-        if (response.data.status != true){
+        if (response.data.status == false){
           this.message = response.data.message
         }
         this.remove_event = [];

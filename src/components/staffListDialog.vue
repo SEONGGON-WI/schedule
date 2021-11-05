@@ -76,10 +76,13 @@ export default {
       const url = "/schedule/app/adminGetStaff.php";
       const data = {}
       await axios.post(url, data).then(function(response) {
-        if (response.data.status === 'success') {
+        if (response.data.status == true && response.data.data != '') {
           this.items = response.data.data
         } else {
-          this.message = response.data.message
+          this.items = []
+          if (response.data.status == false) {
+            this.message = response.data.message
+          }
         }
       }.bind(this))
     },
@@ -89,7 +92,7 @@ export default {
         name: item.name,
       }
       await axios.post(url, data).then(function(response) {
-        if (response.data.status === 'success') {
+        if (response.data.status == true) {
           this.fetch_data()
         } else {
           this.message = response.data.message

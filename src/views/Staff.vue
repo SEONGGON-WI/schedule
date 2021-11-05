@@ -266,14 +266,13 @@ export default {
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
-        if (response.data.status === true && response.data.data != '') {
+        if (response.data.status == true && response.data.data != '') {
           this.search_condition = true
           this.fetch_data(response.data.data);
         } else {
           this.search_condition = false
-          this.$store.commit('set_staff_name', '');
           this.calendar_events = [];
-          if (response.data.data != '') {
+          if (response.data.status == false) {
             this.alert(response.data.message);
           }
         }

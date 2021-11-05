@@ -24,6 +24,24 @@ try {
     }
   }
 } catch(Exception $e) {
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ymd');
+  $path = $rootPath."error_".$logDate.".txt";
+  if($search_condition == true) {
+    $condition = "search";
+  } else {
+    $condition = "";
+  }
+  if (!file_exists($path)) {
+    $log = @fopen($path,"a+");
+    @fwrite($log,"time, api, error\n");
+    @fclose($log);
+  }
+  $remoteAddr = $_SERVER['REMOTE_ADDR'];
+  $log = @fopen($path,"a+");
+  @fwrite($log,"$time, staffSearch, $e\n");
+  @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '検索に失敗しました。'));
 }
 $dbConnect->dbClose();

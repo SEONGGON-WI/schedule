@@ -5,10 +5,30 @@ try {
   $data = $dbConnect->getStaff();
 
   if (!empty($data)) {
-    $result = json_encode(array('status' => 'success' , 'data' => $data));
+    $result = json_encode(array('status' => true , 'data' => $data));
+  } else {
+    $result = json_encode(array('status' => true , 'data' => ''));
   }
 } catch(Exception $e) {
-  $result = json_encode(array('status' => 'error' , 'message' => '検索に失敗しました。'));
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ymd');
+  $path = $rootPath."error_".$logDate.".txt";
+  if($search_condition == true) {
+    $condition = "search";
+  } else {
+    $condition = "";
+  }
+  if (!file_exists($path)) {
+    $log = @fopen($path,"a+");
+    @fwrite($log,"time, api, error\n");
+    @fclose($log);
+  }
+  $remoteAddr = $_SERVER['REMOTE_ADDR'];
+  $log = @fopen($path,"a+");
+  @fwrite($log,"$time, adminGetStaff, $e\n");
+  @fclose($log);
+  $result = json_encode(array('status' => false , 'message' => 'スタッフ情報獲得にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

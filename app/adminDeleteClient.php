@@ -6,9 +6,27 @@ try {
   $dbConnect = new mysqlConnect();
   $del = "DELETE FROM client WHERE client = '$client'";
   $dbConnect->mysql->query($del);
-  $result = json_encode(array('status' => 'success' , 'message' => '削除を完了しました。'));
+  $result = json_encode(array('status' => true));
 } catch(Exception $e) {
-  $result = json_encode(array('status' => 'error' , 'message' => '削除を失敗しました。'));
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ymd');
+  $path = $rootPath."error_".$logDate.".txt";
+  if($search_condition == true) {
+    $condition = "search";
+  } else {
+    $condition = "";
+  }
+  if (!file_exists($path)) {
+    $log = @fopen($path,"a+");
+    @fwrite($log,"time, api, error\n");
+    @fclose($log);
+  }
+  $remoteAddr = $_SERVER['REMOTE_ADDR'];
+  $log = @fopen($path,"a+");
+  @fwrite($log,"$time, adminDeleteClient, $e\n");
+  @fclose($log);
+  $result = json_encode(array('status' => false , 'message' => '削除を失敗しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

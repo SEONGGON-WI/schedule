@@ -395,12 +395,14 @@ export default {
       const data = this.search_date;
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
-          if (response.data.status === 'success') {
-            this.$store.commit('set_calendar_events', response.data.data)
+          if (response.data.status == true && response.data.data != '') {
+            this.$store.commit('set_calendar_events', response.data.data)  
           } else {
             this.calendar_events = [];
             this.$store.commit('set_calendar_events', []);
-            this.alert(response.data.status, response.data.message, true);
+            if (response.data.status == false) {
+              this.alert(response.data.message);
+            }
           }
         }
       }.bind(this))
@@ -410,10 +412,13 @@ export default {
       const data = {}
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
-          if (response.data.status === 'success') {
+          if (response.data.status == true && response.data.data != '') {
             this.$store.commit('set_client_agenda', response.data.data)
           } else {
             this.$store.commit('set_client_agenda', []);
+            if (response.data.status == false) {
+              this.alert(response.data.message);
+            }
           }
         }
       }.bind(this))
@@ -482,10 +487,10 @@ export default {
         current_date: current_date
       }
       await axios.post(url, data).then(function(response) {
-        if (response.data.status === 'success') {
+        if (response.data.status == true) {
           this.get_data()
         } else {
-          this.alert(response.data.status, response.data.message, true);
+          this.alert(response.data.message);
         }
       }.bind(this)).finally(
         this.search()
@@ -618,10 +623,9 @@ export default {
       this.dialog = false;
       this.action = 0;
     },
-    alert(type, text, show) {
-      this.alert_type = type
+    alert(text) {
       this.alert_text = text;
-      this.alert_show = show;
+      this.alert_show = true;
     },
     async csv_download() {
        var config = {
@@ -664,8 +668,8 @@ export default {
         end_date: this.search_date.end_date,
       }
       await axios.post(url, data).then(function(response) {
-        if (response.data.status != "success") {
-          this.alert(response.data.status, response.data.message, true);
+        if (response.data.status == false) {
+          this.alert(response.data.message);
         }
       }.bind(this))
 
