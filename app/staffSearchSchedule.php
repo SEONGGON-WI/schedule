@@ -15,16 +15,16 @@ try {
     if (password_verify($password, $hashedPassword)) {
       $data = $dbConnect->getSchedule($name, $start_date, $end_date);
       if (empty($data)) {
-        $result = json_encode(array('status' => 'success' , 'data' => ''));
+        $result = json_encode(array('status' => true , 'data' => ''));
       } else {
-        $result = json_encode(array('status' => 'success' , 'data' => $data));
+        $result = json_encode(array('status' => true , 'data' => $data));
       }
     } else {
-      $result = json_encode(array('status' => 'warning' , 'message' => 'パスワードを確認してください。'));
+      $result = json_encode(array('status' => false , 'message' => 'パスワードを確認してください。'));
     }
   }
 } catch(Exception $e) {
-  $result = json_encode(array('status' => 'error' , 'message' => '検索に失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '検索に失敗しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

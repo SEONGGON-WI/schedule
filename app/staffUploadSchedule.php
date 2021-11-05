@@ -26,9 +26,9 @@ try {
     $path = $rootPath.$logDate.".txt";
 
     if($search_condition == true) {
-      $condition = "true";
+      $condition = "search";
     } else {
-      $condition = "false";
+      $condition = "";
     }
     try {
       if (!file_exists($path)) {
@@ -44,7 +44,7 @@ try {
       $logError = true;
     }
 
-    if ($search_condition == false) {
+    if ($search_condition == true) {
       $dbConnect = new mysqlConnect();
       $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";
       $dbConnect->mysql->query($del);
@@ -61,7 +61,7 @@ try {
       $sql = $sql.$sub_sql_query.$sub_sql;
       $dbConnect->mysql->query($sql);
     }
-    if ($search_condition == true) {
+    if ($search_condition == false) {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
@@ -78,12 +78,12 @@ try {
     $time_sql = "UPDATE manager SET access_time = '$time' WHERE name = '$name'";
     $dbConnect->mysql->query($time_sql);
 
-     $result = json_encode(array('status' => 'success' , 'message' => '登録を完了しました。'));
+    $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
   } else {
-    $result = json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
+    $result = json_encode(array('status' => false , 'message' => 'パスワードを確認してください。'));
   }
 } catch(Exception $e) {
-  $result = json_encode(array('status' => 'error' , 'message' => '登録を失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

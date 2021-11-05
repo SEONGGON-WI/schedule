@@ -1,38 +1,45 @@
 <template>
-  <div>
-    <v-alert
-      class="mx-1 my-0"
-      dense
-      text
-      :type="type"
-      v-if="dialog"
+  <v-dialog v-click-outside="close" v-model="dialog" @keydown.esc="close" max-width="70%" min-height="50%">
+    <v-sheet
+      class="text-center d-inline-block"
+      color="blue-grey darken-3"
+      dark
+      min-width="100%" 
+      max-height="100%"
     >
-      {{ text }}
-    </v-alert>
-  </div>
+      <div color="white" class="text--lighten-1 ma-2 confirm">
+        {{ text }}
+      </div>
+      <v-spacer></v-spacer>
+      <v-btn class="mx-2 mb-5 confirm_action" height="60" color="success" plain @click="close" outlined>
+        閉じる
+      </v-btn>
+      <v-spacer></v-spacer>
+    </v-sheet>
+  </v-dialog>
 </template>
 <script>
 
 export default {
-  name: "schedulebaner",
+  name: "alert",
   components: {
   },
   props: [
-    'type', 'text'
+    'text'
   ],
   data: () => ({
     dialog: false,
   }),
   created() {
     this.dialog = true;
-    setTimeout(function() {
-      this.$emit('close');
-      this.dialog = false;
-    }.bind(this), 3000);
   },
   computed: {
   },
   methods: {
+    close() {
+      this.dialog = false;
+      this.$emit("close");
+    },
   },
 }
 </script>

@@ -6,14 +6,13 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="name == '' || search_condition">
+    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="name == '' || search_condition == false">
       <v-icon>analytics</v-icon>集計
     </v-btn>
   </v-app-bar>
   <v-main class="mx-1" style="position: fixed !important; width: 100%; height: 100%;">
     <alert
-      @close="alert_close"
-      :type="alert_type"
+      @close="alert_show = false"
       :text="alert_text"
       v-if="alert_show"
     ></alert>
@@ -177,7 +176,7 @@ export default {
     alert_show: false,
     alert_type: '',
     alert_text: '',
-    search_condition: true,
+    search_condition: false,
     today: '',
     dialog: false,
   }),
@@ -201,7 +200,7 @@ export default {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
       }
-      this.search_condition = true
+      this.search_condition = false
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       if (this.name != '' || this.password != '') {
         this.search();
@@ -267,15 +266,15 @@ export default {
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
-        if (response.data.status === 'success' && response.data.data != '') {
-          this.search_condition = false
+        if (response.data.status === true && response.data.data != '') {
+          this.search_condition = true
           this.fetch_data(response.data.data);
         } else {
-          this.search_condition = true
+          this.search_condition = false
           this.$store.commit('set_staff_name', '');
           this.calendar_events = [];
           if (response.data.data != '') {
-            this.alert(response.data.status, response.data.message, true);
+            this.alert(response.data.message);
           }
         }
       }.bind(this))
@@ -332,20 +331,16 @@ export default {
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
-        this.alert(response.data.status, response.data.message, true);
+        this.alert(response.data.message);
       }.bind(this))
       this.dialog = false;
     },
     close() {
       this.dialog = false;
     },
-    alert(type, text, show) {
-      this.alert_type = type
+    alert(text) {
       this.alert_text = text;
-      this.alert_show = show;
-    },
-    alert_close() {
-      this.alert_show = false;
+      this.alert_show = true
     },
     setToday() {
       this.calendar = ''
