@@ -83,7 +83,7 @@ try {
     $result = json_encode(array('status' => 'error' , 'message' => 'パスワードを確認してください。'));
   }
 } catch(Exception $e) {
-  $result = json_encode(array('error' => 'error' , 'message' => '登録を失敗しました。'));
+  $result = json_encode(array('status' => 'error' , 'message' => '登録を失敗しました。'));
 }
 $dbConnect->dbClose();
 echo($result);
