@@ -40,7 +40,7 @@
       <v-icon>analytics</v-icon>集計
     </v-btn>
     <v-btn class="success mx-2" color="white" @click="click(2)">
-      <v-icon>autorenew</v-icon>更新
+      <v-icon>autorenew</v-icon>反映
     </v-btn>
   </v-app-bar>
 
@@ -600,7 +600,7 @@ export default {
       if (action == 1) {
         this.text = "削除しますか？"
       } else if (action == 2) {
-        this.text = "更新しますか？"
+        this.text = "反映しますか？"
       }
       this.action = action;
       this.dialog = true;
