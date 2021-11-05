@@ -39,7 +39,7 @@
     <v-btn class="mx-2" color="yellow darken-4" @click="analytics()">
       <v-icon>analytics</v-icon>集計
     </v-btn>
-    <v-btn class="success mx-2" color="white" @click="load()">
+    <v-btn class="success mx-2" color="white" @click="click(2)">
       <v-icon>autorenew</v-icon>更新
     </v-btn>
   </v-app-bar>
@@ -296,7 +296,6 @@ export default {
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
-    this.load();
   },
   computed: {
     get_agenda() {
@@ -660,7 +659,9 @@ export default {
       await this.get_client()
       const url = "/schedule/app/adminUploadSchedule.php";
       const data = {
-        client: this.$store.getters.client_agenda
+        client: this.$store.getters.client_agenda,
+        start_date: this.search_date.start_date,
+        end_date: this.search_date.end_date,
       }
       await axios.post(url, data).then(function(response) {
         if (response.data.status != "success") {
