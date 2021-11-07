@@ -41,11 +41,6 @@ try {
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
-  if($search_condition == true) {
-    $condition = "search";
-  } else {
-    $condition = "";
-  }
   if (!file_exists($path)) {
     $log = @fopen($path,"a+");
     @fwrite($log,"time, api, error\n");
