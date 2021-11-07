@@ -39,8 +39,8 @@
     <v-btn class="mx-2" color="yellow darken-4" @click="analytics()">
       <v-icon>analytics</v-icon>集計
     </v-btn>
-    <v-btn class="success mx-2" color="white" @click="click(2)">
-      <v-icon>autorenew</v-icon>反映
+    <v-btn class="success mx-2" color="white" @click="reload()">
+      <v-icon>autorenew</v-icon>更新
     </v-btn>
   </v-app-bar>
 
@@ -50,7 +50,6 @@
     <alert
       @close="alert_show = false"
       :text="alert_text"
-      :type="alert_type"
       v-if="alert_show"
     ></alert>
 
@@ -80,6 +79,7 @@
                   :items="get_client_items"
                   label="顧客"
                   @change="search"
+                  :menu-props="{ maxHeight: '800' }"
                   append-icon="arrow_drop_down"
                 ></v-select>
               </v-col>
@@ -91,6 +91,7 @@
                   :items="get_name_items"
                   label="名前"
                   @change="search"
+                  :menu-props="{ maxHeight: '800' }"
                   append-icon="arrow_drop_down"
                 ></v-select>
               </v-col>
@@ -102,6 +103,7 @@
                   :items="get_agenda_items"
                   label="案件"
                   @change="search"
+                  :menu-props="{ maxHeight: '800' }"
                   append-icon="arrow_drop_down"
                 ></v-select>
               </v-col>
@@ -143,7 +145,7 @@
     @accept="accept_edit()"
     @prev="prev_edit()"
     @next="next_edit()"
-    @close="close_edit"
+    @close="edit_show = false"
     v-if="edit_show"
     :items="edit_items"
     :date="edit_date"
@@ -151,7 +153,7 @@
 
   <admin-analytics
     @change="change_analytics($event)"
-    @close="close_analytics"
+    @close="analytics_show = false"
     v-if="analytics_show"
     :items="analytics_items"
     :name_items="analytics_name_items"
@@ -169,6 +171,7 @@
   <client-list-dialog
     v-if="client_show"
     :agenda_items="get_agenda_items"
+    @accept="click(2)"
     @close="client_show = false"
   ></client-list-dialog>
 
@@ -302,23 +305,26 @@ export default {
       return this.calendar_events.length + "件";
     },
     get_client_items() {
-      let clients = this.$store.getters.client_agenda;
+      // let clients = JSON.parse(JSON.stringify(this.$store.getters.client_agenda))
+      const clients = this.$store.getters.client_agenda
       const client_items = clients.map(element => element.client);
       return ['', ...client_items.filter((obj, index) => {
         return client_items.indexOf(obj) === index;
       })];
     },
     get_name_items() {
-      const data = this.$store.getters.calendar_events;
+      // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
+      const data = this.$store.getters.calendar_events
       const name_items = data.map(element => element.name);
       return ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
       })];
     },
     get_agenda_items() {
-      const data = this.$store.getters.calendar_events;
+      // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
+      const data = this.$store.getters.calendar_events
       const agenda_items = data.map(element => element.agenda);
-      return ['', ...agenda_items.filter((obj, index) => {
+      return ['', '案件名無し', '案件名あり', ...agenda_items.filter((obj, index) => {
         return agenda_items.indexOf(obj) === index;
       })];
     },
@@ -371,22 +377,6 @@ export default {
           element.color = this.colors[0]
         }
         element.start = startTime
-        // this.calendar_events.push({
-        //   name: element.name,
-        //   date: element.date,
-        //   agenda: element.agenda,
-        //   start_time: element.start_time,
-        //   end_time: element.end_time,
-        //   total_time: element.total_time,
-        //   staff_hour_salary: element.staff_hour_salary,
-        //   staff_day_salary: element.staff_day_salary,
-        //   staff_expense: element.staff_expense,
-        //   admin_hour_salary: element.admin_hour_salary,
-        //   admin_day_salary: element.admin_day_salary,
-        //   admin_expense: element.admin_expense,
-        //   start: startTime,
-        //   color: element.agenda == ''? this.colors[0] : this.colors[1]
-        // })
       })
       this.calendar_events = data;
     },
@@ -424,7 +414,7 @@ export default {
       }.bind(this))
     },
     search() {
-      let data = this.$store.getters.calendar_events;
+      let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const client = this.client;
       const name = this.name;
       const agenda = this.agenda;
@@ -435,14 +425,37 @@ export default {
         data = data.filter(obj => obj.name == name);
       }
       if (agenda != '') {
-        data = data.filter(obj => obj.agenda == agenda);
+        if (agenda == '案件名無し') {
+          data = data.filter(obj => obj.agenda == '');
+        } else if (agenda == '案件名あり') {
+          data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
+        } else {
+          data = data.filter(obj => obj.agenda == agenda);
+        }
       }
       this.fetch_data(data)
     },
     analytics() {
-      const data = this.$store.getters.calendar_events;
-      this.analytics_name = this.name
-      this.analytics_items = this.name == '全員' ? data.filter(obj => obj.agenda != '' ) : data.filter(obj => obj.name == this.name && obj.agenda != '' )
+      let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
+      const client = this.client;
+      const name = this.name;
+      const agenda = this.agenda;
+      data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+      
+      if (client != '') {
+        data = data.filter(obj => obj.client == client);
+      }
+      if (name != '全員') {
+        data = data.filter(obj => obj.name == name);
+      }
+      if (agenda != '' && agenda != '案件名無し' && agenda != '案件名あり') {
+        data = data.filter(obj => obj.agenda == agenda);
+      }
+      data.sort(function(a, b) {
+          return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
+      });
+      this.analytics_name = name
+      this.analytics_items = data
       const name_items = data.map(element => element.name);
       this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
@@ -450,18 +463,28 @@ export default {
       this.analytics_show = true
     },
     change_analytics(name) {
-      const data = this.$store.getters.calendar_events;
+      let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
+      const client = this.client;
+      const agenda = this.agenda;
+      data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+      if (client != '') {
+        data = data.filter(obj => obj.client == client);
+      }
+      if (name != '全員') {
+        data = data.filter(obj => obj.name == name);
+      }
+      if (agenda != '' && agenda != '案件名無し' && agenda != '案件名あり') {
+        data = data.filter(obj => obj.agenda == agenda);
+      }
+      data.sort(function(a, b) {
+          return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
+      });
       this.analytics_name = name
-      this.analytics_items = name == '全員' ? data : data.filter(obj => obj.name == name)
-    },
-    close_analytics() {
-      this.analytics_name = ''
-      this.analytics_items = []
-      this.analytics_show = false
+      this.analytics_items = data
     },
     export_event() {
       const calendar_date = this.today
-      const export_data = JSON.stringify(this.$store.getters.calendar_events)
+      const export_data = this.$store.getters.calendar_events
       const export_file = `${calendar_date}_schedule.json`
       let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
       let blob = new Blob([ bom,export_data ], { "type" : "text/json" });
@@ -500,24 +523,43 @@ export default {
       this.client = ''
       this.name = '全員'
       this.agenda = ''
-      const data = this.$store.getters.calendar_events;
+      // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events));
+      const data = this.$store.getters.calendar_events
       this.fetch_data(data);
+    },
+    async upload() {
+      const url = "/schedule/app/adminSchedule.php";
+      const data = {
+        event: this.$store.getters.calendar_events,
+      }
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status == false){
+          this.alert(response.data.message);
+        }
+      }.bind(this))
     },
     async edit(item) {
       await this.get_data()
       if (!this.calendar_events.find(e => e.date == item.date)) {
         return;
       }
-      const lodash = require("lodash");
-      const data = this.$store.getters.calendar_events;
-      let edit_items = lodash.cloneDeep(data)
+      let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       edit_items = edit_items.filter(obj => obj.date == item.date);
-      if (this.name != '全員') {
-        edit_items = edit_items.filter(obj => obj.name == this.name);
-      }
       if (this.client != '') {
         edit_items = edit_items.filter(obj => obj.client == this.client);
       } 
+      if (this.name != '全員') {
+        edit_items = edit_items.filter(obj => obj.name == this.name);
+      }
+      if (this.agenda != '') {
+        if (this.agenda == '案件名無し') {
+          edit_items = edit_items.filter(obj => obj.agenda == '');
+        } else if (this.agenda == '案件名あり') {
+          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
+        } else {
+          edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
+        }
+      }
       this.edit_items = edit_items
       this.edit_date = item.date
       if (this.edit_items.length != 0) {
@@ -530,11 +572,6 @@ export default {
       this.edit_show = false;
       await this.get_data()
       this.search();
-    },
-    close_edit() {
-      this.edit_show = false
-      this.edit_items = []
-      this.edit_date = ''
     },
     calculate_edit_date(type) {
       var date = this.edit_date.split("-")
@@ -555,43 +592,25 @@ export default {
     },
     async get_edit() {
       await this.get_data()
-      const data = this.$store.getters.calendar_events;
-      const lodash = require("lodash");
-      let edit_items = lodash.cloneDeep(data)
+      let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       edit_items = edit_items.filter(obj => obj.date == this.edit_date);
-      if (this.name != '全員') {
-        edit_items = edit_items.filter(obj => obj.name == this.name);
-      }
       if (this.client != '') {
         edit_items = edit_items.filter(obj => obj.client == this.client);
       }
+      if (this.name != '全員') {
+        edit_items = edit_items.filter(obj => obj.name == this.name);
+      }
+      if (this.agenda != '') {
+        if (this.agenda == '案件名無し') {
+          edit_items = edit_items.filter(obj => obj.agenda == '');
+        } else if (this.agenda == '案件名あり') {
+          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
+        } else {
+          edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
+        }
+      }
       this.edit_items = edit_items
       this.search();
-
-      // const url = "/schedule/app/adminGetSchedule.php";
-      // const data = this.search_date;
-      // await axios.post(url, data).then(function(response) {
-      //   if (response.data.status) {
-      //     if (response.data.status === 'success') {
-      //       this.$store.commit('set_calendar_events', response.data.data)
-      //       const lodash = require("lodash");
-      //       if (this.name != '全員') {
-      //         this.edit_items = lodash.cloneDeep(response.data.data.filter(obj => {
-      //           if (obj.date == this.edit_date && obj.name == this.name) {
-      //             return obj
-      //           }
-      //         }));
-      //       } else {
-      //         this.edit_items = lodash.cloneDeep(response.data.data.filter(obj => obj.date == this.edit_date));
-      //       }
-      //       this.search();
-      //     } else {
-      //       this.calendar_events = [];
-      //       this.$store.commit('set_calendar_events', []);
-      //       this.alert(response.data.status, response.data.message, true);
-      //     }
-      //   }
-      // }.bind(this))
     },
     prev_edit() {
       this.edit_date = this.calculate_edit_date('prev')
@@ -659,11 +678,19 @@ export default {
         link.click();
       }
     },
+    async reload() {
+      await this.get_data()
+      await this.search()
+    },
     async load() {
       await this.get_client()
+      const client = this.$store.getters.client_agenda;
+      if (client == '' || client == []) {
+        return;
+      }
       const url = "/schedule/app/adminUploadSchedule.php";
       const data = {
-        client: this.$store.getters.client_agenda,
+        client: client,
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date,
       }
@@ -687,6 +714,11 @@ export default {
     },
     get_event_color(event) {
       return event.color;
+    },
+    sort(data) {
+      data.sort(function(a, b) {
+          return a.date > b.date ? -1 : a.date < b.date ? 1 : 0;
+      });
     },
   }
 }
