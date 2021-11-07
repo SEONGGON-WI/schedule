@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
+  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
@@ -37,7 +37,8 @@
               ></v-autocomplete>
             </v-col>
             <v-col cols="3">
-              <v-btn outlined class="success ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>save</v-icon>登録</v-btn>
+              <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>save</v-icon>登録</v-btn>
+              <v-btn outlined class="success ma-2" color="white" @click="acceptClient"><v-icon>autorenew</v-icon>反映</v-btn>
               <v-btn outlined class="error ma-2" color="white" @click="deleteClient"><v-icon>delete</v-icon>削除</v-btn>
             </v-col>
           </v-row>
@@ -104,6 +105,8 @@ export default {
     this.dialog = true;
     this.agenda_list = JSON.parse(JSON.stringify(this.agenda_items))
     this.agenda_list.shift()
+    this.agenda_list.shift()
+    this.agenda_list.shift()
     this.fetch_data()
   },
   computed: {
@@ -150,6 +153,9 @@ export default {
           this.message = response.data.message
         }
       }.bind(this))
+    },
+    acceptClient() {
+      this.$emit("accept")
     },
     async deleteClient() {
       const url = "/schedule/app/adminDeleteClient.php";

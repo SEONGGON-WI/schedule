@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
+  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
