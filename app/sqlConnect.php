@@ -43,7 +43,7 @@ class mysqlConnect {
   }
 
   public function getAdmin($start_date, $end_date) {
-    $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY name*1, date";
+    $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY name, date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -59,7 +59,7 @@ class mysqlConnect {
   }
 
   public function getClient() {
-    $query = "SELECT client, agenda FROM client ORDER BY client*1, agenda";
+    $query = "SELECT client, agenda FROM client ORDER BY client, agenda";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -75,7 +75,7 @@ class mysqlConnect {
   }
 
   public function getStaff() {
-    $query = "SELECT name, access_time FROM manager ORDER BY name*1";
+    $query = "SELECT name, access_time FROM manager ORDER BY name";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
