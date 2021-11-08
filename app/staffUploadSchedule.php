@@ -34,7 +34,6 @@ try {
       @fwrite($log,"time, api, name, condition\n");
       @fclose($log);
     }
-    $remoteAddr = $_SERVER['REMOTE_ADDR'];
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, staffUpload, $name, $condition\n");
     @fclose($log);
@@ -46,10 +45,10 @@ try {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['agenda']}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
         $index++;
       }
-      $sql = "INSERT INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      $sql = "INSERT INTO schedule ( name, agenda, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
       $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
       $sub_sql_query = implode(', ', $sql_array);
       $sql = $sql.$sub_sql_query.$sub_sql;
@@ -59,16 +58,16 @@ try {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['agenda']}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
         $index++;
       }
-      $sql = "INSERT IGNORE INTO schedule ( name, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      $sql = "INSERT IGNORE INTO schedule ( name, agenda, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
       $sub_sql_query = implode(', ', $sql_array);
       $sql = $sql.$sub_sql_query;
       $dbConnect->mysql->query($sql);
     }
 
-    $time = date('Y-m-d h:i:s', time());
+    $time = date('Y-m-d H:i:s', time());
     $time_sql = "UPDATE manager SET access_time = '$time' WHERE name = '$name'";
     $dbConnect->mysql->query($time_sql);
 
@@ -81,17 +80,11 @@ try {
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
-  if($search_condition == true) {
-    $condition = "search";
-  } else {
-    $condition = "";
-  }
   if (!file_exists($path)) {
     $log = @fopen($path,"a+");
     @fwrite($log,"time, api, error\n");
     @fclose($log);
   }
-  $remoteAddr = $_SERVER['REMOTE_ADDR'];
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, staffUpload, $e\n");
   @fclose($log);
