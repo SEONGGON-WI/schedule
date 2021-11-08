@@ -118,7 +118,6 @@
 .v-input__control .v-input__slot .v-text-field__slot label {
   font-size: 20px !important;
 }
-
 .v-event {
   width: 94% !important;
   left: 3% !important;

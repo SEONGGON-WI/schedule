@@ -205,7 +205,7 @@
 .v-calendar-weekly__day .v-event {
   width: 94% !important;
   left: 3% !important;
-  height: 19.5% !important;
+  height: 21% !important;
   top: 1% !important;
   margin-bottom: 1px !important;
 }
@@ -220,7 +220,7 @@
   .v-calendar-weekly__day .v-event {
     width: 94% !important;
     left: 3% !important;
-    height: 28px !important;
+    height: 10% !important;
     top: 1% !important;
     margin-bottom: 5px !important;
   }
