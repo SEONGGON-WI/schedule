@@ -107,6 +107,7 @@ export default {
     this.agenda_list.shift()
     this.agenda_list.shift()
     this.agenda_list.shift()
+    this.agenda_list.shift()
     this.fetch_data()
   },
   computed: {
