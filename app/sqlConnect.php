@@ -58,6 +58,23 @@ class mysqlConnect {
     return $table;
   }
 
+  public function getEdit($date) {
+    $query = "SELECT * FROM schedule WHERE date = '$date' ORDER BY name";
+    $result = $this->mysql->query($query);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
+
   public function getClient() {
     $query = "SELECT client, agenda FROM client ORDER BY client, agenda";
     $result = $this->mysql->query($query);
