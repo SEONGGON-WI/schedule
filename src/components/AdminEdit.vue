@@ -288,11 +288,11 @@ export default {
       return item.agenda == '' || item.staff_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
     },
     async prevDate() {
-      this.edit();
+      await this.edit();
       this.$emit("prev");
     },
     async nextDate() {
-      this.edit();
+      await this.edit();
       this.$emit("next");
     },
     remove(item) {
@@ -316,9 +316,8 @@ export default {
       }.bind(this))
     },
     async accept() {
-      this.edit();
-      this.dialog = false;
-      this.$emit("accept");
+      await this.edit();
+      this.close()
     },
     close() {
       this.dialog = false;

@@ -135,7 +135,6 @@
   </v-main>
 
   <admin-edit
-    @accept="accept_edit()"
     @prev="prev_edit()"
     @next="next_edit()"
     @close="edit_close()"
@@ -354,14 +353,13 @@ export default {
           break;
       }
     },
-    async fetch() {
+    fetch() {
       this.search_date = {
         start_date: this.$refs.calendar.lastStart.date,
         end_date: this.$refs.calendar.lastEnd.date
       }
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
-      await this.get_data();
-      this.search()
+      this.reload()
     },
     fetch_data(data) {
       this.calendar_events = [];
@@ -505,22 +503,20 @@ export default {
       this.analytics_name = name
       this.analytics_items = data
     },
-    async remove() {
+    remove() {
       const url = "/schedule/app/adminRemoveSchedule.php";
       const today = new Date();
       const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
       const data = {
         current_date: current_date
       }
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
-          this.get_data()
+          this.reload()
         } else {
           this.alert(response.data.message);
         }
-      }.bind(this)).finally(
-        this.search()
-      )
+      }.bind(this))
     },
     clear() {
       this.client = ''
@@ -563,11 +559,6 @@ export default {
         this.edit_show = true;
       }
       await this.search()
-    },
-    async accept_edit() {
-      this.edit_show = false;
-      await this.get_data()
-      this.search();
     },
     calculate_edit_date(type) {
       var date = this.edit_date.split("-")
@@ -622,7 +613,7 @@ export default {
       this.get_edit()
     },
     edit_close() {
-      this.get_data()
+      this.reload()
       this.edit_show = false
     },
     click(action) {
@@ -700,13 +691,12 @@ export default {
         end_date: this.search_date.end_date,
       }
       await axios.post(url, data).then(function(response) {
-        if (response.data.status == false) {
+        if (response.data.status == true) {
+          this.reload()
+        } else {
           this.alert(response.data.message);
         }
       }.bind(this))
-
-      await this.get_data()
-      await this.search()
     },
     setToday() {
       this.calendar = ''
