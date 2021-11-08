@@ -23,11 +23,10 @@
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="3">
-            <v-switch
-              v-model="salary_change"
-              inset
-              :label="`給与形態 : ${salary_change ?  '日給' : '時給'}`"
-            ></v-switch>
+            <v-radio-group v-model="salary_change" row>  
+              <v-radio label="時給" value="hour"></v-radio>
+              <v-radio label="日給" value="day" class="pl-2"></v-radio>
+            </v-radio-group>
           </v-col>
         </v-row>
 
@@ -44,9 +43,9 @@
               v-model="item.start_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
               :rules="rules"
-              :dense="salary_change"
-              :filled="salary_change"
-              :readonly="salary_change"
+              :dense="salary_change == 'day'"
+              :filled="salary_change == 'day'"
+              :readonly="salary_change == 'day'"
               @input="timeColon(1)"
               @keydown.enter="enter(1)"
               class="my-3"
@@ -63,9 +62,9 @@
               v-model="item.end_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
               :rules="rules"
-              :dense="salary_change"
-              :filled="salary_change"
-              :readonly="salary_change"
+              :dense="salary_change == 'day'"
+              :filled="salary_change == 'day'"
+              :readonly="salary_change == 'day'"
               @input="timeColon(2)"
               @keydown.enter="enter(2)"
               class="my-3"
@@ -101,9 +100,9 @@
               ref="hour"
               v-model="item.staff_hour_salary"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-              :dense="salary_change"
-              :filled="salary_change"
-              :readonly="salary_change"
+              :dense="salary_change == 'day'"
+              :filled="salary_change == 'day'"
+              :readonly="salary_change == 'day'"
               @keydown.enter="enter(3)"
               class="my-3"
               label="時給"
@@ -112,7 +111,7 @@
           </template>
           <template v-slot:item.staff_day_salary="{ item }">
           <v-text-field
-              v-if="!salary_change"
+              v-if="salary_change == 'hour'"
               :value="item.staff_day_salary = get_staff_day_salary(item)"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               dense
@@ -171,23 +170,23 @@ export default {
     date: '',
     rules: [v => v.length == 5 || v == '' || '時間の様式に合わせてください。'],
     dialog: false,
-    salary_change: false,
+    salary_change: 'hour',
   }),
   created() {
     const day = this.items.date.split("-");
     this.date = day[0] +'年 '+ day[1] +'月 '+ day[2]+'日';
     if (this.items.staff_hour_salary == '' && this.items.staff_day_salary == '') {
-      this.salary_change = false
+      this.salary_change = 'hour'
     } else if (this.items.staff_hour_salary != '') {
-      this.salary_change = false;
+      this.salary_change = 'hour';
     } else {
-      this.salary_change = true;
+      this.salary_change = 'day';
     }
     this.dialog = true;
   },
   watch: {
     salary_change(element) {
-      if (element) {
+      if (element == 'day') {
         this.items.start_time = '';
         this.items.end_time = '';
         this.items.total_time = '';
@@ -234,7 +233,7 @@ export default {
     },
     get_total(item) {
       let time = ''
-      if (this.salary_change === false && item.start_time != '' && item.end_time != '' && item.start_time.length == 5 && item.end_time.length == 5) {
+      if (this.salary_change === 'hour' && item.start_time != '' && item.end_time != '' && item.start_time.length == 5 && item.end_time.length == 5) {
         var start = item.start_time.split(":")
         var end = item.end_time.split(":")
 
@@ -242,7 +241,8 @@ export default {
         var end_date = new Date (2020,11,31,end[0],end[1],0)
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
         time = Number(time).toFixed(2)
-        if ((parseFloat(item.total_time) - parseFloat(time)) == 1) {
+        var time_difference = parseFloat(item.total_time) - parseFloat(time)
+        if (time_difference != 0) {
           return Number(item.total_time).toFixed(2)
         }
       }
