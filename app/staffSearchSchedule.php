@@ -9,7 +9,7 @@ try {
   $dbConnect = new mysqlConnect();
   $managerData = $dbConnect->getPassword($name);
   if (empty($managerData)) {
-    $result = json_encode(array('status' => 'warning' , 'message' => '登録された名前がありません。'));
+    $result = json_encode(array('status' => false , 'message' => '登録された名前がありません。'));
   } else {
     $hashedPassword = $managerData['password'];
     if (password_verify($password, $hashedPassword)) {
@@ -28,11 +28,6 @@ try {
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
-  if($search_condition == true) {
-    $condition = "search";
-  } else {
-    $condition = "";
-  }
   if (!file_exists($path)) {
     $log = @fopen($path,"a+");
     @fwrite($log,"time, api, error\n");
