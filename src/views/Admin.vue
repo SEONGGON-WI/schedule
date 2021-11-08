@@ -184,21 +184,17 @@
 .v-textarea .v-input__control .v-input__slot .v-text-field__slot textarea{
   font-size : 25px !important;
 }
-.v-event {
-  width: 94% !important;
-  left: 3% !important;
-  height: 25% !important;
-  top: 1% !important;
-  margin-bottom: 0px 0px 0px 0px !important;
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th {
+  font-size: 20px !important;
 }
-@media screen and ( max-width: 1000px ) {
-  .v-event {
-    width: 94% !important;
-    left: 3% !important;
-    height: 10% !important;
-    top: 1% !important;
-    margin-bottom: 5px !important;
-  }
+.v-input.v-input--selection-controls .v-input__control .v-input__slot label{
+  font-size: 25px !important;
+}
+.v-input__control .v-input__slot .v-text-field__slot input {
+  font-size: 25px !important;
+}
+.v-input__control .v-input__slot .v-text-field__slot label {
+  font-size: 20px !important;
 }
 .v-event-more{
   width: 90% !important;
@@ -206,28 +202,34 @@
   height: 20px !important;
   top: 1% !important;
 }
-.custom_dialog {
-  max-height: 80% !important;
-  width: 80% !important;
-  position: fixed !important;
-  top: 10% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  align-content: normal !important;
-  justify-content: normal !important;
+.v-calendar-weekly__day .v-event {
+  width: 94% !important;
+  left: 3% !important;
+  height: 19.5% !important;
+  top: 1% !important;
+  margin-bottom: 1px !important;
+}
+.v-calendar-daily_head-day .v-event {
+  width: 94% !important;
+  left: 3% !important;
+  height: 35px !important;
+  top: 1% !important;
+  margin-bottom: 5px !important;
 }
 @media screen and ( max-width: 1000px ) {
-  .custom_dialog {
-    max-height: 80% !important;
-    width: 90% !important;
-    position: fixed !important;
-    top: 10% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    align-content: normal !important;
-    justify-content: normal !important;
+  .v-calendar-weekly__day .v-event {
+    width: 94% !important;
+    left: 3% !important;
+    height: 28px !important;
+    top: 1% !important;
+    margin-bottom: 5px !important;
+  }
+  .v-calendar-daily_head-day .v-event {
+    width: 94% !important;
+    left: 3% !important;
+    height: 35px !important;
+    top: 1% !important;
+    margin-bottom: 5px !important;
   }
 }
 </style>
@@ -415,6 +417,8 @@ export default {
           }
         }
       }.bind(this))
+      // let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
+      // this.editItems = data.filter(e => e.date == this.edit_date)
     },
     async get_client() {
       const url = "/schedule/app/adminGetClient.php";

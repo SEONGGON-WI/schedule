@@ -106,39 +106,31 @@
 </v-app>
 </template>
 <style lang="scss">
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th {
+  font-size: 25px !important;
+}
+.v-input.v-input--selection-controls .v-input__control .v-input__slot label{
+  font-size: 30px !important;
+}
+.v-input__control .v-input__slot .v-text-field__slot input {
+  font-size: 25px !important;
+}
+.v-input__control .v-input__slot .v-text-field__slot label {
+  font-size: 20px !important;
+}
+
 .v-event {
-  width: 99% !important;
-  left: 0.5% !important;
-  height: 60% !important;
+  width: 94% !important;
+  left: 3% !important;
+  height: 40% !important;
   top: 1% !important;
 }
-.form_area {
-  width: 200px !important;
-  line-height: 1 !important;
-  border: 1px black solid !important;
-}
-.custom_dialog {
-  max-height: 80% !important;
-  width: 80% !important;
-  position: fixed !important;
-  top: 10% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  align-content: normal !important;
-  justify-content: normal !important;
-}
 @media screen and ( max-width: 1000px ) {
-  .custom_dialog {
-    max-height: 80% !important;
-    width: 90% !important;
-    position: fixed !important;
-    top: 10% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    align-content: normal !important;
-    justify-content: normal !important;
+  .v-event {
+    width: 94% !important;
+    left: 3% !important;
+    height: 40% !important;
+    top: 1% !important;
   }
 }
 </style>
