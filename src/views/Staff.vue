@@ -83,7 +83,7 @@
 
         <staff-edit
           @edit="edit($event)"
-          @close="edit_close"
+          @close="edit_show = false"
           v-if="edit_show"
           :items="edit_items"
         ></staff-edit>
@@ -219,8 +219,7 @@ export default {
           this.calendar_events.splice(index, 1);
           return;
         } else {
-          const lodash = require("lodash");
-          this.edit_items = lodash.cloneDeep(this.calendar_events[index]);
+          this.edit_items = JSON.parse(JSON.stringify(this.calendar_events[index]))
           this.edit_index = index;
           this.edit_show = true;
           return;
@@ -291,8 +290,7 @@ export default {
       this.calendar_events = data;
     },
     analytics() {
-      const lodash = require("lodash");
-      const data = lodash.cloneDeep(this.calendar_events);
+      const data = JSON.parse(JSON.stringify(this.calendar_event))
       this.analytics_items = data.filter(obj => obj.name == this.name && obj.agenda != '')
       this.analytics_show = true
     },
@@ -310,9 +308,6 @@ export default {
       this.calendar_events[index].staff_expense = event.staff_expense;
       this.edit_show = false;
     }, 
-    edit_close() {
-      this.edit_show = false;
-    },
     async upload() {
       const url = "/schedule/app/staffUploadSchedule.php";
       const data = {
