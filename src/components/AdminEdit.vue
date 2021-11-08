@@ -287,12 +287,12 @@ export default {
     staff_background(item) {
       return item.agenda == '' || item.staff_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
     },
-    async prevDate() {
-      await this.edit();
+    prevDate() {
+      this.edit();
       this.$emit("prev");
     },
-    async nextDate() {
-      await this.edit();
+    nextDate() {
+      this.edit();
       this.$emit("next");
     },
     remove(item) {
