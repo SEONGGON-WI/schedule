@@ -23,7 +23,6 @@ try {
     @fwrite($log,"time, api, error\n");
     @fclose($log);
   }
-  $remoteAddr = $_SERVER['REMOTE_ADDR'];
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminUploadSchedule, $e\n");
   @fclose($log);

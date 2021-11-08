@@ -19,7 +19,6 @@ try {
       @fwrite($log,"time, api, name, condition\n");
       @fclose($log);
     }
-    $remoteAddr = $_SERVER['REMOTE_ADDR'];
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, adminEditDeleteSchedule, $date\n");
     @fclose($log);
@@ -59,7 +58,6 @@ try {
     @fwrite($log,"time, api, error\n");
     @fclose($log);
   }
-  $remoteAddr = $_SERVER['REMOTE_ADDR'];
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminEditSchedule, $e\n");
   @fclose($log);
