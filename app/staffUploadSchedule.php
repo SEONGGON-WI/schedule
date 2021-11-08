@@ -29,20 +29,15 @@ try {
     } else {
       $condition = "";
     }
-    try {
-      if (!file_exists($path)) {
-        $log = @fopen($path,"a+");
-        @fwrite($log,"time, api, name, condition\n");
-        @fclose($log);
-      }
-      $remoteAddr = $_SERVER['REMOTE_ADDR'];
+    if (!file_exists($path)) {
       $log = @fopen($path,"a+");
-      @fwrite($log,"$time, staffUpload, $name, $condition\n");
+      @fwrite($log,"time, api, name, condition\n");
       @fclose($log);
-    } catch(Exception $e) {
-      $logError = true;
     }
-
+    $remoteAddr = $_SERVER['REMOTE_ADDR'];
+    $log = @fopen($path,"a+");
+    @fwrite($log,"$time, staffUpload, $name, $condition\n");
+    @fclose($log);
     if ($search_condition == true) {
       $dbConnect = new mysqlConnect();
       $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";

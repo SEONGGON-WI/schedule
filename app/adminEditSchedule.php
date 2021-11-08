@@ -10,6 +10,19 @@ try {
   $index = 0;
   $sub_sql = "";
   if ($remove_event != []) {
+    $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+    $time = date('Y/m/d-H:i');
+    $logDate = date('Ymd');
+    $path = $rootPath.$logDate.".txt";
+    if (!file_exists($path)) {
+      $log = @fopen($path,"a+");
+      @fwrite($log,"time, api, name, condition\n");
+      @fclose($log);
+    }
+    $remoteAddr = $_SERVER['REMOTE_ADDR'];
+    $log = @fopen($path,"a+");
+    @fwrite($log,"$time, adminEditDeleteSchedule, $date\n");
+    @fclose($log);
     $del = "DELETE FROM schedule WHERE (date = '$date') AND";
     foreach ($remove_event as $values) {
       $sub_sql = $sub_sql." ( name = '".$values['name']."' ) OR";
