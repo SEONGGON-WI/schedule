@@ -9,6 +9,9 @@
     <v-toolbar-title class="mx-3">
       {{ get_agenda }}
     </v-toolbar-title>
+    <v-btn class="mx-2" color="yellow darken-4" @click="get_json()">
+      <v-icon>autorenew</v-icon>json
+    </v-btn>
     <v-btn class="mx-2" color="yellow darken-4" @click="get_data()">
       <v-icon>autorenew</v-icon>更新
     </v-btn>
@@ -349,6 +352,26 @@ export default {
           link.href = url
           link.setAttribute('download', export_file)
           link.click()
+      }
+    },
+    get_json() {
+      const upload_list = []
+      const export_data = JSON.stringify(upload_list)
+      const export_file = `schedule.json`
+      let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+      let blob = new Blob([ bom,export_data ], { "type" : "text/json" });
+      // IE11 ( msSaveBlog が有効なら)
+      if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, export_file)
+        window.navigator.msSaveOrOpenBlob(blob, export_file)
+      }
+      // IE11 以外なら( Chrome, Firefox, Android, etc...)
+      else {
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', export_file)
+        link.click()
       }
     },
     setToday() {
