@@ -326,7 +326,7 @@ export default {
       // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const agenda_items = data.map(element => element.agenda);
-      return ['', 'グレー', 'オレンジ', 'グリーン', ...agenda_items.filter((obj, index) => {
+      return ['', '案件名無し', 'スタッフ日給無し', '管理者日給無し', ...agenda_items.filter((obj, index) => {
         return agenda_items.indexOf(obj) === index;
       })];
     },
@@ -417,8 +417,6 @@ export default {
           }
         }
       }.bind(this))
-      // let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      // this.editItems = data.filter(e => e.date == this.edit_date)
     },
     async get_client() {
       const url = "/schedule/app/adminGetClient.php";
@@ -448,12 +446,12 @@ export default {
         data = data.filter(obj => obj.name == name);
       }
       if (agenda != '') {
-        if (agenda == 'グレー') {
+        if (agenda == '案件名無し') {
           data = data.filter(obj => obj.agenda == '');
-        } else if (agenda == 'オレンジ') {
+        } else if (agenda == 'スタッフ日給無し') {
           data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (agenda == 'グリーン') {
-          data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+        } else if (agenda == '管理者日給無し') {
+          data = data.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
         } else {
           data = data.filter(obj => obj.agenda == agenda);
         }
@@ -473,7 +471,7 @@ export default {
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (agenda != '' && agenda != 'グレー' && agenda != 'オレンジ' && agenda != 'グリーン') {
+      if (agenda != '' && agenda != '案件名無し' && agenda != 'スタッフ日給無し' && agenda != '管理者日給無し') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
@@ -498,7 +496,7 @@ export default {
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (agenda != '' && agenda != 'グレー' && agenda != 'オレンジ' && agenda != 'グリーン') {
+      if (agenda != '' && agenda != '案件名無し' && agenda != 'スタッフ日給無し' && agenda != '管理者日給無し') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
@@ -543,7 +541,6 @@ export default {
         return
       }
       // let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      edit_items = edit_items.filter(obj => obj.date == item.date);
       if (this.client != '') {
         edit_items = edit_items.filter(obj => obj.client == this.client);
       } 
@@ -551,12 +548,12 @@ export default {
         edit_items = edit_items.filter(obj => obj.name == this.name);
       }
       if (this.agenda != '') {
-        if (this.agenda == 'グレー') {
+        if (this.agenda == '案件名無し') {
           edit_items = edit_items.filter(obj => obj.agenda == '');
-        } else if (this.agenda == 'オレンジ') {
+        } else if (this.agenda == 'スタッフ日給無し') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (this.agenda == 'グリーン') {
-          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+        } else if (this.agenda == '管理者日給無し') {
+          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
         } else {
           edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
         }
@@ -596,7 +593,6 @@ export default {
         return
       }
       // let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      edit_items = edit_items.filter(obj => obj.date == this.edit_date);
       if (this.client != '') {
         edit_items = edit_items.filter(obj => obj.client == this.client);
       }
@@ -604,12 +600,12 @@ export default {
         edit_items = edit_items.filter(obj => obj.name == this.name);
       }
       if (this.agenda != '') {
-        if (this.agenda == 'グレー') {
+        if (this.agenda == '案件名無し') {
           edit_items = edit_items.filter(obj => obj.agenda == '');
-        } else if (this.agenda == 'オレンジ') {
+        } else if (this.agenda == 'スタッフ日給無し') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (this.agenda == 'グリーン') {
-          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+        } else if (this.agenda == '管理者日給無し') {
+          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
         } else {
           edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
         }
