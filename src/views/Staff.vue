@@ -290,7 +290,7 @@ export default {
       this.calendar_events = data;
     },
     analytics() {
-      const data = JSON.parse(JSON.stringify(this.calendar_event))
+      const data = JSON.parse(JSON.stringify(this.calendar_events))
       this.analytics_items = data.filter(obj => obj.name == this.name && obj.agenda != '')
       this.analytics_show = true
     },
