@@ -212,24 +212,24 @@ export default {
   ],
   data: () => ({
     headers: [
-      { value:"name", text:"名前", width: "18%", align: 'start'},
-      { value:"client", text:"顧客", width: "10%", align: 'start'},
-      { value:"agenda", text:"案件", width: "19%", align: 'start'},
-      { value:"total_time", text:"時間", width: "10%", align: 'center'},
-      { value:"admin_hour_salary", text:"時給", width: "13%", align: 'center'},
-      { value:"admin_day_salary", text:"日給", width: "15%", align: 'center'},
-      { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
+      { value:"name", text:"名前", width: "15%", align: 'start'},
+      { value:"client", text:"顧客", width: "15%", align: 'start'},
+      { value:"agenda", text:"案件", width: "22%", align: 'start'},
+      { value:"total_time", text:"時間", width: "9%", align: 'center'},
+      { value:"admin_hour_salary", text:"時給", width: "11%", align: 'center'},
+      { value:"admin_day_salary", text:"日給", width: "12%", align: 'center'},
+      { value:"admin_expense", text:"経費", width: "11%", align: 'center'},
       { value:"action", text:"", width:"5%", align: 'center'}
     ],
     header: [
-      { value:"name", text:"名前", width: "18%", align: 'start'},
-      { value:"agenda", text:"案件", width: "17%", align: 'start'},
-      { value:"start_time", text:"出勤", width: "12%", align: 'center'},
-      { value:"end_time", text:"退勤", width: "12%", align: 'center'},
-      { value:"total_time", text:"時間", width: "8%", align: 'center'},
+      { value:"name", text:"名前", width: "15%", align: 'start'},
+      { value:"agenda", text:"案件", width: "20%", align: 'start'},
+      { value:"start_time", text:"出勤", width: "11%", align: 'center'},
+      { value:"end_time", text:"退勤", width: "11%", align: 'center'},
+      { value:"total_time", text:"時間", width: "9%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "11%", align: 'center'},
       { value:"staff_day_salary", text:"日給", width: "12%", align: 'center'},
-      { value:"staff_expense", text:"経費", width: "10%", align: 'center'}
+      { value:"staff_expense", text:"経費", width: "11%", align: 'center'}
     ],
     remove_item: [],
     tab: null,

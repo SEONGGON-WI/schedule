@@ -12,13 +12,13 @@
         </v-toolbar>
       <v-card-text class="pa-0">
       <v-row no-gutters>
-        <v-col cols="3" class="pt-4 ml-8">
-          {{ name }}
+        <v-col cols="3" class="name_agenda pt-3 pl-8">
+          <div>{{ name }}</div>
         </v-col>
-        <v-col cols="1" class="pt-4 ml-8">
+        <v-col cols="3" class="name_agenda pt-3 pl-8">
           {{ total_agenda }}
         </v-col>
-        <v-col cols="2" class="pt-4 ml-8">
+        <v-col cols="6" class="name_agenda pt-3 pl-8">
           {{ get_total_salary }}
         </v-col>
       </v-row>
@@ -48,13 +48,13 @@ export default {
   ],
   data: () => ({
     headers: [
-      { value:"date", text:"日付", width: "8%", align: 'center'},
+      { value:"date", text:"日付", width: "10%", align: 'center'},
       { value:"agenda", text:"案件", width: "20%", align: 'start'},
       { value:"start_time", text:"出勤", width: "12%", align: 'center'},
       { value:"end_time", text:"退勤", width: "12%", align: 'center'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "12%", align: 'center'},
-      { value:"staff_day_salary", text:"日給", width: "14%", align: 'center'},
+      { value:"staff_day_salary", text:"日給", width: "12%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "12%", align: 'center'}
     ],
     total_agenda: 0,

@@ -15,22 +15,22 @@
           </v-btn>
         </v-toolbar>
         <v-row no-gutters>
-          <v-col cols="2" class="pt-4 ml-8">
+          <v-col cols="3" class="name_agenda pt-3 pl-8">
             <div>{{ items.name }}</div>
           </v-col>
-          <v-col cols="2" class="pt-4 ml-8">
+          <v-col cols="5" class="name_agenda pt-3 pl-8">
             <div>{{ items.agenda }}</div>
           </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="3">
-            <v-radio-group v-model="salary_change" row>  
-              <v-radio label="時給" value="hour"></v-radio>
-              <v-radio label="日給" value="day" class="pl-2"></v-radio>
-            </v-radio-group>
+          <v-col cols="4">
+            <v-radio-group v-model="salary_change" row class="">  
+            <v-radio label="時給" value="hour"></v-radio>
+            <v-radio label="日給" value="day" class="pl-2"></v-radio>
+          </v-radio-group>  
           </v-col>
         </v-row>
 
         <v-data-table 
+          class="pt-5"
           :headers="header" 
           :items="[items]" 
           hide-default-footer 
@@ -50,9 +50,11 @@
               @keydown.enter="enter(1)"
               class="my-3"
               label="出勤時間"
-              height="40"
+              height="60"
               placeholder="0900"
               maxlength="5"
+              outlined
+              single-line
             ></v-text-field>
           </template>
 
@@ -69,9 +71,11 @@
               @keydown.enter="enter(2)"
               class="my-3"
               label="退勤時間"
-              height="40"
+              height="60"
               placeholder="1800"
               maxlength="5"
+              outlined
+              single-line
             ></v-text-field>
           </template>
 
@@ -84,7 +88,9 @@
               readonly
               class="my-3"
               label="勤労時間"
-              height="40"
+              height="60"
+              outlined
+              single-line
             ></v-text-field>
           </template>
         </v-data-table>
@@ -104,9 +110,12 @@
               :filled="salary_change == 'day'"
               :readonly="salary_change == 'day'"
               @keydown.enter="enter(3)"
-              class="my-3"
+              class="mt-3 mb-10"
               label="時給"
-              height="40"
+              height="60"
+              outlined
+              single-line
+              hide-details
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary="{ item }">
@@ -117,9 +126,12 @@
               dense
               filled
               readonly
-              class="my-3"
+              class="mt-3 mb-10"
               label="日給"
-              height="40"
+              height="60"
+              outlined
+              single-line
+              hide-details
             ></v-text-field>
             <v-text-field
               v-else
@@ -127,9 +139,12 @@
               ref="day"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               @keydown.enter="enter(3)"
-              class="my-3"
+              class="mt-3 mb-10"
               label="日給"
-              height="40"
+              height="60"
+              outlined
+              single-line
+              hide-details
             ></v-text-field>
           </template>
           <template v-slot:item.staff_expense="{ item }">
@@ -138,9 +153,12 @@
               v-model="item.staff_expense"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
               @keydown.enter="enter(5)"
-              class="my-3"
+              class="mt-3 mb-10"
               label="経費"
-              height="40"
+              height="60"
+              outlined
+              single-line
+              hide-details
             ></v-text-field>
           </template>
         </v-data-table>
@@ -242,7 +260,7 @@ export default {
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
         time = Number(time).toFixed(2)
         var time_difference = parseFloat(item.total_time) - parseFloat(time)
-        if (time_difference != 0) {
+        if (time_difference <= 2 || time_difference >= -2) {
           return Number(item.total_time).toFixed(2)
         }
       }

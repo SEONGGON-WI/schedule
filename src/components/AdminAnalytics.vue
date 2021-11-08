@@ -12,7 +12,7 @@
         </v-toolbar>
       <v-card-text class="pa-0">
       <v-row no-gutters>
-        <v-col cols="3" class="pt-4 ml-8">
+        <v-col cols="4" class="name_agenda pt-3 pl-8">
           <v-select 
             height="30"
             class="pt-0"
@@ -23,10 +23,10 @@
             hide-details
           ></v-select>
         </v-col>
-        <v-col cols="1" class="pt-4 ml-8">
+        <v-col cols="2" class="name_agenda pt-3 pl-8">
           {{ total_agenda }}
         </v-col>
-        <v-col cols="2" class="pt-4 ml-8">
+        <v-col cols="6" class="name_agenda pt-3 pl-8">
           {{ get_total_salary }}
         </v-col>
       </v-row>
@@ -64,8 +64,8 @@ export default {
       { value:"end_time", text:"退勤", width: "10%", align: 'center'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "10%", align: 'center'},
-      { value:"staff_day_salary", text:"日給", width: "12%", align: 'center'},
-      { value:"staff_expense", text:"経費", width: "8%", align: 'center'}
+      { value:"staff_day_salary", text:"日給", width: "10%", align: 'center'},
+      { value:"staff_expense", text:"経費", width: "10%", align: 'center'}
     ],
     total_agenda: 0,
     differ_name: '',
