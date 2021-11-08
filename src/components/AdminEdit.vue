@@ -27,6 +27,7 @@
               v-if="tab == 0"
               :headers="headers" 
               :items="items" 
+              :item-class="admin_background"
               hide-default-footer 
               disable-pagination
               disable-sort
@@ -72,6 +73,7 @@
                   :value="item.admin_day_salary = get_admin_day_salary(item)"
                   dense
                   filled
+                  readonly
                   class="py-3"
                   label="日給"
                   single-line
@@ -108,6 +110,7 @@
               v-else
               :headers="header" 
               :items="items" 
+              :item-class="staff_background"
               hide-default-footer 
               disable-pagination
               disable-sort
@@ -277,6 +280,12 @@ export default {
       }
       let salary = Math.floor(item.staff_hour_salary * item.total_time)
       return String(salary)
+    },
+    admin_background(item) {
+      return item.agenda == '' || item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
+    },
+    staff_background(item) {
+      return item.agenda == '' || item.staff_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
     },
     async prevDate() {
       this.edit();
