@@ -30,6 +30,14 @@ tbody tr td {
   font-size: 30px !important;
 }
 
+.empty_salary {
+  background-color: #FFEA00;
+}
+
+.filled_salary {
+  background-color: white;
+}
+
 .custom_dialog {
   max-height: 80% !important;
   width: 80% !important;
