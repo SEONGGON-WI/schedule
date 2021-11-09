@@ -306,19 +306,48 @@ export default {
       this.calendar_events[index].staff_hour_salary = event.staff_hour_salary;
       this.calendar_events[index].staff_day_salary = event.staff_day_salary;
       this.calendar_events[index].staff_expense = event.staff_expense;
+
+      let name = this.name;
+      name = name.replace(/^\s+|\s+$/gm,'')
+      let password = this.password;
+      password = password.replace(/^\s+|\s+$/gm,'')
+
+      if (name != '' && password != '') {
+        const url = "/schedule/app/staffEditSchedule.php";
+        const data = {
+          name: name,
+          password: password,
+          date: event.date,
+          start_time: event.start_time,
+          end_time: event.end_time,
+          total_time: event.total_time,
+          staff_hour_salary: event.staff_hour_salary,
+          staff_day_salary: event.staff_day_salary,
+          staff_expense: event.staff_expense
+        }
+        axios.post(url, data).then(function(response) {
+          if (response.data.status == true) {
+            this.fetch_data(this.calendar_events)
+          }
+          this.alert(response.data.message);
+        }.bind(this))
+      } else {
+        this.alert("名前、パスワードを入力してください。")
+      }
       this.edit_show = false;
     }, 
     async upload() {
       let name = this.name;
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
+      const event = this.calendar_events.filter(e => e.agenda == '')
       password = password.replace(/^\s+|\s+$/gm,'')
       const url = "/schedule/app/staffUploadSchedule.php";
       const data = {
         name: name,
         password: password,
         search_condition: this.search_condition,
-        event: this.calendar_events,
+        event: event,
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date
       }
