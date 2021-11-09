@@ -194,7 +194,7 @@ export default {
       this.search_condition = false
       this.calendar_events = [];
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
-      if (this.name != '' || this.password != '') {
+      if (this.name != '' && this.password != '') {
         this.search();
       }
     },
