@@ -309,10 +309,14 @@ export default {
       this.edit_show = false;
     }, 
     async upload() {
+      let name = this.name;
+      name = name.replace(/^\s+|\s+$/gm,'')
+      let password = this.password;
+      password = password.replace(/^\s+|\s+$/gm,'')
       const url = "/schedule/app/staffUploadSchedule.php";
       const data = {
-        name: this.name,
-        password: this.password,
+        name: name,
+        password: password,
         search_condition: this.search_condition,
         event: this.calendar_events,
         start_date: this.search_date.start_date,
