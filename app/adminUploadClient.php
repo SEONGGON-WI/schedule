@@ -11,11 +11,15 @@ try {
     $sql_array[$index] = "( '{$client}', '{$values}' )";
     $index++;
   }
-  $sql = "INSERT IGNORE INTO client ( client, agenda ) VALUES";
-  $sub_sql_query = implode(', ', $sql_array);
-  $sql = $sql.$sub_sql_query;
-  $dbConnect->mysql->query($sql);
-  $result = json_encode(array('status' => true));
+  if ($sql_array != []) {
+    $sql = "INSERT IGNORE INTO client ( client, agenda ) VALUES";
+    $sub_sql_query = implode(', ', $sql_array);
+    $sql = $sql.$sub_sql_query;
+    $dbConnect->mysql->query($sql);
+    $result = json_encode(array('status' => true));
+  } else {
+    $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+  }
 } catch(Exception $e) {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
   $time = date('Y/m/d-H:i');

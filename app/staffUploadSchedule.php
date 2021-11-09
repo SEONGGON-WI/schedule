@@ -42,36 +42,68 @@ try {
       $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";
       $dbConnect->mysql->query($del);
 
+
+      $data = $dbConnect->getSchedule($name, $start_date, $end_date);
+      $del = "DELETE FROM schedule WHERE name ='$name' AND";
+      foreach ($data as $element) {
+        if ($element['agenda'] != '') {
+          continue;
+        }
+        $duplicate = true;
+        foreach ($event as $values) {
+          if ($values['agenda'] != '') {
+            continue;
+          }
+          if ($element['name'] == $values['name'] && $element['date'] == $values['date']) {
+            $duplicate = false;
+          }
+        }
+        if ($duplicate) {
+          $del = $del." ( date = '{$element['date']}' ) OR";
+        }
+      }
+      if ($del != "DELETE FROM schedule WHERE name ='$name' AND") {
+        $del = substr($del, 0, -3);
+        $dbConnect->mysql->query($del);
+      }
+
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['agenda']}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
         $index++;
       }
-      $sql = "INSERT INTO schedule ( name, agenda, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
       $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
-      $sub_sql_query = implode(', ', $sql_array);
-      $sql = $sql.$sub_sql_query.$sub_sql;
-      $dbConnect->mysql->query($sql);
+      if ($sql_array != []) {
+        $sub_sql_query = implode(', ', $sql_array);
+        $sql = $sql.$sub_sql_query.$sub_sql;
+        $dbConnect->mysql->query($sql);
+        $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
+      } else {
+        $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+      }
     }
     if ($search_condition == false) {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['agenda']}', '{$values['date']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
         $index++;
       }
-      $sql = "INSERT IGNORE INTO schedule ( name, agenda, date, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
-      $sub_sql_query = implode(', ', $sql_array);
-      $sql = $sql.$sub_sql_query;
-      $dbConnect->mysql->query($sql);
+      $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      if ($sql_array != []) {
+        $sub_sql_query = implode(', ', $sql_array);
+        $sql = $sql.$sub_sql_query;
+        $dbConnect->mysql->query($sql);
+        $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
+      } else {
+        $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+      }
     }
-
     $time = date('Y-m-d H:i:s', time());
     $time_sql = "UPDATE manager SET access_time = '$time' WHERE name = '$name'";
     $dbConnect->mysql->query($time_sql);
-
-    $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
   } else {
     $result = json_encode(array('status' => false , 'message' => 'パスワードを確認してください。'));
   }
