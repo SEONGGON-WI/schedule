@@ -37,6 +37,7 @@ try {
   if ($event != []) {
     foreach ($event as $values) {
       $values['agenda'] = preg_replace('/\r\n|\r|\n/','', $values['agenda']);
+      $values['agenda'] = trim($values['agenda']);
       $sql_array[$index] = "( '{$values['name']}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', 
                             '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}', 
                             '{$values['admin_hour_salary']}', '{$values['admin_day_salary']}', '{$values['admin_expense']}' )";

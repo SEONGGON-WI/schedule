@@ -7,6 +7,7 @@ try {
   $dbConnect = new mysqlConnect();
   $index = 0;
   $sql_array = [];
+  $client = trim($client);
   foreach ($agenda as $values) {
     $sql_array[$index] = "( '{$client}', '{$values}' )";
     $index++;
