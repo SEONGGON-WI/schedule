@@ -92,9 +92,6 @@ export default {
         return day[2]
       }
     },
-    change_name() {
-      this.$emit("change", this.differ_name);
-    },
     close() {
       this.dialog = false;
       this.$emit("close");
