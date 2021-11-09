@@ -42,6 +42,22 @@ class mysqlConnect {
     return $table;
   }
 
+  public function getEditSchedule($name, $start_date, $end_date) {
+    $query = "SELECT name, date FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
+    $result = $this->mysql->query($query);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
   public function getAdmin($start_date, $end_date) {
     $query = "SELECT * FROM schedule WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY name, date";
     $result = $this->mysql->query($query);

@@ -39,22 +39,12 @@ try {
     @fclose($log);
     if ($search_condition == true) {
       $dbConnect = new mysqlConnect();
-      $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";
-      $dbConnect->mysql->query($del);
-
-
-      $data = $dbConnect->getSchedule($name, $start_date, $end_date);
+      $data = $dbConnect->getEditSchedule($name, $start_date, $end_date);
       $del = "DELETE FROM schedule WHERE name ='$name' AND";
       foreach ($data as $element) {
-        if ($element['agenda'] != '') {
-          continue;
-        }
         $duplicate = true;
         foreach ($event as $values) {
-          if ($values['agenda'] != '') {
-            continue;
-          }
-          if ($element['name'] == $values['name'] && $element['date'] == $values['date']) {
+          if ($element['date'] == $values['date']) {
             $duplicate = false;
           }
         }
@@ -70,11 +60,13 @@ try {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        // $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '' )";
         $index++;
       }
-      $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
-      $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
+      // $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+      // $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
+      $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
       if ($sql_array != []) {
         $sub_sql_query = implode(', ', $sql_array);
         $sql = $sql.$sub_sql_query.$sub_sql;
@@ -88,7 +80,8 @@ try {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
-        $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        // $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+        $sql_array[$index] = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '' )";
         $index++;
       }
       $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
