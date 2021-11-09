@@ -40,43 +40,47 @@ try {
     if ($search_condition == true) {
       $dbConnect = new mysqlConnect();
       $data = $dbConnect->getEditSchedule($name, $start_date, $end_date);
-      $del = "DELETE FROM schedule WHERE name ='$name' AND";
-      foreach ($data as $element) {
-        $duplicate = true;
-        foreach ($event as $values) {
-          if ($element['date'] == $values['date']) {
-            $duplicate = false;
+      if (!empty($data)) { 
+        $del = "DELETE FROM schedule WHERE name ='$name' AND";
+        foreach ($data as $element) {
+          $duplicate = true;
+          foreach ($event as $values) {
+            if ($element['date'] == $values['date']) {
+              $duplicate = false;
+            }
+          }
+          if ($duplicate) {
+            $del = $del." ( date = '{$element['date']}' ) OR";
           }
         }
-        if ($duplicate) {
-          $del = $del." ( date = '{$element['date']}' ) OR";
+        if ($del != "DELETE FROM schedule WHERE name ='$name' AND") {
+          $del = substr($del, 0, -3);
+          $dbConnect->mysql->query($del);
         }
       }
-      if ($del != "DELETE FROM schedule WHERE name ='$name' AND") {
-        $del = substr($del, 0, -3);
-        $dbConnect->mysql->query($del);
-      }
-
-      $index = 0;
-      $sql_array = [];
-      foreach ($event as $values) {
-        // $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
-        $sql_array[$index] = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '' )";
-        $index++;
-      }
-      // $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
-      // $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
-      $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
-      if ($sql_array != []) {
-        $sub_sql_query = implode(', ', $sql_array);
-        $sql = $sql.$sub_sql_query.$sub_sql;
-        $dbConnect->mysql->query($sql);
-        $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
+      if ($event != []) {
+        $index = 0;
+        $sql_array = [];
+        foreach ($event as $values) {
+          // $sql_array[$index] = "( '{$name}', '{$values['date']}', '{$values['agenda']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}' )";
+          $sql_array[$index] = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '' )";
+          $index++;
+        }
+        // $sql = "INSERT INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+        // $sub_sql = "ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
+        $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES";
+        if ($sql_array != []) {
+          $sub_sql_query = implode(', ', $sql_array);
+          $sql = $sql.$sub_sql_query.$sub_sql;
+          $dbConnect->mysql->query($sql);
+          $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
+        } else {
+          $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+        }
       } else {
-        $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+        $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
       }
-    }
-    if ($search_condition == false) {
+    } else {
       $index = 0;
       $sql_array = [];
       foreach ($event as $values) {
