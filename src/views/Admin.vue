@@ -679,14 +679,8 @@ export default {
       await this.search()
     },
     async load() {
-      await this.get_client()
-      const client = this.$store.getters.client_agenda;
-      if (client == '' || client == []) {
-        return;
-      }
       const url = "/schedule/app/adminUploadSchedule.php";
       const data = {
-        client: client,
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date,
       }
