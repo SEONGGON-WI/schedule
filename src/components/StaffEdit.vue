@@ -4,7 +4,7 @@
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2 title_text">
-            {{ items.date }}
+            {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn class="success mx-2 botton_size" @click="edit">
@@ -185,11 +185,14 @@ export default {
       { value:"staff_day_salary", text:"日給", width:"33%", align: 'center'},
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
+    date: '',
     rules: [v => v.length == 5 || v == '' || '時間の様式に合わせてください。'],
     dialog: false,
     salary_change: 'hour',
   }),
   created() {
+    const day = this.items.date.split("-");
+    this.date = day[0] +'年 '+ day[1] +'月 '+ day[2]+'日';
     if (this.items.staff_hour_salary == '' && this.items.staff_day_salary == '') {
       this.salary_change = 'hour'
     } else if (this.items.staff_hour_salary != '') {
