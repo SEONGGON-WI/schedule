@@ -325,7 +325,7 @@ export default {
       // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const agenda_items = data.map(element => element.agenda);
-      return ['', '案件名無し', 'スタッフ日給無し', '管理者日給無し', ...agenda_items.filter((obj, index) => {
+      return ['', '案件名未入力', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
         return agenda_items.indexOf(obj) === index;
       })];
     },
@@ -443,11 +443,11 @@ export default {
         data = data.filter(obj => obj.name == name);
       }
       if (agenda != '') {
-        if (agenda == '案件名無し') {
+        if (agenda == '案件名未入力') {
           data = data.filter(obj => obj.agenda == '');
-        } else if (agenda == 'スタッフ日給無し') {
+        } else if (agenda == 'スタッフ日給未入力') {
           data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (agenda == '管理者日給無し') {
+        } else if (agenda == '管理者日給未入力') {
           data = data.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
         } else {
           data = data.filter(obj => obj.agenda == agenda);
@@ -468,7 +468,7 @@ export default {
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (agenda != '' && agenda != '案件名無し' && agenda != 'スタッフ日給無し' && agenda != '管理者日給無し') {
+      if (agenda != '' && agenda != '案件名未入力' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
@@ -493,7 +493,7 @@ export default {
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (agenda != '' && agenda != '案件名無し' && agenda != 'スタッフ日給無し' && agenda != '管理者日給無し') {
+      if (agenda != '' && agenda != '案件名未入力' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
@@ -543,11 +543,11 @@ export default {
         edit_items = edit_items.filter(obj => obj.name == this.name);
       }
       if (this.agenda != '') {
-        if (this.agenda == '案件名無し') {
+        if (this.agenda == '案件名未入力') {
           edit_items = edit_items.filter(obj => obj.agenda == '');
-        } else if (this.agenda == 'スタッフ日給無し') {
+        } else if (this.agenda == 'スタッフ日給未入力') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (this.agenda == '管理者日給無し') {
+        } else if (this.agenda == '管理者日給未入力') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
         } else {
           edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
@@ -590,11 +590,11 @@ export default {
         edit_items = edit_items.filter(obj => obj.name == this.name);
       }
       if (this.agenda != '') {
-        if (this.agenda == '案件名無し') {
+        if (this.agenda == '案件名未入力') {
           edit_items = edit_items.filter(obj => obj.agenda == '');
-        } else if (this.agenda == 'スタッフ日給無し') {
+        } else if (this.agenda == 'スタッフ日給未入力') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (this.agenda == '管理者日給無し') {
+        } else if (this.agenda == '管理者日給未入力') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
         } else {
           edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
