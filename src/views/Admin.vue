@@ -368,8 +368,7 @@ export default {
       data.map(element => {
         firstTimestamp = new Date(`${element.date}T09:00:00`)
         startTime = new Date(firstTimestamp)
-
-        if ((element.date < this.today) && (element.staff_day_salary != '')) {
+        if ((element.date <= this.today) && (element.staff_day_salary != '')) {
           element.color = this.colors[2]
         } else if (element.agenda != '') {
           element.color = this.colors[1]
