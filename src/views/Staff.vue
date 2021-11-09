@@ -278,7 +278,7 @@ export default {
       data.map(obj => {
         firstTimestamp = new Date(`${obj.date}T09:00:00`)
         startTime = new Date(firstTimestamp)
-        if ((obj.date < this.today) && (obj.staff_day_salary != '')) {
+        if ((obj.agenda != '') && (obj.staff_day_salary != '')) {
           obj.color = this.colors[2]
         } else if (obj.agenda != '') {
           obj.color = this.colors[1]
