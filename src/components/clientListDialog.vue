@@ -25,7 +25,7 @@
             <v-col cols="6">
               <v-autocomplete
                 v-model="agenda" 
-                :items="agenda_list"
+                :items="calculate_agenda"
                 :multiple="true"
                 :hide-selected="true"
                 :search-input.sync="search"
@@ -33,13 +33,13 @@
                 label="案件名を選択"
                 hide-details
                 clearable
-                @change="reset"
+                @change="search = ''"
               ></v-autocomplete>
             </v-col>
             <v-col cols="3">
               <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>save</v-icon>登録</v-btn>
               <v-btn outlined class="success ma-2" color="white" @click="acceptClient"><v-icon>autorenew</v-icon>反映</v-btn>
-              <v-btn outlined class="error ma-2" color="white" @click="deleteClient"><v-icon>delete</v-icon>削除</v-btn>
+              <v-btn outlined class="error ma-2" color="white" @click="deleteClient" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
             </v-col>
           </v-row>
         </v-card-text>
@@ -111,15 +111,6 @@ export default {
     this.fetch_data()
   },
   computed: {
-  },
-  methods: {
-    keyboardEvent: function(e) {
-      if (e.which !== 13) {
-        return
-      }
-      this.sy_search = null;
-      this.setClient();
-    },
     calculate_agenda() {
       let list = []
       this.agenda_list.map(element => {
@@ -127,27 +118,37 @@ export default {
           list.push(element)
         }
       })
-      this.agenda_list = list
+      return list
     },
-    async fetch_data() {
+  },
+  methods: {
+    keyboardEvent: function(e) {
+      if (e.which !== 13 || this.client == '') {
+        return
+      }
+      this.sy_search = null;
+      this.setClient();
+    },
+    fetch_data() {
       const url = "/schedule/app/adminGetClient.php";
       const data = {}
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
           this.items = response.data.data
-          this.calculate_agenda()
         } else {
           this.items = [];
         }
       }.bind(this))
     },
-    async setClient() {
+    setClient() {
       const url = "/schedule/app/adminUploadClient.php";
       const data = {
         client: this.client,
         agenda: this.agenda
       }
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
+        this.client = ''
+        this.agenda = []
         if (response.data.status == true) {
           this.fetch_data()
         } else {
@@ -158,12 +159,12 @@ export default {
     acceptClient() {
       this.$emit("accept")
     },
-    async deleteClient() {
+    deleteClient() {
       const url = "/schedule/app/adminDeleteClient.php";
       const data = {
         client: this.client,
       }
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
@@ -171,22 +172,19 @@ export default {
         }
       }.bind(this))
     },
-    async remove(item) {
+    remove(item) {
       const url = "/schedule/app/adminRemoveClient.php";
       const data = {
         client: item.client,
         agenda: item.agenda,
       }
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
           this.message = response.data.message
         }
       }.bind(this))
-    },
-    reset() {
-      this.search = ''
     },
     close() {
       this.dialog = false;

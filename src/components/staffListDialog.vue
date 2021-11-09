@@ -72,10 +72,10 @@ export default {
   computed: {
   },
   methods: {
-    async fetch_data() {
+    fetch_data() {
       const url = "/schedule/app/adminGetStaff.php";
       const data = {}
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
           this.items = response.data.data
         } else {
@@ -86,12 +86,12 @@ export default {
         }
       }.bind(this))
     },
-    async remove(item) {
+    remove(item) {
       const url = "/schedule/app/adminRemoveStaff.php";
       const data = {
         name: item.name,
       }
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
