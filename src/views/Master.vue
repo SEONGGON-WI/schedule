@@ -336,7 +336,7 @@ export default {
     },
     export_event() {
       const calendar_date = this.today
-      const export_data = JSON.stringify(this.$store.getters.calendar_events)
+      const export_data = JSON.stringify(this.$store.getters.calendar_events, null, 2)
       const export_file = `${calendar_date}_${this.$store.getters.calendar_events.length}_schedule.json`
       let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
       let blob = new Blob([ bom,export_data ], { "type" : "text/json" });
@@ -356,7 +356,7 @@ export default {
     },
     get_json() {
       const upload_list = []
-      const export_data = JSON.stringify(upload_list)
+      const export_data = JSON.stringify(upload_list, null, 2)
       const export_file = `schedule.json`
       let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
       let blob = new Blob([ bom,export_data ], { "type" : "text/json" });
