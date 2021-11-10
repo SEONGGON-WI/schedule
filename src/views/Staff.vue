@@ -352,6 +352,9 @@ export default {
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
+        if (response.data.status == true) {
+          this.search()
+        }
         this.alert(response.data.message);
       }.bind(this))
       this.dialog = false;
