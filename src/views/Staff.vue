@@ -118,6 +118,9 @@
 .v-input__control .v-input__slot .v-text-field__slot label {
   font-size: 20px !important;
 }
+.v-text-field--filled .v-input__control .v-input__slot fieldset{
+  background-color: #BDBDBD !important;
+}
 .v-event {
   width: 94% !important;
   left: 3% !important;
