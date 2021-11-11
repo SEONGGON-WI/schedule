@@ -9,7 +9,6 @@ try {
   if (empty($client)) {
     $client = [];
   }
-  $sql = "UPDATE schedule SET client = '' WHERE agenda != '' AND date >= '$start_date' AND date <= '$end_date'";
   if ($client != []) {
     $dbConnect->mysql->query($sql);
     foreach ($client as $values) {
