@@ -22,12 +22,8 @@ try {
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, adminEditDeleteSchedule, $date\n");
     @fclose($log);
-    $del = "DELETE FROM schedule WHERE (date = '$date') AND";
     foreach ($remove_event as $values) {
-      $sub_sql = $sub_sql." ( name = '".$values['name']."' ) OR";
-    }
-    if ($sub_sql != "") {
-      $del = substr($del.$sub_sql, 0, -3);
+      $del = "DELETE FROM schedule WHERE date = '$date' AND name = '{$values['name']}' ";
       $dbConnect->mysql->query($del);
     }
   }
