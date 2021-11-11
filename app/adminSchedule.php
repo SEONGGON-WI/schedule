@@ -35,11 +35,6 @@ try {
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
-  if (!file_exists($path)) {
-    $log = @fopen($path,"a+");
-    @fwrite($log,"time, api, error\n");
-    @fclose($log);
-  }
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminSchedule, $e\n");
   @fclose($log);

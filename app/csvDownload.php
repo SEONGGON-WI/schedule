@@ -134,11 +134,6 @@ try {
   } else {
     $condition = "";
   }
-  if (!file_exists($path)) {
-    $log = @fopen($path,"a+");
-    @fwrite($log,"time, api, error\n");
-    @fclose($log);
-  }
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, CSVDownload, $e\n");
   @fclose($log);
