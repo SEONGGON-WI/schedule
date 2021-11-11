@@ -14,14 +14,14 @@ try {
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, adminEditDeleteSchedule, $date\n");
     @fclose($log);
-    $index = 0;
+    $deleteName = '';
     foreach ($remove_event as $values) {
       $del = "DELETE FROM schedule WHERE date = '$date' AND name = '{$values['name']}'";
       $dbConnect->mysql->query($del);
-      $index ++;
+      $deleteName = $deleteName.$values['name'].',';
     }
     $log = @fopen($path,"a+");
-    @fwrite($log,"$time, adminEditDeleteSchedule, $index\n");
+    @fwrite($log,"$time, adminEditDeleteSchedule, $deleteName\n");
     @fclose($log);
   }
   $index = 0;
