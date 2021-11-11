@@ -195,6 +195,9 @@
 .v-input__control .v-input__slot .v-text-field__slot label {
   font-size: 20px !important;
 }
+.v-text-field--filled .v-input__control{
+  background-color: #BDBDBD !important;
+}
 .v-event-more{
   width: 90% !important;
   left: 5% !important;
@@ -325,8 +328,15 @@ export default {
       // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const agenda_items = data.map(element => element.agenda);
-      return ['', '案件名未入力', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
+      return ['', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
         return agenda_items.indexOf(obj) === index;
+      }).sort(function(a, b) {
+        const upperCaseA = a.toUpperCase();
+        const upperCaseB = b.toUpperCase();
+        
+        if(upperCaseA > upperCaseB) return 1;
+        if(upperCaseA < upperCaseB) return -1;
+        if(upperCaseA === upperCaseB) return 0;
       })];
     },
   },
@@ -443,7 +453,7 @@ export default {
         data = data.filter(obj => obj.name == name);
       }
       if (agenda != '') {
-        if (agenda == '案件名未入力') {
+        if (agenda == '空きスケジュール') {
           data = data.filter(obj => obj.agenda == '');
         } else if (agenda == 'スタッフ日給未入力') {
           data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
@@ -468,7 +478,7 @@ export default {
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (agenda != '' && agenda != '案件名未入力' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
+      if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
@@ -493,7 +503,7 @@ export default {
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
-      if (agenda != '' && agenda != '案件名未入力' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
+      if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
@@ -543,7 +553,7 @@ export default {
         edit_items = edit_items.filter(obj => obj.name == this.name);
       }
       if (this.agenda != '') {
-        if (this.agenda == '案件名未入力') {
+        if (this.agenda == '空きスケジュール') {
           edit_items = edit_items.filter(obj => obj.agenda == '');
         } else if (this.agenda == 'スタッフ日給未入力') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
@@ -590,7 +600,7 @@ export default {
         edit_items = edit_items.filter(obj => obj.name == this.name);
       }
       if (this.agenda != '') {
-        if (this.agenda == '案件名未入力') {
+        if (this.agenda == '空きスケジュール') {
           edit_items = edit_items.filter(obj => obj.agenda == '');
         } else if (this.agenda == 'スタッフ日給未入力') {
           edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
