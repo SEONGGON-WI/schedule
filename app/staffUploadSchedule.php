@@ -29,11 +29,6 @@ try {
     } else {
       $condition = "";
     }
-    if (!file_exists($path)) {
-      $log = @fopen($path,"a+");
-      @fwrite($log,"time, api, name, condition\n");
-      @fclose($log);
-    }
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, staffUpload, $name, $condition\n");
     @fclose($log);
@@ -54,25 +49,8 @@ try {
           }
         }
       }
-      if ($event != []) {
-        $index = 0;
-        $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES ";
-        $sub_sql = " ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary), staff_expense = VALUES(staff_expense)";
-        foreach ($event as $values) {
-          $sql_value = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '' )";
-          $query = $sql.$sql_value.$sub_sql;
-          $dbConnect->mysql->query($query);
-          $index++;
-        }
-        if ($index == 0) {
-          $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
-        } else {
-          $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));  
-        }
-      } else {
-        $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
-      }
-    } else {
+    }
+    if ($event != []) {
       $index = 0;
       $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES ";
       foreach ($event as $values) {
@@ -82,10 +60,14 @@ try {
         $index++;
       }
       if ($index == 0) {
+        $index = "empty";
         $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
       } else {
         $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));  
       }
+    } else {
+      $index = "empty";
+      $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
     }
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, staffUpload, $name, $index\n");
@@ -102,11 +84,6 @@ try {
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
-  if (!file_exists($path)) {
-    $log = @fopen($path,"a+");
-    @fwrite($log,"time, api, error\n");
-    @fclose($log);
-  }
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, staffUpload, $e\n");
   @fclose($log);
