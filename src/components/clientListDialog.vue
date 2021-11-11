@@ -26,6 +26,7 @@
               <v-autocomplete
                 v-model="agenda" 
                 :items="calculate_agenda"
+                :menu-props="{ maxHeight: '800' }"
                 :multiple="true"
                 :hide-selected="true"
                 :search-input.sync="search"
@@ -115,10 +116,12 @@ export default {
       let list = []
       this.agenda_list.map(element => {
         if (this.items.find(e => e.agenda == element) == undefined) {
-          list.push(element)
+          if (element != '') {
+            list.push(element)  
+          }
         }
       })
-      return list
+      return list.sort()
     },
   },
   methods: {
