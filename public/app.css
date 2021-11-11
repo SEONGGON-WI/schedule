@@ -38,6 +38,11 @@ tbody tr td {
   background-color: white;
 }
 
+.v-input__control .v-text-field__details .v-messages .v-messages__wrapper .v-messages__message {
+  font-size: 18px !important;
+  margin-top: 5px !important;
+}
+
 .custom_dialog {
   max-height: 80% !important;
   width: 80% !important;
