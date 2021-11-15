@@ -15,19 +15,19 @@ try {
   $time = (int)date('H');
   if ($time < 9 && $time >= 1) {
     $fileName = "1_backup.json";
-    $deleteName = "22_backup.json";
+    $deleteName = "9_backup.json";
   } else if ($time < 18 && $time >= 9) {
     $fileName = "9_backup.json";
-    $deleteName = "1_backup.json";
+    $deleteName = "18_backup.json";
   } else if ($time < 22 && $time >= 18) {
     $fileName = "18_backup.json";
-    $deleteName = "9_backup.json";
+    $deleteName = "22_backup.json";
   } else if ($time >= 22) {
     $fileName = "22_backup.json";
-    $deleteName = "18_backup.json";
+    $deleteName = "1_backup.json";
   } else {
     $fileName = "22_backup.json";
-    $deleteName = "18_backup.json";
+    $deleteName = "1_backup.json";
   }
 
   $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
