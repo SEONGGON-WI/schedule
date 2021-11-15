@@ -69,6 +69,7 @@
               :events="calendar_events"
               event-color="grey darken-1"
               locale="ja-jp"
+              :weekdays="calendar_format"
               @click:day="select"
               @change="fetch"
             >
@@ -162,6 +163,7 @@ export default {
     calendar_date: '',
     calendar_type: 'month',
     calendar_events: [],
+    calendar_format : [1,2,3,5,6,0],
     edit_show: false,
     edit_items: {},
     edit_index: null,
