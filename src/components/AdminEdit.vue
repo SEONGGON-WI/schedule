@@ -301,10 +301,16 @@ export default {
       this.items.splice(index, 1);
     },
     async edit() {
+      let event = JSON.parse(JSON.stringify(this.items))
+      const client = this.$store.getters.client_agenda
+      event.map(element => {
+        var find = client.find(obj => obj.agenda == element.agenda)
+        element.client = find == undefined ? '' : find.client
+      })
       const url = "/schedule/app/adminEditSchedule.php";
       const data = {
         date: this.date,
-        event: this.items,
+        event: event,
         remove_event: this.remove_item
       }
       await axios.post(url, data).then(function(response) {

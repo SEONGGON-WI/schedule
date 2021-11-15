@@ -137,8 +137,10 @@ export default {
       const data = {}
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
+          this.$store.commit('set_client_agenda', response.data.data)
           this.items = response.data.data
         } else {
+          this.$store.commit('set_client_agenda', [])
           this.items = [];
         }
       }.bind(this))

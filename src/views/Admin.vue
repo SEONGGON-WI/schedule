@@ -303,6 +303,7 @@ export default {
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
+    this.get_client();
   },
   computed: {
     get_agenda() {

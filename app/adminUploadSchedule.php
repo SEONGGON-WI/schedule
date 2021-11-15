@@ -10,6 +10,7 @@ try {
     $client = [];
   }
   if ($client != []) {
+    $sql = "UPDATE schedule SET client = '' WHERE date >= '$start_date' AND date <= '$end_date'";
     $dbConnect->mysql->query($sql);
     foreach ($client as $values) {
       $sql = "UPDATE schedule SET client = '{$values['client']}' WHERE agenda = '{$values['agenda']}' AND date >= '$start_date' AND date <= '$end_date'";
@@ -17,6 +18,8 @@ try {
     }
     $result = json_encode(array('status' => true));
   } else {
+    $sql = "UPDATE schedule SET client = '' WHERE date >= '$start_date' AND date <= '$end_date'";
+    $dbConnect->mysql->query($sql);
     $result = json_encode(array('status' => false , 'message' => 'クライアントが存在しません。'));
   }
 } catch(Exception $e) {
