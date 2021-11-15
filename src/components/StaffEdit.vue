@@ -178,7 +178,7 @@ export default {
     header: [
       { value:"start_time", text:"出勤時間", width:"33%", align: 'center'},
       { value:"end_time", text:"退勤時間", width:"33%", align: 'center'},
-      { value:"total_time", text:"勤労時間", width:"33%", align: 'center'}
+      { value:"total_time", text:"勤務時間", width:"33%", align: 'center'}
     ],
     headers: [
       { value:"staff_hour_salary", text:"時給", width:"33%", align: 'center'},
