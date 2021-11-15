@@ -45,9 +45,9 @@
                   auto-grow
                 ></v-textarea>
               </template>
-              <template v-slot:item.total_time="{ item }">
+              <template v-slot:item.admin_total_time="{ item }">
                 <v-text-field
-                  v-model="item.total_time"
+                  v-model="item.admin_total_time"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                   class="py-3"
                   label="時間"
@@ -59,8 +59,8 @@
                 <v-text-field
                   v-model="item.admin_hour_salary"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  :dense="item.total_time == ''"
-                  :filled="item.total_time == ''"
+                  :dense="item.admin_total_time == ''"
+                  :filled="item.admin_total_time == ''"
                   class="py-3"
                   label="時給"
                   single-line
@@ -69,7 +69,7 @@
               </template>
               <template v-slot:item.admin_day_salary="{ item }">
                 <v-text-field
-                  v-if="item.total_time != ''"
+                  v-if="item.admin_total_time != ''"
                   :value="item.admin_day_salary = get_admin_day_salary(item)"
                   dense
                   filled
@@ -218,7 +218,7 @@ export default {
       { value:"name", text:"名前", width: "15%", align: 'start'},
       { value:"client", text:"顧客", width: "15%", align: 'start'},
       { value:"agenda", text:"案件", width: "22%", align: 'start'},
-      { value:"total_time", text:"時間", width: "9%", align: 'center'},
+      { value:"admin_total_time", text:"時間", width: "9%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "11%", align: 'center'},
       { value:"admin_day_salary", text:"日給", width: "12%", align: 'center'},
       { value:"admin_expense", text:"経費", width: "11%", align: 'center'},
@@ -268,10 +268,10 @@ export default {
       return time;
     },
     get_admin_day_salary(item) {
-      if (item.admin_hour_salary == '' || item.total_time == '') {
+      if (item.admin_hour_salary == '' || item.admin_total_time == '') {
         return ''
       }
-      let salary = Math.floor(item.admin_hour_salary * item.total_time)
+      let salary = Math.floor(item.admin_hour_salary * item.admin_total_time)
       return String(salary)
     },
     get_staff_day_salary(item) {

@@ -124,9 +124,9 @@ class mysqlConnect {
   }
 
   public function getCsv($start_date, $end_date) {
-    $sql = "SELECT name, client, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(name) AS cnt, sum(staff_expense) AS staff_total_expense, sum(admin_expense) AS admin_total_expense FROM schedule ";
+    $sql = "SELECT name, client, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(name) AS cnt, sum(staff_expense) AS staff_total_expense, sum(admin_expense) AS admin_total_expense FROM schedule ";
     $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
-    $sql = $sql."GROUP BY name, client, agenda, start_time, end_time, total_time ,admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
+    $sql = $sql."GROUP BY name, client, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
     $sql = $sql."ORDER BY client, agenda, name";
 
     $result = $this->mysql->query($sql);
@@ -161,6 +161,7 @@ class mysqlConnect {
     $query = $query."start_time TEXT not null,";
     $query = $query."end_time TEXT not null,";
     $query = $query."total_time TEXT not null,";
+    $query = $query."admin_total_time TEXT not null,";
     $query = $query."staff_hour_salary TEXT not null,";
     $query = $query."staff_day_salary TEXT not null,";
     $query = $query."staff_expense TEXT not null,";
