@@ -27,21 +27,42 @@
           {{ total_agenda }}
         </v-col>
         <v-col cols="6" class="name_agenda pt-3 pl-8">
-          {{ get_total_salary }}
+          {{ tab == 0 ? get_admin_total_salary : get_total_salary }}
         </v-col>
       </v-row>
-      <v-data-table 
-        :headers="headers"
-        :items="items"
-        class="mt-3 fixed-header2"
-        hide-default-footer 
-        disable-pagination
-        disable-sort
-      >
-      <template v-slot:item.date="{ item }">
-        <div>{{ get_date(item.date) }} </div>
-      </template>
-      </v-data-table>
+      <v-tabs v-model="tab" grow>
+          <v-tab v-for="item in tab_item" :key="item">
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab">
+          <v-data-table 
+            v-if="tab == 0"
+            :headers="header"
+            :items="items"
+            class="mt-3 fixed-header2"
+            hide-default-footer 
+            disable-pagination
+            disable-sort
+          >
+            <template v-slot:item.date="{ item }">
+              <div>{{ get_date(item.date) }}</div>
+            </template>
+          </v-data-table>
+          <v-data-table 
+            v-else
+            :headers="headers"
+            :items="items"
+            class="mt-3 fixed-header2"
+            hide-default-footer 
+            disable-pagination
+            disable-sort
+          >
+            <template v-slot:item.date="{ item }">
+              <div>{{ get_date(item.date) }}</div>
+            </template>
+          </v-data-table>
+        </v-tabs-items>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -55,6 +76,16 @@ export default {
     'items', 'name_items', 'name', 'date'
   ],
   data: () => ({
+    header: [
+      { value:"date", text:"日付", width: "10%", align: 'center'},
+      { value:"client", text:"顧客", width: "15%", align: 'start'},
+      { value:"agenda", text:"案件", width: "20%", align: 'start'},
+      { value:"name", text:"名前", width: "15%", align: 'start'},
+      { value:"admin_total_time", text:"時給", width: "10%", align: 'center'},
+      { value:"admin_hour_salary", text:"時給", width: "10%", align: 'center'},
+      { value:"admin_day_salary", text:"日給", width: "10%", align: 'center'},
+      { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
+    ],
     headers: [
       { value:"date", text:"日付", width: "8%", align: 'center'},
       { value:"client", text:"顧客", width: "10%", align: 'start'},
@@ -67,6 +98,8 @@ export default {
       { value:"staff_day_salary", text:"日給", width: "10%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "10%", align: 'center'}
     ],
+    tab: null,
+    tab_item: ['管理者', 'スタッフ'],
     total_agenda: 0,
     differ_name: '',
     dialog: false,
@@ -85,7 +118,19 @@ export default {
     get_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '') {
-          return stack + parseInt(obj.staff_day_salary) + parseInt(obj.staff_expense)
+          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
+          return stack + parseInt(obj.staff_day_salary) + expense
+        } else {
+          return stack
+        }
+      }, 0)
+      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    get_admin_total_salary() {
+      const salary = this.items.reduce((stack, obj) => {
+        if (obj.admin_day_salary != '') {
+          var expense = obj.admin_expense ? parseInt(obj.admin_expense) : 0
+          return stack + parseInt(obj.admin_day_salary) + expense
         } else {
           return stack
         }
