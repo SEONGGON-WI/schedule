@@ -41,8 +41,8 @@ try {
       }
       // $working_day = substr($working_day, 0, -1);
 
-      if ($value['total_time'] != '') {
-        $explode_time = explode(".", $value['total_time']);
+      if ($value['admin_total_time'] != '') {
+        $explode_time = explode(".", $value['admin_total_time']);
         if (strlen($explode_time[1]) != 2) {
           $explode_time[1] = $explode_time[1]."0";
         }
