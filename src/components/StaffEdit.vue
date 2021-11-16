@@ -208,6 +208,7 @@ export default {
         this.items.start_time = '';
         this.items.end_time = '';
         this.items.total_time = '';
+        this.items.admin_total_time = '';
         this.items.staff_hour_salary = '';
       } else {
         this.items.staff_day_salary = '';
@@ -261,9 +262,11 @@ export default {
         time = Number(time).toFixed(2)
         var time_difference = parseFloat(item.total_time) - parseFloat(time)
         if (time_difference <= 2 || time_difference >= -2) {
+          item.admin_total_time = Number(item.admin_total_time).toFixed(2)
           return Number(item.total_time).toFixed(2)
         }
       }
+      item.admin_total_time = (Number(parseFloat(time) + 1).toFixed(2))
       return time
     },
     get_staff_day_salary(item) {

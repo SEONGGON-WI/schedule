@@ -242,6 +242,7 @@ export default {
         start_time: '',
         end_time: '',
         total_time: '',
+        admin_total_tome: '',
         staff_hour_salary: '',
         staff_day_salary: '',
         staff_expense: '',
@@ -308,6 +309,7 @@ export default {
       this.calendar_events[index].start_time = event.start_time;
       this.calendar_events[index].end_time = event.end_time;
       this.calendar_events[index].total_time = event.total_time;
+      this.calendar_events[index].admin_total_time = event.admin_total_time;
       this.calendar_events[index].staff_hour_salary = event.staff_hour_salary;
       this.calendar_events[index].staff_day_salary = event.staff_day_salary;
       this.calendar_events[index].staff_expense = event.staff_expense;
@@ -326,6 +328,7 @@ export default {
           start_time: event.start_time,
           end_time: event.end_time,
           total_time: event.total_time,
+          admin_total_time: event.admin_total_time,
           staff_hour_salary: event.staff_hour_salary,
           staff_day_salary: event.staff_day_salary,
           staff_expense: event.staff_expense
