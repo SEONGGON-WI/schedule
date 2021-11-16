@@ -12,6 +12,7 @@
           </v-btn>
         </v-toolbar>
           <v-data-table 
+            name="staff-list-table"
             :headers="headers" 
             :items="items" 
             item-key="name"
@@ -38,7 +39,11 @@
     </v-container>
   </v-dialog>
 </template>
-
+<style lang="scss">
+[name=staff-list-table] tbody tr:nth-of-type(odd){
+  background: rgba(170, 200, 99,0.2); 
+}
+</style>
 <script>
 import axios from 'axios';
 export default {

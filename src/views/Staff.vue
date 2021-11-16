@@ -30,10 +30,10 @@
                   <input
                     class="form_area pa-2 mx-2 mb-4"
                     lang="en"
-                    ref="name"
-                    v-model="name"
-                    id="name"
-                    name="name"
+                    ref="id"
+                    v-model="id"
+                    id="id"
+                    name="id"
                     @keydown.enter="id_enter"
                     placeholder="名前"
                   >
@@ -51,7 +51,7 @@
                     class="accent mx-2 mt-3"
                     type="submit"
                     color="white"
-                    :disabled="name == '' || password == ''"
+                    :disabled="id == '' || password == ''"
                   ><v-icon>search</v-icon>検索
                   </v-btn>
               </v-row>
@@ -156,14 +156,14 @@ export default {
   },
   data: () => ({
     colors: ['grey darken-2','orange','teal accent-4'],
-    name: '',
+    id: '',
     password: '',
     search_date: {},
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
     calendar_events: [],
-    calendar_format : [1,2,3,5,6,0],
+    calendar_format : [1,2,3,4,5,6,0],
     edit_show: false,
     edit_items: {},
     edit_index: null,
@@ -199,7 +199,7 @@ export default {
       this.search_condition = false
       this.calendar_events = [];
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
-      if (this.name != '' && this.password != '') {
+      if (this.id != '' && this.password != '') {
         this.search();
       }
     },
@@ -230,7 +230,7 @@ export default {
           return;
         }
       }
-      if (this.name == '' || this.password == '') {
+      if (this.id == '' || this.password == '') {
         return;
       }
 
@@ -250,7 +250,7 @@ export default {
       });    
     },
     search() {
-      let name = this.name;
+      let name = this.id;
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
       password = password.replace(/^\s+|\s+$/gm,'')
@@ -296,7 +296,7 @@ export default {
     },
     analytics() {
       const data = JSON.parse(JSON.stringify(this.calendar_events))
-      this.analytics_items = data.filter(obj => obj.name == this.name && obj.agenda != '')
+      this.analytics_items = data.filter(obj => obj.name == this.id && obj.agenda != '')
       this.analytics_show = true
     },
     close_analytics() {
@@ -312,7 +312,7 @@ export default {
       this.calendar_events[index].staff_day_salary = event.staff_day_salary;
       this.calendar_events[index].staff_expense = event.staff_expense;
 
-      let name = this.name;
+      let name = this.id;
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
       password = password.replace(/^\s+|\s+$/gm,'')
@@ -342,7 +342,7 @@ export default {
       this.edit_show = false;
     }, 
     async upload() {
-      let name = this.name;
+      let name = this.id;
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
       const event = this.calendar_events.filter(e => e.agenda == '')

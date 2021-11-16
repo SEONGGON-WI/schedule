@@ -95,7 +95,7 @@
     </v-container>
   </v-main>
 
-  <admin-edit
+  <master-edit
     @accept="accept_edit()"
     @prev="prev_edit()"
     @next="next_edit()"
@@ -103,7 +103,7 @@
     v-if="edit_show"
     :items="edit_items"
     :date="edit_date"
-  ></admin-edit>
+  ></master-edit>
 </v-app>
 </template>
 <style lang="scss">
@@ -158,13 +158,13 @@
 }
 </style>
 <script>
-import AdminEdit from '@/components/AdminEdit.vue';
+import MasterEdit from '@/components/MasterEdit.vue';
 import axios from 'axios';
 
 export default {
   name: 'master',
   components: {
-    AdminEdit,
+    MasterEdit,
   },
   data: () => ({
     colors: ['grey darken-2','orange','teal accent-4'],

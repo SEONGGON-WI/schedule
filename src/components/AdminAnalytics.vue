@@ -85,7 +85,7 @@ export default {
     get_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '') {
-          return stack + parseInt(obj.staff_day_salary)
+          return stack + parseInt(obj.staff_day_salary) + parseInt(obj.staff_expense)
         } else {
           return stack
         }

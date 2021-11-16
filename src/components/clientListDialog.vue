@@ -15,12 +15,17 @@
         <v-card-text>
           <v-row>
             <v-col cols="3">
-              <v-text-field
+              <v-textarea
                 v-model="client"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                 label="クライアント名を入力"
-                clearable
+                single-line
                 hide-details
-              ></v-text-field>
+                rows="1"
+                no-resize
+                auto-grow
+                clearable
+              ></v-textarea>
             </v-col>
             <v-col cols="6">
               <v-autocomplete
@@ -45,6 +50,7 @@
           </v-row>
         </v-card-text>
           <v-data-table 
+            name="client-list-table"
             :headers="headers" 
             :items="items" 
             item-key="name"
@@ -71,6 +77,11 @@
     </v-container>
   </v-dialog>
 </template>
+<style lang="scss">
+[name=client-list-table] tbody tr:nth-of-type(odd){
+  background: rgba(170, 200, 99,0.2); 
+}
+</style>
 <script>
 import axios from 'axios';
 export default {

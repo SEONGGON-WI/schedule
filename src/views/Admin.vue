@@ -278,7 +278,7 @@ export default {
       {text: '週', value:'week'}
     ],
     calendar_events: [],
-    calendar_format : [1,2,3,5,6,0],
+    calendar_format : [1,2,3,4,5,6,0],
     edit_show: false,
     editItems: [],
     edit_items: [],

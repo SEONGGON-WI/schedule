@@ -23,6 +23,7 @@
         </v-col>
       </v-row>
       <v-data-table 
+        name="staff-analytics-table"
         :headers="headers"
         :items="items"
         class="mt-3 fixed-header2"
@@ -38,6 +39,11 @@
     </v-card>
   </v-dialog>
 </template>
+<style lang="scss">
+[name=staff-analytics-table] tbody tr:nth-of-type(odd){
+  background: rgba(170, 200, 99,0.2); 
+}
+</style>
 <script>
 export default {
   name: "staffanalytics",
@@ -75,7 +81,7 @@ export default {
     get_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '') {
-          return stack + parseInt(obj.staff_day_salary)
+          return stack + parseInt(obj.staff_day_salary) + parseInt(obj.staff_expense)
         } else {
           return stack
         }
