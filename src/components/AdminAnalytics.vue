@@ -11,7 +11,7 @@
           </v-btn>
         </v-toolbar>
       <v-card-text class="pa-0">
-      <v-row no-gutters>
+      <v-row no-gutters class="mb-3">
         <v-col cols="4" class="name_agenda pt-3 pl-8">
           <v-select 
             height="30"
