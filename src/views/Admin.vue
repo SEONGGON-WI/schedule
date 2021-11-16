@@ -315,31 +315,47 @@ export default {
       // let clients = JSON.parse(JSON.stringify(this.$store.getters.client_agenda))
       const clients = this.$store.getters.client_agenda
       const client_items = clients.map(element => element.client);
+      // return ['', ...client_items.filter((obj, index) => {
+      //   return client_items.indexOf(obj) === index;
+      // })];
       return ['', ...client_items.filter((obj, index) => {
         return client_items.indexOf(obj) === index;
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
       })];
     },
     get_name_items() {
       // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const name_items = data.map(element => element.name);
+      // return ['全員', ...name_items.filter((obj, index) => {
+      //   return name_items.indexOf(obj) === index;
+      // })];
       return ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
       })];
     },
     get_agenda_items() {
       // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const agenda_items = data.map(element => element.agenda);
+    //   return ['', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
+    //     return agenda_items.indexOf(obj) === index;
+    //   }).sort(function(a, b) {
+    //     const upperCaseA = a.toUpperCase();
+    //     const upperCaseB = b.toUpperCase();
+        
+    //     if(upperCaseA > upperCaseB) return 1;
+    //     if(upperCaseA < upperCaseB) return -1;
+    //     if(upperCaseA === upperCaseB) return 0;
+    //   })];
+    // },
       return ['', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
         return agenda_items.indexOf(obj) === index;
-      }).sort(function(a, b) {
-        const upperCaseA = a.toUpperCase();
-        const upperCaseB = b.toUpperCase();
-        
-        if(upperCaseA > upperCaseB) return 1;
-        if(upperCaseA < upperCaseB) return -1;
-        if(upperCaseA === upperCaseB) return 0;
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
       })];
     },
   },
@@ -478,21 +494,28 @@ export default {
       if (client != '') {
         data = data.filter(obj => obj.client == client);
       }
-      if (name != '全員') {
-        data = data.filter(obj => obj.name == name);
-      }
       if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
         data = data.filter(obj => obj.agenda == agenda);
       }
       data.sort(function(a, b) {
-          return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
+        // if (a.date < b.date) {
+        //   return -1
+        // } else if (a.agenda < b.agenda) {
+        //   return -1
+        // }
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
       });
-      this.analytics_name = name
-      this.analytics_items = data
       const name_items = data.map(element => element.name);
       this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
       })];
+      if (name != '全員') {
+        data = data.filter(obj => obj.name == name);
+      }
+      this.analytics_name = name
+      this.analytics_items = data
       this.analytics_show = true
     },
     change_analytics(name) {
