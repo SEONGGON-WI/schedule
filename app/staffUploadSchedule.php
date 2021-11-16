@@ -52,9 +52,9 @@ try {
     }
     if ($event != []) {
       $index = 0;
-      $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES ";
+      $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES ";
       foreach ($event as $values) {
-        $sql_value = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '' )";
+        $sql_value = "( '{$name}', '{$values['date']}', '', '', '', '', '', '', '', '' )";
         $query = $sql.$sql_value;
         $dbConnect->mysql->query($query);
         $index++;
