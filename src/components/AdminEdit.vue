@@ -202,6 +202,11 @@
         </v-tabs-items>
       </v-card>
     </v-container>
+    <alert
+      @close="alert_show = false"
+      :text="alert_text"
+      v-if="alert_show"
+    ></alert>
   </v-dialog>
 </template>
 <script>
@@ -238,6 +243,8 @@ export default {
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
     rules: [v => v.length == 4 || v == '' || '4桁入力'],
+    alert_text: '',
+    alert_show: false,
     dialog: false,
   }),
   created() {
@@ -316,14 +323,17 @@ export default {
       await axios.post(url, data).then(function(response) {
         this.remove_item = [];
         if (response.data.status == false){
-          this.message = response.data.message
+          this.alert(response.data.message)
         }
-        this.remove_event = [];
       }.bind(this))
     },
     async accept() {
       await this.edit();
       this.close()
+    },
+    alert(text) {
+      this.alert_text = text;
+      this.alert_show = true;
     },
     close() {
       this.dialog = false;

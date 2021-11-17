@@ -8,7 +8,7 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn class="error mx-2 botton_size" @click="close">
-            <v-icon>close</v-icon>
+            <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
 
@@ -43,7 +43,7 @@
               ></v-autocomplete>
             </v-col>
             <v-col cols="3">
-              <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>save</v-icon>登録</v-btn>
+              <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>cloud_upload</v-icon>登録</v-btn>
               <v-btn outlined class="success ma-2" color="white" @click="acceptClient"><v-icon>autorenew</v-icon>反映</v-btn>
               <v-btn outlined class="error ma-2" color="white" @click="deleteClient" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
             </v-col>
@@ -75,6 +75,11 @@
           </v-data-table>
       </v-card>
     </v-container>
+    <alert
+      @close="alert_show = false"
+      :text="alert_text"
+      v-if="alert_show"
+    ></alert>
   </v-dialog>
 </template>
 <style lang="scss">
@@ -83,10 +88,12 @@
 }
 </style>
 <script>
+import alert from './alert.vue';
 import axios from 'axios';
 export default {
   name: "clientlistdialog",
   components: {
+    alert,
   },
   props: [
     'agenda_items'
@@ -111,6 +118,8 @@ export default {
     agenda_list: [],
     search: '',
     search_table: '',
+    alert_text: '',
+    alert_show: false,
     dialog: false,
   }),
   created() {
@@ -170,7 +179,7 @@ export default {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
-          this.message = response.data.message
+          this.alert(response.data.message)
         }
       }.bind(this))
     },
@@ -186,7 +195,7 @@ export default {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
-          this.message = response.data.message
+          this.alert(response.data.message)
         }
       }.bind(this))
     },
@@ -200,9 +209,13 @@ export default {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
-          this.message = response.data.message
+          this.alert(response.data.message)
         }
       }.bind(this))
+    },
+    alert(text) {
+      this.alert_text = text;
+      this.alert_show = true;
     },
     close() {
       this.dialog = false;

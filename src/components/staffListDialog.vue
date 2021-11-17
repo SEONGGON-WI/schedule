@@ -8,7 +8,7 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn class="error mx-2 botton_size" @click="close">
-            <v-icon>close</v-icon>
+            <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
           <v-data-table 
@@ -37,6 +37,11 @@
           </v-data-table>
       </v-card>
     </v-container>
+    <alert
+      @close="alert_show = false"
+      :text="alert_text"
+      v-if="alert_show"
+    ></alert>
   </v-dialog>
 </template>
 <style lang="scss">
@@ -45,10 +50,12 @@
 }
 </style>
 <script>
+import alert from './alert.vue';
 import axios from 'axios';
 export default {
   name: "stafflistdialog",
   components: {
+    alert,
   },
   props: [
   ],
@@ -68,6 +75,8 @@ export default {
       itemsPerPage: 10,
     },
     search: '',
+    alert_text: '',
+    alert_show: false,
     dialog: false,
   }),
   created() {
@@ -85,9 +94,6 @@ export default {
           this.items = response.data.data
         } else {
           this.items = []
-          if (response.data.status == false) {
-            this.message = response.data.message
-          }
         }
       }.bind(this))
     },
@@ -100,9 +106,13 @@ export default {
         if (response.data.status == true) {
           this.fetch_data()
         } else {
-          this.message = response.data.message
+          this.alert(response.data.message)
         }
       }.bind(this))
+    },
+    alert(text) {
+      this.alert_text = text;
+      this.alert_show = true;
     },
     close() {
       this.dialog = false;
