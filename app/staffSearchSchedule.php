@@ -31,7 +31,7 @@ try {
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, staffSearch, $e\n");
   @fclose($log);
-  $result = json_encode(array('status' => false , 'message' => '検索に失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '検索にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

@@ -15,7 +15,7 @@ try {
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminRemoveStaff, $e\n");
   @fclose($log);
-  $result = json_encode(array('status' => false , 'message' => '削除を失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '削除にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

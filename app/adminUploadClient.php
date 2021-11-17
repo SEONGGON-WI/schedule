@@ -14,7 +14,6 @@ try {
     $dbConnect->mysql->query($query);
     $index++;
   }
-  $result = json_encode(array('status' => true));
   if ($index == 0) {
     $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
   } else {
@@ -28,7 +27,7 @@ try {
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminUploadClient, $e\n");
   @fclose($log);
-  $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '登録にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

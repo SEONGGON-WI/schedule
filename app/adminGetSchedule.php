@@ -56,7 +56,7 @@ try {
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminGetSchedule, $e\n");
   @fclose($log);
-  $result = json_encode(array('status' => false , 'message' => 'データ更新に失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => 'データ更新にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

@@ -45,6 +45,8 @@ try {
     } else {
       $result = json_encode(array('status' => true));  
     }
+  } else {
+    $result = json_encode(array('status' => true));  
   }
 } catch(Exception $e) {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
@@ -54,7 +56,7 @@ try {
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminEditSchedule, $e\n");
   @fclose($log);
-  $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
+  $result = json_encode(array('status' => false , 'message' => '登録にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);
