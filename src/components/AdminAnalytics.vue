@@ -63,7 +63,11 @@
             disable-sort
           >
             <template v-slot:item.status="{ item }">
-              <v-checkbox :input-value="item.status == '1' ? true : false" @change="set_status(item)"></v-checkbox>
+              <v-checkbox 
+                class="checkbox mt-4 mb-4"
+                hide-details
+               :input-value="item.status == '1' ? true : false" @change="set_status(item)"
+              ></v-checkbox>
             </template>
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
@@ -79,6 +83,12 @@
     ></alert>
   </v-dialog>
 </template>
+<style lang="scss">
+.checkbox {
+    transform: scale(1.5);
+    transform-origin: left;
+}
+</style>
 <script>
 import alert from './alert.vue';
 import axios from 'axios';
@@ -105,13 +115,13 @@ export default {
       { value:"status", text:"", width: "5%", align: 'center'},
       { value:"date", text:"日付", width: "8%", align: 'center'},
       { value:"agenda", text:"案件", width: "14%", align: 'start'},
-      { value:"name", text:"名前", width: "13%", align: 'start'},
+      { value:"name", text:"名前", width: "14%", align: 'start'},
       { value:"start_time", text:"出勤", width: "10%", align: 'center'},
       { value:"end_time", text:"退勤", width: "10%", align: 'center'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "10%", align: 'center'},
       { value:"staff_day_salary", text:"日給", width: "10%", align: 'center'},
-      { value:"staff_expense", text:"経費", width: "10%", align: 'center'}
+      { value:"staff_expense", text:"経費", width: "9%", align: 'center'}
     ],
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
