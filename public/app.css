@@ -38,6 +38,22 @@ tbody tr td {
   background-color: white;
 }
 
+.paid_schedule {
+  background-color: #FFEA00;
+}
+
+.not_paid_schedule {
+  background-color: white;
+}
+
+.odd_schedule {
+  background: rgba(170, 200, 99,0.2); 
+}
+
+.even_schedule {
+  background-color: white;
+}
+
 .v-input__control .v-text-field__details .v-messages .v-messages__wrapper .v-messages__message {
   font-size: 18px !important;
   margin-top: 5px !important;
