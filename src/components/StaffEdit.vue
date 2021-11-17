@@ -8,7 +8,7 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn class="success mx-2 botton_size" @click="edit">
-            <v-icon>save</v-icon>登録
+            <v-icon>cloud_upload</v-icon>登録
           </v-btn>
           <v-btn class="error mx-2 botton_size" @click="close">
             <v-icon>cancel</v-icon>キャンセル

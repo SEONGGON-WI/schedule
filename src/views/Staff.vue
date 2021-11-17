@@ -57,7 +57,7 @@
               </v-row>
             </v-form>
             <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == ''">
-              <v-icon>save</v-icon>登録
+              <v-icon>cloud_upload</v-icon>登録
             </v-btn>
           </v-toolbar>
 
