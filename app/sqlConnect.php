@@ -154,14 +154,15 @@ class mysqlConnect {
 
   public function createScheduleTable() {
     $query = "CREATE TABLE IF NOT EXISTS schedule (";
+    $query = $query."status BOOLEAN not null,";
     $query = $query."name varchar(32) not null,";
     $query = $query."date DATE not null,";
-    $query = $query."client DATE not null,";
+    $query = $query."client TEXT not null,";
     $query = $query."agenda TEXT not null,";
-    $query = $query."start_time TEXT not null,";
-    $query = $query."end_time TEXT not null,";
-    $query = $query."total_time TEXT not null,";
-    $query = $query."admin_total_time TEXT not null,";
+    $query = $query."start_time varchar(5) not null,";
+    $query = $query."end_time varchar(5) not null,";
+    $query = $query."total_time varchar(5) not null,";
+    $query = $query."admin_total_time varchar(5) not null,";
     $query = $query."staff_hour_salary TEXT not null,";
     $query = $query."staff_day_salary TEXT not null,";
     $query = $query."staff_expense TEXT not null,";
