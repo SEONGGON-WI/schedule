@@ -146,6 +146,7 @@
 
   <admin-analytics
     @change="change_analytics($event)"
+    @reload="reload()"
     @close="analytics_show = false"
     v-if="analytics_show"
     :items="analytics_items"

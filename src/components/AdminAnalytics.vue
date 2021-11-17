@@ -63,7 +63,7 @@
             disable-sort
           >
             <template v-slot:item.status="{ item }">
-              <v-checkbox :value="item.status == '1' ? true : false" @change="set_status(item)"></v-checkbox>
+              <v-checkbox :input-value="item.status == '1' ? true : false" @change="set_status(item)"></v-checkbox>
             </template>
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
@@ -185,7 +185,9 @@ export default {
         })
       })
       axios.post(url, {event:data}).then(function(response) {
-        if (response.data.status == false) {
+        if (response.data.status == true) {
+          this.$emit("reload");    
+        } else {
           this.alert(response.data.message);
         }
       }.bind(this))
