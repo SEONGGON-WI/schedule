@@ -6,6 +6,9 @@
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-btn class="success mx-2 botton_size" @click="upload">
+            <v-icon>cloud_upload</v-icon>登録
+          </v-btn>
           <v-btn class="error mx-2 botton_size" @click="close">
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
@@ -53,11 +56,15 @@
             v-else
             :headers="headers"
             :items="items"
+            :item-class="paid_background"
             class="mt-3 fixed-header2"
             hide-default-footer 
             disable-pagination
             disable-sort
           >
+            <template v-slot:item.status="{ item }">
+              <v-checkbox :value="item.status == '1' ? true : false" @change="set_status(item)"></v-checkbox>
+            </template>
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
             </template>
@@ -65,12 +72,20 @@
         </v-tabs-items>
       </v-card-text>
     </v-card>
+    <alert
+      @close="alert_show = false"
+      :text="alert_text"
+      v-if="alert_show"
+    ></alert>
   </v-dialog>
 </template>
 <script>
+import alert from './alert.vue';
+import axios from 'axios';
 export default {
   name: "adminanalytics",
   components: {
+    alert,
   },
   props: [
     'items', 'name_items', 'name', 'date'
@@ -87,10 +102,10 @@ export default {
       { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
     ],
     headers: [
+      { value:"status", text:"", width: "5%", align: 'center'},
       { value:"date", text:"日付", width: "8%", align: 'center'},
-      { value:"client", text:"顧客", width: "10%", align: 'start'},
-      { value:"agenda", text:"案件", width: "12%", align: 'start'},
-      { value:"name", text:"名前", width: "10%", align: 'start'},
+      { value:"agenda", text:"案件", width: "14%", align: 'start'},
+      { value:"name", text:"名前", width: "13%", align: 'start'},
       { value:"start_time", text:"出勤", width: "10%", align: 'center'},
       { value:"end_time", text:"退勤", width: "10%", align: 'center'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
@@ -100,8 +115,11 @@ export default {
     ],
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
+    background_date: [],
     total_agenda: 0,
     differ_name: '',
+    alert_text: '',
+    alert_show: false,
     dialog: false,
   }),
   created() {
@@ -117,7 +135,7 @@ export default {
   computed: {
     get_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
-        if (obj.staff_day_salary != '') {
+        if (obj.staff_day_salary != '' && obj.status == 0) {
           var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
           return stack + parseInt(obj.staff_day_salary) + expense
         } else {
@@ -139,6 +157,12 @@ export default {
     },
   },
   methods: {
+    set_status(item) {
+      item.status = item.status == '1' ? '0' : '1'
+    },
+    paid_background(item) {
+      return item.status == 1 ? 'paid_schedule' : 'not_piad_schedule' ;
+    },
     get_date(date) {
       const day = date.split("-")
       if (day[2] < 10) {
@@ -149,6 +173,26 @@ export default {
     },
     change_name() {
       this.$emit("change", this.differ_name);
+    },
+    upload() {
+      const url = "/schedule/app/adminEditAnalytics.php";
+      let data = []
+      this.items.map(element => {
+        data.push({
+          status: element.status,
+          name: element.name,
+          date: element.date
+        })
+      })
+      axios.post(url, {event:data}).then(function(response) {
+        if (response.data.status == false) {
+          this.alert(response.data.message);
+        }
+      }.bind(this))
+    },
+    alert(text) {
+      this.alert_text = text;
+      this.alert_show = true;
     },
     close() {
       this.dialog = false;
