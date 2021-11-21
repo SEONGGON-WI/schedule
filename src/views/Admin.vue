@@ -152,6 +152,8 @@
     :items="analytics_items"
     :name_items="analytics_name_items"
     :name="analytics_name"
+    :agenda_items="analytics_agenda_items"
+    :agenda ="analytics_agenda"
     :date="calendar_date"
   ></admin-analytics>
 
@@ -288,6 +290,8 @@ export default {
     analytics_items: [],
     analytics_name_items: [],
     analytics_name: '',
+    analytics_agenda_items: [],
+    analytics_agenda: '',
     alert_show: false,
     alert_type: '',
     alert_text: '',
@@ -498,9 +502,16 @@ export default {
       if (client != '') {
         data = data.filter(obj => obj.client == client);
       }
-      if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
-        data = data.filter(obj => obj.agenda == agenda);
-      }
+
+      const name_items = data.map(element => element.name);
+      this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
+        return name_items.indexOf(obj) === index;
+      }).sort(this.sort_by([{key:'name'}]))];
+
+      const agenda_items = data.map(element => element.agenda);
+      this.analytics_agenda_items =  ['', ...agenda_items.filter((obj, index) => {
+        return agenda_items.indexOf(obj) === index;
+      }).sort(this.sort_by([{key:'agenda'}]))];
       // data.sort(function(a, b) {
       //   // if (a.date < b.date) {
       //   //   return -1
@@ -509,15 +520,14 @@ export default {
       //   // }
       //   return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
       // });
-      const name_items = data.map(element => element.name);
       // this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
       //   return name_items.indexOf(obj) === index;
       // }).sort(function (a, b) {
       //   return a.localeCompare(b, 'ja')
       // })];
-      this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
-        return name_items.indexOf(obj) === index;
-      }).sort(this.sort_by([{key:'name'}]))];
+      if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
+        data = data.filter(obj => obj.agenda == agenda);
+      }
       if (name != '全員') {
         data = data.filter(obj => obj.name == name);
       }
@@ -527,13 +537,15 @@ export default {
       ]
       data.sort(this.sort_by(sort_list))
       this.analytics_name = name
+      this.analytics_agenda = agenda
       this.analytics_items = data
       this.analytics_show = true
     },
-    change_analytics(name) {
+    change_analytics(condition) {
+      const name = condition.name
+      const agenda = condition.agenda
       let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const client = this.client;
-      const agenda = this.agenda;
       data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
       if (client != '') {
         data = data.filter(obj => obj.client == client);
@@ -550,6 +562,7 @@ export default {
       ]
       data.sort(this.sort_by(sort_list))
       this.analytics_name = name
+      this.analytics_agenda = agenda
       this.analytics_items = data
     },
     remove() {
