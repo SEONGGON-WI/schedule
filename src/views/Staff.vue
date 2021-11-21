@@ -74,7 +74,7 @@
               @change="fetch"
             >
             <template v-slot:event="{ event }">
-              <div class="event_message mt-2 ml-4">
+              <div class="event_message mt-3 ml-1">
                 {{ event.agenda }}
               </div>
             </template>
@@ -123,15 +123,17 @@
   background-color: #BDBDBD !important;
 }
 .v-event {
-  width: 94% !important;
-  left: 3% !important;
+  font-size: 30px !important;
+  width: 98% !important;
+  left: 1% !important;
   height: 40% !important;
   top: 1% !important;
 }
 @media screen and ( max-width: 1000px ) {
   .v-event {
-    width: 94% !important;
-    left: 3% !important;
+    font-size: 30px !important;
+    width: 98% !important;
+    left: 1% !important;
     height: 40% !important;
     top: 1% !important;
   }
