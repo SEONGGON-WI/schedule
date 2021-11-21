@@ -252,6 +252,7 @@ export default {
     },
     get_total(item) {
       let time = ''
+      let admin_time = ''
       if (this.salary_change === 'hour' && item.start_time != '' && item.end_time != '' && item.start_time.length == 5 && item.end_time.length == 5) {
         var start = item.start_time.split(":")
         var end = item.end_time.split(":")
@@ -260,13 +261,14 @@ export default {
         var end_date = new Date (2020,11,31,end[0],end[1],0)
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
         time = Number(time).toFixed(2)
+        admin_time = (Number(parseFloat(time) + 1).toFixed(2))
         var time_difference = parseFloat(item.total_time) - parseFloat(time)
         if (time_difference <= 2 || time_difference >= -2) {
           item.admin_total_time = Number(item.admin_total_time).toFixed(2)
           return Number(item.total_time).toFixed(2)
         }
       }
-      item.admin_total_time = (Number(parseFloat(time) + 1).toFixed(2))
+      item.admin_total_time = admin_time
       return time
     },
     get_staff_day_salary(item) {
