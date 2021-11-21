@@ -6,6 +6,9 @@
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-toolbar-title class="mx-3">
+            {{ total_agenda }}
+          </v-toolbar-title>
           <v-btn class="success mx-2 botton_size" @click="upload">
             <v-icon>cloud_upload</v-icon>登録
           </v-btn>
@@ -21,15 +24,23 @@
             class="pt-0"
             v-model="differ_name" 
             :items="name_items"
-            @change="change_name"
+            @change="change"
             append-icon="arrow_drop_down"
             hide-details
           ></v-select>
         </v-col>
-        <v-col cols="2" class="name_agenda pt-3 pl-8">
-          {{ total_agenda }}
+        <v-col cols="4" class="name_agenda pt-3 pl-8">
+          <v-select 
+            height="30"
+            class="pt-0"
+            v-model="differ_agenda" 
+            :items="agenda_items"
+            @change="change"
+            append-icon="arrow_drop_down"
+            hide-details
+          ></v-select>
         </v-col>
-        <v-col cols="6" class="name_agenda pt-3 pl-8">
+        <v-col cols="4" class="name_agenda pt-3 pl-8">
           {{ tab == 0 ? get_admin_total_salary : get_total_salary }}
         </v-col>
       </v-row>
@@ -98,7 +109,7 @@ export default {
     alert,
   },
   props: [
-    'items', 'name_items', 'name', 'date'
+    'items', 'name_items', 'name', 'agenda_items', 'agenda', 'date'
   ],
   data: () => ({
     header: [
@@ -128,6 +139,7 @@ export default {
     background_date: [],
     total_agenda: 0,
     differ_name: '',
+    differ_agenda: '',
     alert_text: '',
     alert_show: false,
     dialog: false,
@@ -135,6 +147,7 @@ export default {
   created() {
     this.total_agenda = this.items.length + "件"
     this.differ_name = this.name
+    this.differ_agenda = this.agenda
     this.dialog = true;
   },
   watch: {
@@ -181,8 +194,12 @@ export default {
         return day[2]
       }
     },
-    change_name() {
-      this.$emit("change", this.differ_name);
+    change() {
+      const condition = {
+        name : this.differ_name,
+        agenda: this.differ_agenda
+      }
+      this.$emit("change", condition);
     },
     upload() {
       const url = "/schedule/app/adminEditAnalytics.php";
