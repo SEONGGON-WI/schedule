@@ -263,7 +263,8 @@ export default {
       { icon: "business", text: "クライアント管理", action: "client"},
       { icon: "people", text: "スタッフ管理", action: "staff"},
       { icon: "delete", text: "データ削除", action: "remove"},
-      { icon: "cloud_download", text: "CSV出力", action: "download"}
+      { icon: "cloud_download", text: "経理表出力", action: "download"},
+      { icon: "cloud_download", text: "請求書出力", action: "download2"}
     ],
     client_show: false,
     staff_show: false,
@@ -311,6 +312,214 @@ export default {
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
     this.get_client();
+
+    this.event = [
+    {
+        "client": "CC",
+        "agenda": "SCA2021ﾗｯｷｰｺｰﾋｰﾏｼｰﾝﾌﾞｰｽ"
+    },
+    {
+        "client": "EMI",
+        "agenda": "BoConcept　会員獲得キャンペーン"
+    },
+    {
+        "client": "EMI",
+        "agenda": "Tender Loving Sustainable Christmas点灯式"
+    },
+    {
+        "client": "EMI",
+        "agenda": "激坂最速王決定戦"
+    },
+    {
+        "client": "EMI",
+        "agenda": "第62回日本肺癌学会学術集会"
+    },
+    {
+        "client": "fu",
+        "agenda": "第40回伊豆会議"
+    },
+    {
+        "client": "GGC",
+        "agenda": "DMMオンライン展示会事務局"
+    },
+    {
+        "client": "GGC",
+        "agenda": "丸亀製麺記者発表会"
+    },
+    {
+        "client": "GGC",
+        "agenda": "公式LINEお友だち特典キャンペーン"
+    },
+    {
+        "client": "GGC",
+        "agenda": "柏レイソルイベント"
+    },
+    {
+        "client": "GGC",
+        "agenda": "試験運営"
+    },
+    {
+        "client": "nwc",
+        "agenda": "オンライン社員総会"
+    },
+    {
+        "client": "zips",
+        "agenda": "KDDI記者発表"
+    },
+    {
+        "client": "zips",
+        "agenda": "将棋日本シリーズ東京大会"
+    },
+    {
+        "client": "zips",
+        "agenda": "都市対抗野球大会2021"
+    },
+    {
+        "client": "アンボス",
+        "agenda": "ジャンプフェスタ"
+    },
+    {
+        "client": "インベース",
+        "agenda": "hololive ERROR リアル脱出ゲーム"
+    },
+    {
+        "client": "インベース",
+        "agenda": "しまじろうコンサート"
+    },
+    {
+        "client": "インベース",
+        "agenda": "リモート配信の進行AD"
+    },
+    {
+        "client": "イーアレンジ",
+        "agenda": "shu uemura HELLO KITTY コラボイベント"
+    },
+    {
+        "client": "イーアレンジ",
+        "agenda": "YSL配信イベント"
+    },
+    {
+        "client": "イーアレンジ",
+        "agenda": "仮　ロレアル"
+    },
+    {
+        "client": "イーアレンジ",
+        "agenda": "仮　撮影案件"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "くら寿司発表会"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "スポーツ文化ツーリズムシンポジウム"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "スマッピーキャンペーン"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "ラトビア日本修好100周年イベント"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "ロールスロイス　搬入出補助"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "新価値創造展2021"
+    },
+    {
+        "client": "ゴエモン",
+        "agenda": "東京レザーフェア"
+    },
+    {
+        "client": "スカイ",
+        "agenda": "ルフロンアプリポイントチャージキャンペーンスタッフ"
+    },
+    {
+        "client": "スカイ",
+        "agenda": "ルフロンアプリ入会カウンター"
+    },
+    {
+        "client": "フィート",
+        "agenda": "CHILLOUT ZERO サンプリング"
+    },
+    {
+        "client": "フィート",
+        "agenda": "監視業務"
+    },
+    {
+        "client": "フォーライン",
+        "agenda": "Wacom"
+    },
+    {
+        "client": "フォーライン",
+        "agenda": "リクナビ"
+    },
+    {
+        "client": "フォーライン",
+        "agenda": "日立SSB Festival Online"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "お買い物券販売&抽選会"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "創エネ・あかりパーク2021"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "新プリクラ先行体験会"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "書類審査業務案件＠東銀座"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "東京都行幸地下ワクチン接種センター"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "某事務局入力作業"
+    },
+    {
+        "client": "レイゲツ",
+        "agenda": "車輛メーカー発表会"
+    },
+    {
+        "client": "広原",
+        "agenda": "富士山花火大会"
+    },
+    {
+        "client": "広原",
+        "agenda": "拉致問題　国際シンポジウム"
+    },
+    {
+        "client": "田代",
+        "agenda": "TOKYOワクション事務局作業"
+    },
+    {
+        "client": "ﾖﾝﾅﾅ",
+        "agenda": "某大手ｺﾝﾋﾞﾆｴﾝｽｽﾄｱ　ﾌﾟﾛﾓｰｼｮﾝｲﾍﾞﾝﾄ"
+    },
+    {
+        "client": "ﾖﾝﾅﾅ",
+        "agenda": "某大手ｺﾝﾋﾞﾆｴﾝｽｽﾄｱ　ﾌﾟﾛﾓｰｼｮﾝｵﾍﾞﾝﾄ"
+    },
+    {
+        "client": "ﾖﾝﾅﾅ",
+        "agenda": "某飲料メーカーキャンペーンイベント"
+    },
+    {
+        "client": "ﾖﾝﾅﾅ",
+        "agenda": "第58回体育研究発表実演会"
+    }
+]
+     this.$store.commit('set_client_agenda', this.event)
   },
   computed: {
     get_agenda() {
@@ -384,6 +593,10 @@ export default {
 
         case 'download':
           this.csv_download()
+          break;
+
+        case 'download2':
+          this.csv_download2()
           break;
         
         default:
@@ -705,6 +918,7 @@ export default {
       this.alert_show = true;
     },
     async csv_download() {
+      const file_name = "経理表_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
        var config = {
         responseType: "blob",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -713,16 +927,33 @@ export default {
       this.csvdownloading = true
       const data = this.search_date
       await axios.post("/schedule/app/csvDownload.php", data, config).then(function (response) {
-        this.downloadCSV(response)
+        this.downloadCSV(file_name, response)
       }.bind(this))
     },
-    downloadCSV(res) {
+    async csv_download2() {
+      if (this.client == '') {
+        return
+      }
+      const file_name = "請求書" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+       var config = {
+        responseType: "blob",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      };
+      this.csvdownloading = true
+      const data = {
+        start_date: this.search_date.start_date,
+        end_date: this.search_date.end_date,
+        client: this.client
+      }
+      await axios.post("/schedule/app/csvDownload2.php", data, config).then(function (response) {
+        this.downloadCSV(file_name, response)
+      }.bind(this))
+    },
+    downloadCSV(file_name, res) {
       var blob = new Blob([res.data], { type: "text/csv" });
       if (blob.size === 0) {
         return;
       }
-      const file_name = this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
-
       if (window.navigator.msSaveBlob) {
         window.navigator.msSaveBlob(blob, file_name);
         window.navigator.msSaveOrOpenBlob(blob, file_name);
@@ -735,6 +966,7 @@ export default {
         link.setAttribute("download", file_name);
         link.click();
       }
+      this.csvdownloading = false
     },
     async reload() {
       await this.get_data()

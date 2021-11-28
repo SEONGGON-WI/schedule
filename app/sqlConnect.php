@@ -143,10 +143,10 @@ class mysqlConnect {
     return $table;
   }
 
-  public function getCsv2($client) {
-    $sql = "SELECT date, client, agenda, COUNT(name) AS cnt, sum(admin_day_salary) AS staff_total_expense FROM schedule ";
-    $sql = $sql."WHERE client = '$client' AND agenda != '' ";
-    $sql = $sql."GROUP BY date, client, agenda ";
+  public function getCsv2($start_date, $end_date, $client) {
+    $sql = "SELECT date, client, agenda, admin_day_salary, COUNT(name) AS cnt, sum(admin_day_salary) AS admin_total_salary FROM schedule ";
+    $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
+    $sql = $sql."GROUP BY date, client, agenda, admin_day_salary ";
     $sql = $sql."ORDER BY client, agenda, date";
 
     $result = $this->mysql->query($sql);
