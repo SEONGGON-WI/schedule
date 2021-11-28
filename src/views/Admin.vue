@@ -934,7 +934,7 @@ export default {
       if (this.client == '') {
         return
       }
-      const file_name = "請求書" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+      const file_name = "請求書_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
        var config = {
         responseType: "blob",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },

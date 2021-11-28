@@ -41,7 +41,7 @@ try {
           . mb_convert_encoding('日', 'SJIS', 'UTF-8') . '","'
           . $value['admin_day_salary'] . '","'
           . $admin_total_salary . '","'
-          . $working_day . '"'
+          . "'". $working_day . '"'
           . "\r\n";
     }
     $dbConnect->dbClose();
