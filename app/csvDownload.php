@@ -12,7 +12,7 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"日付","クライアント","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"時間","日數","時給","日給","月給","交通費"'. "\r\n";
+    $csv = '"日付","クライアント","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"時間","日數","時給","日給","月給","交通費",,,,"日払い"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
@@ -96,6 +96,12 @@ try {
         $value['staff_total_expense'] = number_format((int)$value['staff_total_expense']);
       }   
 
+      if ($value['status'] != 1) {
+        $paid = '';
+      } else {
+        $paid = number_format((int)$value['paid'] * 1000);
+      }
+
       $csv .= '"'
           . $working_day . '","'
           . mb_convert_encoding($value['client'], 'SJIS', 'UTF-8') . '","'
@@ -117,7 +123,11 @@ try {
           . $value['staff_hour_salary'] . '","'
           . $value['staff_day_salary'] . '","'
           . $staff_total_salary . '","'
-          . $value['staff_total_expense'] . '"'
+          . $value['staff_total_expense'] . '","'
+          . '","'
+          . '","'
+          . '","'
+          . $paid . '"'
           . "\r\n";
     }
     $dbConnect->dbClose();

@@ -124,10 +124,30 @@ class mysqlConnect {
   }
 
   public function getCsv($start_date, $end_date) {
-    $sql = "SELECT name, client, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(name) AS cnt, sum(staff_expense) AS staff_total_expense, sum(admin_expense) AS admin_total_expense FROM schedule ";
+    $sql = "SELECT status, name, client, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(status) AS paid, COUNT(name) AS cnt, sum(staff_expense) AS staff_total_expense, sum(admin_expense) AS admin_total_expense FROM schedule ";
     $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
-    $sql = $sql."GROUP BY name, client, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
-    $sql = $sql."ORDER BY client, agenda, name";
+    $sql = $sql."GROUP BY status, name, client, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
+    $sql = $sql."ORDER BY client, agenda, date, name";
+
+    $result = $this->mysql->query($sql);
+    if ($result->num_rows > 0) {
+      $i = 0;
+      while($row = $result->fetch_assoc()) {
+        $table[$i] = $row;
+        $i++;
+      }
+    }
+    if (!isset($table)) {
+      return;
+    } 
+    return $table;
+  }
+
+  public function getCsv2($client) {
+    $sql = "SELECT date, client, agenda, COUNT(name) AS cnt, sum(admin_day_salary) AS staff_total_expense FROM schedule ";
+    $sql = $sql."WHERE client = '$client' AND agenda != '' ";
+    $sql = $sql."GROUP BY date, client, agenda ";
+    $sql = $sql."ORDER BY client, agenda, date";
 
     $result = $this->mysql->query($sql);
     if ($result->num_rows > 0) {
@@ -176,7 +196,7 @@ class mysqlConnect {
   public function createClientTable() {
     $query = "CREATE TABLE IF NOT EXISTS client (";
     $query = $query."client varchar(32) not null,";
-    $query = $query."agenda varchar(32) not null,";
+    $query = $query."agenda varchar(64) not null,";
     $query = $query."primary key(client, agenda));";
     $this->mysql->query($query);
   }
