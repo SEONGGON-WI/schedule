@@ -7,9 +7,12 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-title class="mx-3">
+            {{ tab == 1 ? staff_total_salary : admin_total_salary }}
+          </v-toolbar-title>
+          <v-toolbar-title class="mx-3">
             {{ total_agenda }}
           </v-toolbar-title>
-          <v-btn class="success mx-2 botton_size" @click="upload">
+          <v-btn class="success mx-2 botton_size" @click="check()">
             <v-icon>cloud_upload</v-icon>登録
           </v-btn>
           <v-btn class="error mx-2 botton_size" @click="close">
@@ -18,7 +21,7 @@
         </v-toolbar>
       <v-card-text class="pa-0">
       <v-row no-gutters class="mb-3">
-        <v-col cols="4" class="name_agenda pt-3 pl-8">
+        <v-col cols="2" class="name_agenda pt-3 pl-8">
           <v-select 
             height="30"
             class="pt-0"
@@ -29,7 +32,7 @@
             hide-details
           ></v-select>
         </v-col>
-        <v-col cols="4" class="name_agenda pt-3 pl-8">
+        <v-col cols="3" class="name_agenda pt-3 pl-8">
           <v-select 
             height="30"
             class="pt-0"
@@ -40,8 +43,13 @@
             hide-details
           ></v-select>
         </v-col>
-        <v-col cols="4" class="name_agenda pt-3 pl-8">
-          {{ tab == 0 ? get_admin_total_salary : get_total_salary }}
+        <v-spacer></v-spacer>
+        <v-col cols="3" class="name_agenda pt-3 pl-8">
+          {{ tab == 1 ? get_pay_total_salary : '' }}
+        </v-col>
+        <v-col cols="4" class="name_agenda pt-3 pr-2">
+          {{ tab == 1 ? get_paid_total_salary : '' }}
+          {{ tab == 1 ? get_paid_status : '' }}
         </v-col>
       </v-row>
       <v-tabs v-model="tab" grow>
@@ -87,6 +95,12 @@
         </v-tabs-items>
       </v-card-text>
     </v-card>
+    <admin-dialog
+      @accept="upload"
+      @close="check_dialog = false"
+      v-if="check_dialog"
+      :text="check_text"
+    ></admin-dialog>
     <alert
       @close="alert_show = false"
       :text="alert_text"
@@ -101,11 +115,13 @@
 }
 </style>
 <script>
+import AdminDialog from '@/components/AdminDialog.vue';
 import alert from './alert.vue';
 import axios from 'axios';
 export default {
   name: "adminanalytics",
   components: {
+    AdminDialog,
     alert,
   },
   props: [
@@ -142,12 +158,18 @@ export default {
     differ_agenda: '',
     alert_text: '',
     alert_show: false,
+    check_text: '登録しますか？',
+    check_dialog: false,
+    staff_total_salary: 0,
+    admin_total_salary: 0,
     dialog: false,
   }),
   created() {
     this.total_agenda = this.items.length + "件"
     this.differ_name = this.name
     this.differ_agenda = this.agenda
+    this.staff_total_salary = this.get_total_salary()
+    this.admin_total_salary = this.get_admin_total_salary()
     this.dialog = true;
   },
   watch: {
@@ -156,11 +178,51 @@ export default {
     },
   },
   computed: {
-    get_total_salary() {
+    get_pay_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '' && obj.status == 0) {
           var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
           return stack + parseInt(obj.staff_day_salary) + expense
+        } else {
+          return stack
+        }
+      }, 0)
+      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    get_paid_total_salary() {
+      const salary = this.items.reduce((stack, obj) => {
+        if (obj.staff_day_salary != '' && obj.status == 1) {
+          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
+          return stack + parseInt(obj.staff_day_salary) + expense
+        } else {
+          return stack
+        }
+      }, 0)
+      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    get_paid_status() {
+      const salary = this.items.reduce((stack, obj) => {
+        if (obj.staff_day_salary != '' && obj.status == 1) {
+          return stack + 1000
+        } else {
+          return stack
+        }
+      }, 0)
+      return " - " + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+  },
+  methods: {
+    set_status(item) {
+      item.status = item.status == '1' ? '0' : '1'
+    },
+    paid_background(item) {
+      return item.status == 1 ? 'paid_schedule' : 'not_piad_schedule' ;
+    },
+    get_total_salary() {
+      const salary = this.items.reduce((stack, obj) => {
+        if (obj.staff_day_salary != '') {
+          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
+            return stack + parseInt(obj.staff_day_salary) + expense
         } else {
           return stack
         }
@@ -177,14 +239,6 @@ export default {
         }
       }, 0)
       return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-  },
-  methods: {
-    set_status(item) {
-      item.status = item.status == '1' ? '0' : '1'
-    },
-    paid_background(item) {
-      return item.status == 1 ? 'paid_schedule' : 'not_piad_schedule' ;
     },
     get_date(date) {
       const day = date.split("-")
@@ -218,6 +272,9 @@ export default {
           this.alert(response.data.message);
         }
       }.bind(this))
+    },
+    check() {
+      this.check_dialog = true;
     },
     alert(text) {
       this.alert_text = text;
