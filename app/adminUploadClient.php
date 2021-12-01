@@ -1,15 +1,18 @@
 <?php
 $response = json_decode(file_get_contents('php://input'), true);
+$start_date = $response['start_date'];
 $client = $response['client'];
 $agenda = $response['agenda'];
+$hour_salary = $response['hour_salary'];
+$day_salary = $response['day_salary'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
   $index = 0;
   $client = trim($client);
-  $sql = "INSERT IGNORE INTO client ( client, agenda ) VALUES ";
+  $sql = "INSERT IGNORE INTO client ( date, client, agenda, hour_salary, day_salary ) VALUES ";
   foreach ($agenda as $values) {
-    $sql_value = "( '{$client}', '{$values}' )";
+    $sql_value = "( '{$start_date}', '{$client}', '{$values}', '{$hour_salary}', '{$day_salary}' )";
     $query = $sql.$sql_value;
     $dbConnect->mysql->query($query);
     $index++;

@@ -1,11 +1,12 @@
 <?php
 $response = json_decode(file_get_contents('php://input'), true);
+$start_date = $response['start_date'];
 $client = $response['client'];
 $agenda = $response['agenda'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $del = "DELETE FROM client WHERE client = '$client' AND agenda = '$agenda'";
+  $del = "DELETE FROM client WHERE client = '$client' AND agenda = '$agenda' AND date = '$start_date'";
   $dbConnect->mysql->query($del);
   $result = json_encode(array('status' => true));
 } catch(Exception $e) {

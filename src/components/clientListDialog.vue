@@ -16,6 +16,7 @@
           <v-row>
             <v-col cols="3">
               <v-textarea
+                class="pt-1"
                 v-model="client"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                 label="クライアント名を入力"
@@ -27,7 +28,7 @@
                 clearable
               ></v-textarea>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="9">
               <v-autocomplete
                 v-model="agenda" 
                 :items="calculate_agenda"
@@ -42,7 +43,31 @@
                 @change="search = ''"
               ></v-autocomplete>
             </v-col>
+          </v-row>
+          <v-row>
             <v-col cols="3">
+              <v-text-field
+                ref="hour"
+                v-model="hour_salary"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                @keydown.enter="enter(1)"
+                label="時給"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                ref="day"
+                v-model="day_salary"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                @keydown.enter="enter(2)"
+                label="日給"
+                single-line
+                hide-details
+              ></v-text-field>              
+            </v-col>
+            <v-col cols="5">
               <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>cloud_upload</v-icon>登録</v-btn>
               <v-btn outlined class="success ma-2" color="white" @click="acceptClient"><v-icon>autorenew</v-icon>反映</v-btn>
               <v-btn outlined class="error ma-2" color="white" @click="deleteClient" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
@@ -96,14 +121,16 @@ export default {
     alert,
   },
   props: [
-    'agenda_items'
+    'agenda_items', 'start_date'
   ],
   data: () => ({
     items: [],
     headers: [
-      { value:"client", text:"クライアント名", width: "40%", align: 'start'},
+      { value:"client", text:"クライアント名", width: "20%", align: 'start'},
       { value:"agenda", text:"案件名", width: "40%", align: 'start'},
-      { value:"action", text:"削除", width:"20%", align: 'center', sortable: false}
+      { value:"day_salary", text:"時給", width: "15%", align: 'start'},
+      { value:"hour_salary", text:"日給", width: "15%", align: 'start'},
+      { value:"action", text:"削除", width:"10%", align: 'center', sortable: false}
     ],
     footer : {
       itemsPerPageText:"1ページあたりの行数",
@@ -116,6 +143,8 @@ export default {
     client: '',
     agenda: '',
     agenda_list: [],
+    hour_salary: '',
+    day_salary: '',
     search: '',
     search_table: '',
     alert_text: '',
@@ -156,7 +185,9 @@ export default {
     },
     fetch_data() {
       const url = "/schedule/app/adminGetClient.php";
-      const data = {}
+      const data = {
+        start_date: this.start_date,
+      }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
           this.$store.commit('set_client_agenda', response.data.data)
@@ -170,8 +201,11 @@ export default {
     setClient() {
       const url = "/schedule/app/adminUploadClient.php";
       const data = {
+        start_date: this.start_date,
         client: this.client,
-        agenda: this.agenda
+        agenda: this.agenda,
+        hour_salary: this.hour_salary,
+        day_salary: this.day_salary,
       }
       axios.post(url, data).then(function(response) {
         this.client = ''
@@ -189,6 +223,7 @@ export default {
     deleteClient() {
       const url = "/schedule/app/adminDeleteClient.php";
       const data = {
+        start_date: this.start_date,
         client: this.client,
       }
       axios.post(url, data).then(function(response) {
@@ -202,6 +237,7 @@ export default {
     remove(item) {
       const url = "/schedule/app/adminRemoveClient.php";
       const data = {
+        start_date: this.start_date,
         client: item.client,
         agenda: item.agenda,
       }
@@ -212,6 +248,24 @@ export default {
           this.alert(response.data.message)
         }
       }.bind(this))
+    },
+    enter(index) {
+      switch (index) {
+        case 1:
+          this.$refs.day.focus()
+          break;
+
+        case 2:
+          if(this.client == '' || this.agenda.length == 0) {
+            break
+          } else {
+            this.setClient()
+            break
+          }
+
+        default:
+          break;
+      }
     },
     alert(text) {
       this.alert_text = text;
