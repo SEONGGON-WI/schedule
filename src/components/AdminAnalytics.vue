@@ -62,6 +62,7 @@
             v-if="tab == 0"
             :headers="header"
             :items="items"
+            :item-class="admin_background"
             class="mt-3 fixed-header2"
             hide-default-footer 
             disable-pagination
@@ -75,7 +76,7 @@
             v-else
             :headers="headers"
             :items="items"
-            :item-class="paid_background"
+            :item-class="staff_background"
             class="mt-3 fixed-header2"
             hide-default-footer 
             disable-pagination
@@ -133,7 +134,7 @@ export default {
       { value:"client", text:"顧客", width: "15%", align: 'start'},
       { value:"agenda", text:"案件", width: "20%", align: 'start'},
       { value:"name", text:"名前", width: "15%", align: 'start'},
-      { value:"admin_total_time", text:"時給", width: "10%", align: 'center'},
+      { value:"admin_total_time", text:"時間", width: "10%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "10%", align: 'center'},
       { value:"admin_day_salary", text:"日給", width: "10%", align: 'center'},
       { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
@@ -215,8 +216,17 @@ export default {
     set_status(item) {
       item.status = item.status == '1' ? '0' : '1'
     },
-    paid_background(item) {
-      return item.status == 1 ? 'paid_schedule' : 'not_piad_schedule' ;
+    admin_background(item) {
+      return item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
+    },
+    staff_background(item) {
+      if (item.status == 1) {
+        return 'paid_schedule'
+      } else if (item.staff_day_salary == '') {
+        return 'empty_salary'
+      } else {
+        return 'filled_salary'
+      }
     },
     get_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
