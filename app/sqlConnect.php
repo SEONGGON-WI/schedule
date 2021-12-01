@@ -90,9 +90,8 @@ class mysqlConnect {
     return $table;
   }
 
-
-  public function getClient() {
-    $query = "SELECT client, agenda FROM client ORDER BY client, agenda";
+  public function getClient($start_date) {
+    $query = "SELECT client, agenda, hour_salary, day_salary FROM client WHERE date = '$start_date' ORDER BY client, agenda";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -195,9 +194,12 @@ class mysqlConnect {
 
   public function createClientTable() {
     $query = "CREATE TABLE IF NOT EXISTS client (";
+    $query = $query."date DATE not null,";
     $query = $query."client varchar(32) not null,";
     $query = $query."agenda varchar(64) not null,";
-    $query = $query."primary key(client, agenda));";
+    $query = $query."hour_salary TEXT not null,";
+    $query = $query."day_salary TEXT not null,";
+    $query = $query."primary key(date, client, agenda));";
     $this->mysql->query($query);
   }
 }
