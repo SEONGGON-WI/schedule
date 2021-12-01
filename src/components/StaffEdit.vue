@@ -46,7 +46,6 @@
               :dense="salary_change == 'day'"
               :filled="salary_change == 'day'"
               :readonly="salary_change == 'day'"
-              @input="timeColon(1)"
               @keydown.enter="enter(1)"
               class="my-3"
               label="出勤時間"
@@ -67,7 +66,6 @@
               :dense="salary_change == 'day'"
               :filled="salary_change == 'day'"
               :readonly="salary_change == 'day'"
-              @input="timeColon(2)"
               @keydown.enter="enter(2)"
               class="my-3"
               label="退勤時間"
@@ -186,7 +184,7 @@ export default {
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
-    rules: [v => v.length == 5 || v == '' || '時間の様式に合わせてください。'],
+    rules: [v => v.length == 4 || v == '' || '時間の様式に合わせてください。'],
     dialog: false,
     salary_change: 'hour',
   }),
@@ -200,6 +198,8 @@ export default {
     } else {
       this.salary_change = 'day';
     }
+    this.items.start_time = this.items.start_time.replace(':','')
+    this.items.end_time = this.items.end_time.replace(':','')
     this.dialog = true;
   },
   watch: {
@@ -253,10 +253,13 @@ export default {
     get_total(item) {
       let time = ''
       let admin_time = ''
-      if (this.salary_change === 'hour' && item.start_time != '' && item.end_time != '' && item.start_time.length == 5 && item.end_time.length == 5) {
-        var start = item.start_time.split(":")
-        var end = item.end_time.split(":")
-
+      if (this.salary_change === 'hour' && item.start_time != '' && item.end_time != '' && item.start_time.length == 4 && item.end_time.length == 4) {
+        var start = []
+        start[0] = item.start_time.substring(0, 2)
+        start[1] = item.start_time.substring(2, 4)
+        var end = []
+        end[0] = item.end_time.substring(0, 2)
+        end[1] = item.end_time.substring(2, 4)
         var start_date = new Date (2020,11,31,start[0],start[1],0)
         var end_date = new Date (2020,11,31,end[0],end[1],0)
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
@@ -298,11 +301,30 @@ export default {
       }
     },
     edit() {
-      if ((this.items.start_time || this.items.end_time) && (this.items.start_time.length != 5 || this.items.end_time.length != 5)) {
+      if ((this.items.start_time || this.items.end_time) && (this.items.start_time.length != 4 || this.items.end_time.length != 4)) {
         return;
+      }
+      this.items.start_time = this.make_colon(this.items.start_time)
+      this.items.end_time = this.make_colon(this.items.end_time)
+      if (this.items.start_time == false || this.items.end_time == false) {
+        return
       }
       this.dialog = false;
       this.$emit("edit", this.items);
+    },
+    make_colon(time) {
+      var hours = time.substring(0, 2)
+      var minute = time.substring(2, 4)
+      if(isFinite(hours + minute) == false) {
+        return false
+      }
+      if (hours > 23 ) {
+        hours = "24"
+      }
+      if (minute > 59) {
+        minute = "00";
+      }
+      return hours + ":" + minute;
     },
     close() {
       this.dialog = false;
