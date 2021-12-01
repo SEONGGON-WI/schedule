@@ -311,8 +311,14 @@ export default {
       let event = JSON.parse(JSON.stringify(this.items))
       const client = this.$store.getters.client_agenda
       event.map(element => {
+        element.admin_total_time = element.admin_total_time == '' ? '' : parseFloat(element.admin_total_time).toFixed(2)
+        element.total_time = element.total_time == '' ? '' : parseFloat(element.total_time).toFixed(2)
         var find = client.find(obj => obj.agenda == element.agenda)
-        element.client = find == undefined ? '' : find.client
+        if (find != undefined) {
+          element.client = find.client
+          element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
+          element.admin_day_salary = element.admin_day_salary == '' ? find.day_salary : element.admin_day_salary  
+        }
       })
       const url = "/schedule/app/adminEditSchedule.php";
       const data = {
