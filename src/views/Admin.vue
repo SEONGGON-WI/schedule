@@ -173,6 +173,8 @@
   <client-list-dialog
     v-if="client_show"
     :agenda_items="get_agenda_items"
+    :today="today"
+    :start_date="search_date.start_date"
     @accept="click(2)"
     @close="client_show = false"
   ></client-list-dialog>
@@ -311,215 +313,6 @@ export default {
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
-    this.get_client();
-
-    this.event = [
-    {
-        "client": "CC",
-        "agenda": "SCA2021ﾗｯｷｰｺｰﾋｰﾏｼｰﾝﾌﾞｰｽ"
-    },
-    {
-        "client": "EMI",
-        "agenda": "BoConcept　会員獲得キャンペーン"
-    },
-    {
-        "client": "EMI",
-        "agenda": "Tender Loving Sustainable Christmas点灯式"
-    },
-    {
-        "client": "EMI",
-        "agenda": "激坂最速王決定戦"
-    },
-    {
-        "client": "EMI",
-        "agenda": "第62回日本肺癌学会学術集会"
-    },
-    {
-        "client": "fu",
-        "agenda": "第40回伊豆会議"
-    },
-    {
-        "client": "GGC",
-        "agenda": "DMMオンライン展示会事務局"
-    },
-    {
-        "client": "GGC",
-        "agenda": "丸亀製麺記者発表会"
-    },
-    {
-        "client": "GGC",
-        "agenda": "公式LINEお友だち特典キャンペーン"
-    },
-    {
-        "client": "GGC",
-        "agenda": "柏レイソルイベント"
-    },
-    {
-        "client": "GGC",
-        "agenda": "試験運営"
-    },
-    {
-        "client": "nwc",
-        "agenda": "オンライン社員総会"
-    },
-    {
-        "client": "zips",
-        "agenda": "KDDI記者発表"
-    },
-    {
-        "client": "zips",
-        "agenda": "将棋日本シリーズ東京大会"
-    },
-    {
-        "client": "zips",
-        "agenda": "都市対抗野球大会2021"
-    },
-    {
-        "client": "アンボス",
-        "agenda": "ジャンプフェスタ"
-    },
-    {
-        "client": "インベース",
-        "agenda": "hololive ERROR リアル脱出ゲーム"
-    },
-    {
-        "client": "インベース",
-        "agenda": "しまじろうコンサート"
-    },
-    {
-        "client": "インベース",
-        "agenda": "リモート配信の進行AD"
-    },
-    {
-        "client": "イーアレンジ",
-        "agenda": "shu uemura HELLO KITTY コラボイベント"
-    },
-    {
-        "client": "イーアレンジ",
-        "agenda": "YSL配信イベント"
-    },
-    {
-        "client": "イーアレンジ",
-        "agenda": "仮　ロレアル"
-    },
-    {
-        "client": "イーアレンジ",
-        "agenda": "仮　撮影案件"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "くら寿司発表会"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "スポーツ文化ツーリズムシンポジウム"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "スマッピーキャンペーン"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "ラトビア日本修好100周年イベント"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "ロールスロイス　搬入出補助"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "新価値創造展2021"
-    },
-    {
-        "client": "ゴエモン",
-        "agenda": "東京レザーフェア"
-    },
-    {
-        "client": "スカイ",
-        "agenda": "ルフロンアプリポイントチャージキャンペーンスタッフ"
-    },
-    {
-        "client": "スカイ",
-        "agenda": "ルフロンアプリ入会カウンター"
-    },
-    {
-        "client": "フィート",
-        "agenda": "CHILLOUT ZERO サンプリング"
-    },
-    {
-        "client": "フィート",
-        "agenda": "監視業務"
-    },
-    {
-        "client": "フォーライン",
-        "agenda": "Wacom"
-    },
-    {
-        "client": "フォーライン",
-        "agenda": "リクナビ"
-    },
-    {
-        "client": "フォーライン",
-        "agenda": "日立SSB Festival Online"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "お買い物券販売&抽選会"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "創エネ・あかりパーク2021"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "新プリクラ先行体験会"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "書類審査業務案件＠東銀座"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "東京都行幸地下ワクチン接種センター"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "某事務局入力作業"
-    },
-    {
-        "client": "レイゲツ",
-        "agenda": "車輛メーカー発表会"
-    },
-    {
-        "client": "広原",
-        "agenda": "富士山花火大会"
-    },
-    {
-        "client": "広原",
-        "agenda": "拉致問題　国際シンポジウム"
-    },
-    {
-        "client": "田代",
-        "agenda": "TOKYOワクション事務局作業"
-    },
-    {
-        "client": "ﾖﾝﾅﾅ",
-        "agenda": "某大手ｺﾝﾋﾞﾆｴﾝｽｽﾄｱ　ﾌﾟﾛﾓｰｼｮﾝｲﾍﾞﾝﾄ"
-    },
-    {
-        "client": "ﾖﾝﾅﾅ",
-        "agenda": "某大手ｺﾝﾋﾞﾆｴﾝｽｽﾄｱ　ﾌﾟﾛﾓｰｼｮﾝｵﾍﾞﾝﾄ"
-    },
-    {
-        "client": "ﾖﾝﾅﾅ",
-        "agenda": "某飲料メーカーキャンペーンイベント"
-    },
-    {
-        "client": "ﾖﾝﾅﾅ",
-        "agenda": "第58回体育研究発表実演会"
-    }
-]
-     this.$store.commit('set_client_agenda', this.event)
   },
   computed: {
     get_agenda() {
@@ -667,7 +460,9 @@ export default {
     },
     async get_client() {
       const url = "/schedule/app/adminGetClient.php";
-      const data = {}
+      const data = {
+        start_date: this.search_date.start_date
+      }
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
           if (response.data.status == true && response.data.data != '') {
@@ -710,7 +505,7 @@ export default {
       const client = this.client;
       const name = this.name;
       const agenda = this.agenda;
-      data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+      data = data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
       
       if (client != '') {
         data = data.filter(obj => obj.client == client);
@@ -759,7 +554,7 @@ export default {
       const agenda = condition.agenda
       let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const client = this.client;
-      data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary != '');
+      data = data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
       if (client != '') {
         data = data.filter(obj => obj.client == client);
       }
@@ -970,6 +765,7 @@ export default {
     },
     async reload() {
       await this.get_data()
+      await this.get_client()
       await this.search()
     },
     async load() {
