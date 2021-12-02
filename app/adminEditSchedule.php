@@ -28,7 +28,7 @@ try {
   $index = 0;
   if ($event != []) {
     $sql = "INSERT INTO schedule ( name, date, client, agenda, overlap, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense, admin_hour_salary, admin_day_salary , admin_expense ) VALUES ";
-    $sub_sql = " ON DUPLICATE KEY UPDATE agenda = VALUES(agenda), client = VALUES(client), start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), admin_total_time = VALUES(admin_total_time), 
+    $sub_sql = " ON DUPLICATE KEY UPDATE agenda = VALUES(agenda), client = VALUES(client), overlap = VALUES(overlap),start_time = VALUES(start_time), end_time = VALUES(end_time), total_time = VALUES(total_time), admin_total_time = VALUES(admin_total_time), 
               staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary),  staff_expense = VALUES(staff_expense),
               admin_hour_salary = VALUES(admin_hour_salary), admin_day_salary = VALUES(admin_day_salary), admin_expense = VALUES(admin_expense)";
     foreach ($event as $values) {
