@@ -148,11 +148,9 @@
 </style>
 <script>
 import axios from 'axios';
-
 export default {
   name: 'master',
   components: {
-    MasterEdit,
   },
   data: () => ({
     colors: ['grey darken-2','orange','teal accent-4'],
@@ -175,7 +173,7 @@ export default {
     root_folder: '/schedule',
   }),
   created() {
-    this.$store.commit('set_client_agenda', this.root_folder)
+    this.$store.commit('set_root_folder', this.root_folder)
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);

@@ -173,7 +173,6 @@
   <client-list-dialog
     v-if="client_show"
     :agenda_items="get_agenda_items"
-    :today="today"
     :start_date="search_date.start_date"
     @accept="click(2)"
     @close="client_show = false"
@@ -307,7 +306,7 @@ export default {
     root_folder: '/schedule',
   }),
   created() {
-    this.$store.commit('set_client_agenda', this.root_folder)
+    this.$store.commit('set_root_folder', this.root_folder)
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -582,6 +581,7 @@ export default {
       }
       this.edit_date = item.date
       await this.get_edit_data()
+      // this.editItems = this.calendar_events.filter(element => element.date == this.edit_date)
       let edit_items = this.editItems
       if (edit_items == []) {
         return
