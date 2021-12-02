@@ -4,7 +4,7 @@ $response = json_decode(file_get_contents('php://input'), true);
 $current_date = $response['current_date'];
 include 'sqlConnect.php';
 try {
-  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
