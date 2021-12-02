@@ -143,7 +143,7 @@ class mysqlConnect {
   }
 
   public function getCsv2($start_date, $end_date, $client) {
-    $sql = "SELECT date, client, agenda, admin_day_salary, COUNT(name) AS cnt, sum(admin_day_salary) AS admin_total_salary FROM schedule ";
+    $sql = "SELECT date, client, agenda, admin_day_salary, COUNT(overlap) AS cnt, sum(admin_day_salary) AS admin_total_salary FROM schedule ";
     $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
     $sql = $sql."GROUP BY date, client, agenda, admin_day_salary ";
     $sql = $sql."ORDER BY client, agenda, date";
@@ -178,6 +178,7 @@ class mysqlConnect {
     $query = $query."date DATE not null,";
     $query = $query."client TEXT not null,";
     $query = $query."agenda TEXT not null,";
+    $query = $query."overlap TINYINT not null,";
     $query = $query."start_time varchar(5) not null,";
     $query = $query."end_time varchar(5) not null,";
     $query = $query."total_time varchar(5) not null,";

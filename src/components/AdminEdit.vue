@@ -45,6 +45,16 @@
                   auto-grow
                 ></v-textarea>
               </template>
+              <template v-slot:item.overlap="{ item }">
+                <v-text-field
+                  v-model="item.overlap"
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
+                  class="py-3"
+                  label=""
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </template>
               <template v-slot:item.admin_total_time="{ item }">
                 <v-text-field
                   v-model="item.admin_total_time"
@@ -220,9 +230,10 @@ export default {
   ],
   data: () => ({
     headers: [
-      { value:"name", text:"名前", width: "15%", align: 'start'},
-      { value:"client", text:"顧客", width: "15%", align: 'start'},
-      { value:"agenda", text:"案件", width: "22%", align: 'start'},
+      { value:"name", text:"名前", width: "12%", align: 'start'},
+      { value:"client", text:"顧客", width: "11%", align: 'start'},
+      { value:"agenda", text:"案件", width: "20%", align: 'start'},
+      { value:"overlap", text:"", width: "9%", align: 'center'},
       { value:"admin_total_time", text:"時間", width: "9%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "11%", align: 'center'},
       { value:"admin_day_salary", text:"日給", width: "12%", align: 'center'},
@@ -321,6 +332,7 @@ export default {
           element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
           element.admin_day_salary = element.admin_day_salary == '' ? find.day_salary : element.admin_day_salary  
         }
+        element.admin_day_salary = element.admin_day_salary == '' ? '' : String(Math.floor(element.admin_day_salary * element.overlap))
       })
       const url = this.root_folder + "/app/adminEditSchedule.php";
       const data = {
