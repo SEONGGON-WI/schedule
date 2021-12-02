@@ -7,7 +7,7 @@
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn class="success mx-2 botton_size" @click="edit">
+          <v-btn class="success mx-2 botton_size" @click="edit" :disabled="!valid">
             <v-icon>cloud_upload</v-icon>登録
           </v-btn>
           <v-btn class="error mx-2 botton_size" @click="close">
@@ -28,7 +28,7 @@
           </v-radio-group>  
           </v-col>
         </v-row>
-
+        <v-form ref="form" v-model="valid">
         <v-data-table 
           class="pt-5"
           :headers="header" 
@@ -165,6 +165,7 @@
             ></v-text-field>
           </template>
         </v-data-table>
+        </v-form>
       </v-card>
     </v-container>
   </v-dialog>
@@ -189,9 +190,10 @@ export default {
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
-    rules: [v => v.length == 4 || v == '' || '時間の様式に合わせてください。'],
+    rules: [v => v.length == 4 || '時間の様式に合わせてください。'],
     dialog: false,
     salary_change: 'hour',
+    valid: true,
   }),
   created() {
     const day = this.items.date.split("-");
@@ -309,10 +311,15 @@ export default {
       if ((this.items.start_time || this.items.end_time) && (this.items.start_time.length != 4 || this.items.end_time.length != 4)) {
         return;
       }
-      this.items.start_time = this.make_colon(this.items.start_time)
-      this.items.end_time = this.make_colon(this.items.end_time)
-      if (this.items.start_time == false || this.items.end_time == false) {
-        return
+      this.items.start_time = this.items.start_time == '' ? '' : this.make_colon(this.items.start_time)
+      this.items.end_time = this.items.end_time == '' ? '' :  this.make_colon(this.items.end_time)
+      if (this.items.start_time === false) {
+        this.items.start_time = ''
+        return;
+      }
+      if (this.items.end_time === false) {
+        this.items.end_time = ''
+        return;
       }
       this.dialog = false;
       this.$emit("edit", this.items);
@@ -324,10 +331,10 @@ export default {
         return false
       }
       if (hours > 23 ) {
-        hours = "24"
+        return false
       }
       if (minute > 59) {
-        minute = "00";
+        return false
       }
       return hours + ":" + minute;
     },
