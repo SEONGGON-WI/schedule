@@ -128,8 +128,8 @@ export default {
     headers: [
       { value:"client", text:"クライアント名", width: "20%", align: 'start'},
       { value:"agenda", text:"案件名", width: "40%", align: 'start'},
-      { value:"day_salary", text:"時給", width: "15%", align: 'start'},
-      { value:"hour_salary", text:"日給", width: "15%", align: 'start'},
+      { value:"hour_salary", text:"時給", width: "15%", align: 'start'},
+      { value:"day_salary", text:"日給", width: "15%", align: 'start'},
       { value:"action", text:"削除", width:"10%", align: 'center', sortable: false}
     ],
     footer : {
