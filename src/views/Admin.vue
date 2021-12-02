@@ -521,8 +521,10 @@ export default {
         data = data.filter(obj => obj.name == name);
       }
       const sort_list = [
-        {key:'date'},
-        {key:'agenda'}
+        {key:'date', type: 1},
+        {key:'agenda', type: 1},
+        {key:'admin_day_salary', type: 2},
+        {key:'staff_day_salary', type: 2},
       ]
       data.sort(this.sort_by(sort_list))
       this.analytics_name = name
@@ -546,8 +548,10 @@ export default {
         data = data.filter(obj => obj.agenda == agenda);
       }
       const sort_list = [
-        {key:'date'},
-        {key:'agenda'}
+        {key:'date', type: 1},
+        {key:'agenda', type: 1},
+        {key:'admin_day_salary', type: 2},
+        {key:'staff_day_salary', type: 2},
       ]
       data.sort(this.sort_by(sort_list))
       this.analytics_name = name
@@ -708,7 +712,7 @@ export default {
       if (this.client == '') {
         return
       }
-      const file_name = "請求書_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+      const file_name = "請求書_" + this.client + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
        var config = {
         responseType: "blob",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -778,14 +782,19 @@ export default {
       this.toggle_key = this.toggle_key === 0 ? 1 : 0
     },
     sort_by: function(orderlist) {
-      // .sort(this.sort_by(this.sort_params))
-      return (a, b) => {
-        for (let i=0; i<orderlist.length; i++) {
-          if (a[orderlist[i].key] < b[orderlist[i].key]) return -1 ;
-          if (a[orderlist[i].key] > b[orderlist[i].key]) return -1 * -1;
+        return (a, b) => {
+          for (let i=0; i<orderlist.length; i++) {
+            if (orderlist[i].type == 1) {
+              if (a[orderlist[i].key] < b[orderlist[i].key]) return -1 ;
+              if (a[orderlist[i].key] > b[orderlist[i].key]) return -1 * -1;
+            } else {
+              if (a[orderlist[i].key] < b[orderlist[i].key]) return 1 ;
+              if (a[orderlist[i].key] > b[orderlist[i].key]) return 1 * -1;
+            }
+          }
+          return 0;
         }
-        return 0;
-      }
+      // .sort(this.sort_by(this.sort_params))
     },
   }
 }
