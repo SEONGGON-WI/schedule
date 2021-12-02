@@ -39,6 +39,7 @@
         >
           <template v-slot:item.start_time="{ item }">
             <v-text-field
+              type="number"
               ref="start"
               v-model="item.start_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
@@ -59,6 +60,7 @@
 
           <template v-slot:item.end_time="{ item }">
             <v-text-field
+              type="number"
               ref="end"
               v-model="item.end_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
@@ -101,6 +103,7 @@
         >
           <template v-slot:item.staff_hour_salary="{ item }">
             <v-text-field
+              type="number"
               ref="hour"
               v-model="item.staff_hour_salary"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
@@ -133,6 +136,7 @@
             ></v-text-field>
             <v-text-field
               v-else
+              type="number"
               v-model="item.staff_day_salary"
               ref="day"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
@@ -147,6 +151,7 @@
           </template>
           <template v-slot:item.staff_expense="{ item }">
             <v-text-field
+              type="number"
               ref="expense"
               v-model="item.staff_expense"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
