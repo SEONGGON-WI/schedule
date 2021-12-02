@@ -177,8 +177,10 @@ export default {
     search_condition: false,
     today: '',
     dialog: false,
+    root_folder: '/schedule',
   }),
   created() {
+    this.$store.commit('set_client_agenda', this.root_folder)
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -257,7 +259,7 @@ export default {
       name = name.replace(/^\s+|\s+$/gm,'')
       let password = this.password;
       password = password.replace(/^\s+|\s+$/gm,'')
-      const url = "/schedule/app/staffSearchSchedule.php";
+      const url = this.root_folder + "/app/staffSearchSchedule.php";
       const data = {
         name: name,
         password: password,
@@ -322,7 +324,7 @@ export default {
       password = password.replace(/^\s+|\s+$/gm,'')
 
       if (name != '' && password != '') {
-        const url = "/schedule/app/staffEditSchedule.php";
+        const url = this.root_folder + "/app/staffEditSchedule.php";
         const data = {
           name: name,
           password: password,
@@ -352,7 +354,7 @@ export default {
       let password = this.password;
       const event = this.calendar_events.filter(e => e.agenda == '')
       password = password.replace(/^\s+|\s+$/gm,'')
-      const url = "/schedule/app/staffUploadSchedule.php";
+      const url = this.root_folder + "/app/staffUploadSchedule.php";
       const data = {
         name: name,
         password: password,

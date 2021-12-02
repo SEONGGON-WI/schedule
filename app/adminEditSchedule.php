@@ -1,4 +1,5 @@
 <?php
+include 'defaultValue.php';
 $response = json_decode(file_get_contents('php://input'), true);
 $date = $response['date'];
 $event = $response['event'];
@@ -7,7 +8,7 @@ include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
   if ($remove_event != []) {
-    $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+    $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
     $time = date('Y/m/d-H:i');
     $logDate = date('Ymd');
     $path = $rootPath.$logDate.".txt";
@@ -49,7 +50,7 @@ try {
     $result = json_encode(array('status' => true));  
   }
 } catch(Exception $e) {
-  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";

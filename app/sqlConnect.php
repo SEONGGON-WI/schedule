@@ -75,7 +75,7 @@ class mysqlConnect {
   }
 
   public function getEdit($date) {
-    $query = "SELECT * FROM schedule WHERE date = '$date' ORDER BY name";
+    $query = "SELECT * FROM schedule WHERE date = '$date' ORDER BY name, agenda, admin_day_salary";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;

@@ -246,8 +246,10 @@ export default {
     alert_text: '',
     alert_show: false,
     dialog: false,
+    root_folder: '',
   }),
   created() {
+    this.root_folder = this.$store.getters.root_folder
     this.dialog = true;
   },
   computed: {
@@ -320,7 +322,7 @@ export default {
           element.admin_day_salary = element.admin_day_salary == '' ? find.day_salary : element.admin_day_salary  
         }
       })
-      const url = "/schedule/app/adminEditSchedule.php";
+      const url = this.root_folder + "/app/adminEditSchedule.php";
       const data = {
         date: this.date,
         event: event,

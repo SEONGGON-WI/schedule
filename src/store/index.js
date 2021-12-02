@@ -8,6 +8,7 @@ export default new Vuex.Store({
     calendar_events: [],
     client_agenda: [],
     staff_name: '',
+    root_folder: '',
   },
   getters: {
     calendar_events (state) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     staff_name (state) {
       return state.staff_name
     },
+    root_folder (state) {
+      return state.root_folder
+    },
   },
   mutations: {
     set_calendar_events(state, payload) {
@@ -29,6 +33,9 @@ export default new Vuex.Store({
     },
     set_staff_name(state, payload) {
       state.staff_name = payload
+    },
+    set_root_folder(state, payload) {
+      state.root_folder = payload
     },
   },
   actions: {

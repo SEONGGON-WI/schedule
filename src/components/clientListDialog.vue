@@ -150,15 +150,17 @@ export default {
     alert_text: '',
     alert_show: false,
     dialog: false,
+    root_folder: '',
   }),
   created() {
-    this.dialog = true;
+    this.root_folder = this.$store.getters.root_folder
     this.agenda_list = JSON.parse(JSON.stringify(this.agenda_items))
     this.agenda_list.shift()
     this.agenda_list.shift()
     this.agenda_list.shift()
     this.agenda_list.shift()
     this.fetch_data()
+    this.dialog = true;
   },
   computed: {
     calculate_agenda() {
@@ -184,7 +186,7 @@ export default {
       this.setClient();
     },
     fetch_data() {
-      const url = "/schedule/app/adminGetClient.php";
+      const url = this.root_folder + "/app/adminGetClient.php";
       const data = {
         start_date: this.start_date,
       }
@@ -199,7 +201,7 @@ export default {
       }.bind(this))
     },
     setClient() {
-      const url = "/schedule/app/adminUploadClient.php";
+      const url = this.root_folder + "/app/adminUploadClient.php";
       const data = {
         start_date: this.start_date,
         client: this.client,
@@ -221,7 +223,7 @@ export default {
       this.$emit("accept")
     },
     deleteClient() {
-      const url = "/schedule/app/adminDeleteClient.php";
+      const url = this.root_folder + "/app/adminDeleteClient.php";
       const data = {
         start_date: this.start_date,
         client: this.client,
@@ -235,7 +237,7 @@ export default {
       }.bind(this))
     },
     remove(item) {
-      const url = "/schedule/app/adminRemoveClient.php";
+      const url = this.root_folder + "/app/adminRemoveClient.php";
       const data = {
         start_date: this.start_date,
         client: item.client,

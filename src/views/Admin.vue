@@ -304,8 +304,10 @@ export default {
     downloading: false,
     today: '',
     toggle_key: 0,
+    root_folder: '/schedule',
   }),
   created() {
+    this.$store.commit('set_client_agenda', this.root_folder)
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -319,7 +321,6 @@ export default {
       return this.calendar_events.length + "件";
     },
     get_client_items() {
-      // let clients = JSON.parse(JSON.stringify(this.$store.getters.client_agenda))
       const clients = this.$store.getters.client_agenda
       const client_items = clients.map(element => element.client);
       // return ['', ...client_items.filter((obj, index) => {
@@ -332,36 +333,20 @@ export default {
       })];
     },
     get_name_items() {
-      // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const name_items = data.map(element => element.name);
       // return ['全員', ...name_items.filter((obj, index) => {
       //   return name_items.indexOf(obj) === index;
       // })];
-      // return ['全員', ...name_items.filter((obj, index) => {
-      //   return name_items.indexOf(obj) === index;
-      // }).sort(function (a, b) {
-      //   return a.localeCompare(b, 'ja')
-      // })];
       return ['全員', ...name_items.filter((obj, index) => {
         return name_items.indexOf(obj) === index;
-      }).sort(this.sort_by([{key:'name'}]))];
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })];
     },
     get_agenda_items() {
-      // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       const data = this.$store.getters.calendar_events
       const agenda_items = data.map(element => element.agenda);
-    //   return ['', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
-    //     return agenda_items.indexOf(obj) === index;
-    //   }).sort(function(a, b) {
-    //     const upperCaseA = a.toUpperCase();
-    //     const upperCaseB = b.toUpperCase();
-        
-    //     if(upperCaseA > upperCaseB) return 1;
-    //     if(upperCaseA < upperCaseB) return -1;
-    //     if(upperCaseA === upperCaseB) return 0;
-    //   })];
-    // },
       return ['', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
         return agenda_items.indexOf(obj) === index;
       }).sort(function (a, b) {
@@ -424,7 +409,7 @@ export default {
       this.toggle()
     },
     async get_data() {
-      const url = "/schedule/app/adminGetSchedule.php";
+      const url = this.root_folder + "/app/adminGetSchedule.php";
       const data = this.search_date;
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
@@ -441,7 +426,7 @@ export default {
       }.bind(this))
     },
     async get_edit_data() {
-      const url = "/schedule/app/adminGetEditSchedule.php";
+      const url = this.root_folder + "/app/adminGetEditSchedule.php";
       const data = {
         date: this.edit_date
       }
@@ -459,7 +444,7 @@ export default {
       }.bind(this))
     },
     async get_client() {
-      const url = "/schedule/app/adminGetClient.php";
+      const url = this.root_folder + "/app/adminGetClient.php";
       const data = {
         start_date: this.search_date.start_date
       }
@@ -512,27 +497,24 @@ export default {
       }
 
       const name_items = data.map(element => element.name);
-      this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
-        return name_items.indexOf(obj) === index;
-      }).sort(this.sort_by([{key:'name'}]))];
-
-      const agenda_items = data.map(element => element.agenda);
-      this.analytics_agenda_items =  ['', ...agenda_items.filter((obj, index) => {
-        return agenda_items.indexOf(obj) === index;
-      }).sort(this.sort_by([{key:'agenda'}]))];
-      // data.sort(function(a, b) {
-      //   // if (a.date < b.date) {
-      //   //   return -1
-      //   // } else if (a.agenda < b.agenda) {
-      //   //   return -1
-      //   // }
-      //   return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
-      // });
       // this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
       //   return name_items.indexOf(obj) === index;
-      // }).sort(function (a, b) {
-      //   return a.localeCompare(b, 'ja')
-      // })];
+      // }).sort(this.sort_by([{key:'name'}]))];
+      this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
+        return name_items.indexOf(obj) === index;
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })];
+
+      const agenda_items = data.map(element => element.agenda);
+      // this.analytics_agenda_items =  ['', ...agenda_items.filter((obj, index) => {
+      //   return agenda_items.indexOf(obj) === index;
+      // }).sort(this.sort_by([{key:'agenda'}]))];
+      this.analytics_agenda_items =  ['', ...agenda_items.filter((obj, index) => {
+        return agenda_items.indexOf(obj) === index;
+      }).sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })];
       if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
         data = data.filter(obj => obj.agenda == agenda);
       }
@@ -574,7 +556,7 @@ export default {
       this.analytics_items = data
     },
     remove() {
-      const url = "/schedule/app/adminRemoveSchedule.php";
+      const url = this.root_folder + "/app/adminRemoveSchedule.php";
       const today = new Date();
       const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
       const data = {
@@ -592,8 +574,6 @@ export default {
       this.client = ''
       this.name = '全員'
       this.agenda = ''
-      // const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events));
-      // const data = this.$store.getters.calendar_events
       this.search();
     },
     async edit(item) {
@@ -606,7 +586,6 @@ export default {
       if (edit_items == []) {
         return
       }
-      // let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       if (this.client != '') {
         edit_items = edit_items.filter(obj => obj.client == this.client);
       } 
@@ -653,7 +632,6 @@ export default {
       if (edit_items == []) {
         return
       }
-      // let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
       if (this.client != '') {
         edit_items = edit_items.filter(obj => obj.client == this.client);
       }
@@ -720,8 +698,9 @@ export default {
       };
 
       this.csvdownloading = true
+      const url = this.root_folder + "/app/csvDownload.php"
       const data = this.search_date
-      await axios.post("/schedule/app/csvDownload.php", data, config).then(function (response) {
+      await axios.post(url, data, config).then(function (response) {
         this.downloadCSV(file_name, response)
       }.bind(this))
     },
@@ -740,7 +719,8 @@ export default {
         end_date: this.search_date.end_date,
         client: this.client
       }
-      await axios.post("/schedule/app/csvDownload2.php", data, config).then(function (response) {
+      const url = this.root_folder + "/app/csvDownload2.php"
+      await axios.post(url, data, config).then(function (response) {
         this.downloadCSV(file_name, response)
       }.bind(this))
     },
@@ -769,7 +749,7 @@ export default {
       await this.search()
     },
     async load() {
-      const url = "/schedule/app/adminUploadSchedule.php";
+      const url = this.root_folder + "/app/adminUploadSchedule.php";
       const data = {
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date,

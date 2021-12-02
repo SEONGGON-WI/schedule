@@ -77,7 +77,6 @@
               locale="ja-jp"
               event-more-text="•••"
               interval-count=0
-              @click:day="edit"
               @change="fetch"
             >
               <template v-slot:event="{ event }">
@@ -94,16 +93,6 @@
       </v-row>
     </v-container>
   </v-main>
-
-  <master-edit
-    @accept="accept_edit()"
-    @prev="prev_edit()"
-    @next="next_edit()"
-    @close="edit_show = false"
-    v-if="edit_show"
-    :items="edit_items"
-    :date="edit_date"
-  ></master-edit>
 </v-app>
 </template>
 <style lang="scss">
@@ -158,7 +147,6 @@
 }
 </style>
 <script>
-import MasterEdit from '@/components/MasterEdit.vue';
 import axios from 'axios';
 
 export default {
@@ -184,8 +172,10 @@ export default {
     importFile: null,
     type: 'upload',
     name: '全員',
+    root_folder: '/schedule',
   }),
   created() {
+    this.$store.commit('set_client_agenda', this.root_folder)
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -235,7 +225,7 @@ export default {
       this.calendar_events = data;
     },
     async get_data() {
-      const url = "/schedule/app/adminGetSchedule.php";
+      const url = this.root_folder + "/app/adminGetSchedule.php";
       const data = this.search_date;
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
@@ -275,7 +265,7 @@ export default {
       reader.readAsText(this.importFile);
     },
     async upload() {
-      const url = "/schedule/app/adminSchedule.php";
+      const url = this.root_folder + "/app/adminSchedule.php";
       const data = {
         type: this.type,
         event: this.$store.getters.calendar_events,
@@ -285,54 +275,6 @@ export default {
           this.alert(response.data.message);
         }
       }.bind(this))
-    },
-    async edit(item) {
-      if (!this.calendar_events.find(e => e.date == item.date)) {
-        return;
-      }
-      let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      edit_items = edit_items.filter(obj => obj.date == item.date);
-      if (this.name != '全員') {
-        edit_items = edit_items.filter(obj => obj.name == this.name);
-      }
-      this.edit_items = edit_items
-      this.edit_date = item.date
-      if (this.edit_items.length != 0) {
-        this.edit_show = true;
-      }
-    },
-    calculate_edit_date(type) {
-      var date = this.edit_date.split("-")
-      var time = type === 'next' ? new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) + 1)
-                                 : new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) - 1);
-      date = time.getFullYear() +"-"
-      if (parseInt((time.getMonth()+1)) < 10) {
-        date = date + "0" + (time.getMonth()+1) + "-"
-      } else {
-        date = date + (time.getMonth()+1) + "-"
-      }
-      if (parseInt(time.getDate()) < 10) {
-        date = date + "0" + time.getDate()
-      } else {
-        date = date + time.getDate()
-      }
-      return date
-    },
-    async get_edit() {
-      let edit_items = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      edit_items = edit_items.filter(obj => obj.date == this.edit_date);
-      if (this.name != '全員') {
-        edit_items = edit_items.filter(obj => obj.name == this.name);
-      }
-      this.edit_items = edit_items
-    },
-    prev_edit() {
-      this.edit_date = this.calculate_edit_date('prev')
-      this.get_edit()
-    },
-    next_edit() {
-      this.edit_date = this.calculate_edit_date('next')
-      this.get_edit()
     },
     export_event() {
       const calendar_date = this.today

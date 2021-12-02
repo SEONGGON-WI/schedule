@@ -78,16 +78,18 @@ export default {
     alert_text: '',
     alert_show: false,
     dialog: false,
+    root_folder: '',
   }),
   created() {
-    this.dialog = true;
+    this.root_folder = this.$store.getters.root_folder
     this.fetch_data()
+    this.dialog = true;
   },
   computed: {
   },
   methods: {
     fetch_data() {
-      const url = "/schedule/app/adminGetStaff.php";
+      const url = this.root_folder + "/app/adminGetStaff.php";
       const data = {}
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
@@ -98,7 +100,7 @@ export default {
       }.bind(this))
     },
     remove(item) {
-      const url = "/schedule/app/adminRemoveStaff.php";
+      const url = this.root_folder + "/app/adminRemoveStaff.php";
       const data = {
         name: item.name,
       }

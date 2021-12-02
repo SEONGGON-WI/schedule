@@ -1,4 +1,5 @@
 <?php
+include 'defaultValue.php';
 $response = json_decode(file_get_contents('php://input'), true);
 $name = $response['name'];
 $password = $response['password'];
@@ -20,7 +21,7 @@ try {
   } else {
     $hashedPassword = $managerData['password'];
     if (password_verify($password, $hashedPassword)) {
-      $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+      $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
       $time = date('Y/m/d-H:i');
       $logDate = date('Ymd');
       $path = $rootPath.$logDate.".txt";
@@ -36,7 +37,7 @@ try {
     }
   }
 } catch(Exception $e) {
-  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";

@@ -1,10 +1,11 @@
 <?php
+include 'defaultValue.php';
 $response = json_decode(file_get_contents('php://input'), true);
 $event = $response['event'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
@@ -37,7 +38,7 @@ try {
   @fwrite($log,"$time, adminEditAnalytics, $index\n");
   @fclose($log);
 } catch(Exception $e) {
-  $rootPath = $_SERVER['DOCUMENT_ROOT'].'/schedule/log/';
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";

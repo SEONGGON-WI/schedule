@@ -164,8 +164,10 @@ export default {
     staff_total_salary: 0,
     admin_total_salary: 0,
     dialog: false,
+    root_folder: '',
   }),
   created() {
+    this.root_folder = this.$store.getters.root_folder
     this.total_agenda = this.items.length + "件"
     this.differ_name = this.name
     this.differ_agenda = this.agenda
@@ -266,7 +268,7 @@ export default {
       this.$emit("change", condition);
     },
     upload() {
-      const url = "/schedule/app/adminEditAnalytics.php";
+      const url = this.root_folder + "/app/adminEditAnalytics.php";
       let data = []
       this.items.map(element => {
         data.push({
