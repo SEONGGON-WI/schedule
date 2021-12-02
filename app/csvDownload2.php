@@ -21,16 +21,17 @@ try {
       $day = [];
       $day = explode("-", $value['date']);
       $working_day = $day[1]."-".$day[2];
-      if ($value['admin_day_salary']) {
-        $admin_total_salary = (int)$value['admin_day_salary'] * (int)$value['cnt'];
+    
+      if ($value['admin_day_salary'] != '' ) {
+        $admin_salary = number_format((int)$value['admin_day_salary']);
+      } else {
+        $admin_salary = '';
+      }
+
+      if ($value['admin_day_salary'] != '') {
+        $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
       } else {
         $admin_total_salary = '';
-      }
-      if ($value['admin_day_salary'] != '' ) {
-        $value['admin_day_salary'] = number_format((int)$value['admin_day_salary']);
-      }
-      if ($admin_total_salary != '' ) {
-        $admin_total_salary = number_format((int)$admin_total_salary);
       }
 
       $csv .= '"'
@@ -40,11 +41,81 @@ try {
           . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
           . '"1,"'
           . mb_convert_encoding('日', 'SJIS', 'UTF-8') . '","'
-          . $value['admin_day_salary'] . '","'
+          . $admin_salary . '","'
           . $admin_total_salary . '","'
           . "'". $working_day . '"'
           . "\r\n";
     }
+
+    $csv .= '"'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '"'
+        . "\r\n";
+
+    $csv .= '"'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '"'
+        . "\r\n";
+
+    $data = $dbConnect->getCsv3($start_date, $end_date, $client);
+    if (!empty($data)) {
+      foreach ($data as $value) {
+        $sql = "SELECT date FROM schedule ";
+        $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda = '{$value['agenda']}' AND admin_expense = '{$value['admin_expense']}' ";
+        $sql = $sql."ORDER BY date";
+        $table = [];
+        $result = $dbConnect->mysql->query($sql);
+        if ($result->num_rows > 0) {
+          $index = 0;
+          while($row = $result->fetch_assoc()) {
+            $table[$index] = $row;
+            $index++;
+          }
+        }
+        $month = explode("-", $start_date);
+        $working_day = $month[1]."-";
+        foreach ($table as $element) {
+          $day = [];
+          $day = explode("-", $element['date']);
+          if ((int)$day[2] < 10) {
+            $day[2] = substr($day[2], 1);
+          }
+          $working_day .= $day[2].",";
+        }
+        $working_day = substr($working_day, 0, -1);
+        if ($value['admin_expense'] != '' ) {
+          $admin_expense = number_format((int)$value['admin_expense'] * (int)$value['cnt']);
+        } else {
+          $admin_expense = '';
+        }
+        $csv .= '"'
+            . '","'
+            . '","'
+            . $value['cnt'] . '","'
+            . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
+            . '","'
+            . '","'
+            . '","'
+            . $admin_expense . '","'
+            . "'". $working_day . '"'
+            . "\r\n";
+      }
+    }
+
     $dbConnect->dbClose();
     echo $csv;
     return;
