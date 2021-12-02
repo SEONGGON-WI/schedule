@@ -6,6 +6,9 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
+    <v-btn class="success mx-2" color="white" @click="dialog = true" :disabled="input.username == '' || input.password == '' || calendar_events == ''">
+      <v-icon>cloud_upload</v-icon>登録
+    </v-btn>
     <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="input.username == '' || search_condition == false">
       <v-icon>analytics</v-icon>集計
     </v-btn>
@@ -65,9 +68,6 @@
                   </v-btn>
               </v-row>
             </v-form>
-            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="input.username == '' || input.password == '' || calendar_events == ''">
-              <v-icon>cloud_upload</v-icon>登録
-            </v-btn>
           </v-toolbar>
 
           <v-sheet height="90%" class="mx-3">
@@ -214,7 +214,7 @@ export default {
       this.search_condition = false
       this.calendar_events = [];
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
-      if (this.id != '' && this.password != '') {
+      if (this.input.username != '' && this.input.password != '') {
         this.search();
       }
     },
