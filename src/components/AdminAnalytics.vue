@@ -71,6 +71,12 @@
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
             </template>
+            <template v-slot:item.admin_day_salary="{ item }">
+              <div>{{ item.admin_day_salary == '' ? '' : String(Math.floor(item.admin_day_salary * item.overlap)) }}</div>
+            </template>
+            <template v-slot:item.admin_expense="{ item }">
+              <div>{{ item.admin_expense == '' ? '' : String(Math.floor(item.admin_expense * item.overlap)) }}</div>
+            </template>
           </v-data-table>
           <v-data-table 
             v-else
@@ -91,6 +97,12 @@
             </template>
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
+            </template>
+            <template v-slot:item.staff_day_salary="{ item }">
+              <div>{{ item.staff_day_salary == '' ? '' : String(Math.floor(item.staff_day_salary * item.overlap)) }}</div>
+            </template>
+            <template v-slot:item.staff_expense="{ item }">
+              <div>{{ item.staff_expense == '' ? '' : String(Math.floor(item.staff_expense * item.overlap)) }}</div>
             </template>
           </v-data-table>
         </v-tabs-items>
@@ -134,10 +146,10 @@ export default {
       { value:"client", text:"顧客", width: "10%", align: 'start'},
       { value:"agenda", text:"案件", width: "15%", align: 'start'},
       { value:"name", text:"名前", width: "15%", align: 'start'},
-      { value:"overlap", text:"", width: "10%", align: 'center'},
+      { value:"overlap", text:"人数", width: "10%", align: 'center'},
       { value:"admin_total_time", text:"時間", width: "10%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "10%", align: 'center'},
-      { value:"admin_day_salary", text:"日給", width: "10%", align: 'center'},
+      { value:"admin_day_salary", text:"合計", width: "10%", align: 'center'},
       { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
     ],
     headers: [
@@ -149,7 +161,7 @@ export default {
       { value:"end_time", text:"退勤", width: "10%", align: 'center'},
       { value:"total_time", text:"時間", width: "10%", align: 'center'},
       { value:"staff_hour_salary", text:"時給", width: "10%", align: 'center'},
-      { value:"staff_day_salary", text:"日給", width: "10%", align: 'center'},
+      { value:"staff_day_salary", text:"合計", width: "10%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "9%", align: 'center'}
     ],
     tab: null,
@@ -186,7 +198,8 @@ export default {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '' && obj.status == 0) {
           var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-          return stack + parseInt(obj.staff_day_salary) + expense
+          // return stack + parseInt(obj.staff_day_salary) + expense
+          return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
         } else {
           return stack
         }
@@ -197,7 +210,8 @@ export default {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '' && obj.status == 1) {
           var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-          return stack + parseInt(obj.staff_day_salary) + expense
+          // return stack + parseInt(obj.staff_day_salary) + expense
+          return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
         } else {
           return stack
         }
@@ -207,7 +221,8 @@ export default {
     get_paid_status() {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '' && obj.status == 1) {
-          return stack + 1000
+          return stack + (1000 * parseInt(obj.overlap))
+          // return stack + parseInt(Math.floor(100 * obj.overlap))
         } else {
           return stack
         }
@@ -235,7 +250,8 @@ export default {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '') {
           var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-            return stack + parseInt(obj.staff_day_salary) + expense
+            // return stack + parseInt(obj.staff_day_salary) + expense
+            return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
         } else {
           return stack
         }
@@ -246,7 +262,8 @@ export default {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.admin_day_salary != '') {
           var expense = obj.admin_expense ? parseInt(obj.admin_expense) : 0
-          return stack + parseInt(obj.admin_day_salary) + expense
+          // return stack + parseInt(obj.admin_day_salary) + expense
+          return stack + parseInt(Math.floor(obj.admin_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
         } else {
           return stack
         }

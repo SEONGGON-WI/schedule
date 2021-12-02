@@ -233,7 +233,7 @@ export default {
       { value:"name", text:"名前", width: "12%", align: 'start'},
       { value:"client", text:"顧客", width: "11%", align: 'start'},
       { value:"agenda", text:"案件", width: "20%", align: 'start'},
-      { value:"overlap", text:"", width: "9%", align: 'center'},
+      { value:"overlap", text:"人数", width: "9%", align: 'center'},
       { value:"admin_total_time", text:"時間", width: "9%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "11%", align: 'center'},
       { value:"admin_day_salary", text:"日給", width: "12%", align: 'center'},
@@ -330,9 +330,8 @@ export default {
         if (find != undefined) {
           element.client = find.client
           element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
-          element.admin_day_salary = element.admin_day_salary == '' ? find.day_salary : element.admin_day_salary  
+          element.admin_day_salary = element.admin_day_salary == '' ?  find.day_salary : element.admin_day_salary  
         }
-        element.admin_day_salary = element.admin_day_salary == '' ? '' : String(Math.floor(element.admin_day_salary * element.overlap))
       })
       const url = this.root_folder + "/app/adminEditSchedule.php";
       const data = {
