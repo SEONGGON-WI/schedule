@@ -6,7 +6,7 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="name == '' || search_condition == false">
+    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="input.username == '' || search_condition == false">
       <v-icon>analytics</v-icon>集計
     </v-btn>
   </v-app-bar>
@@ -25,38 +25,47 @@
             <v-btn icon text class="mx-1 pl-2" color="grey darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
             <v-btn icon text class="mx-1 pl-2" color="grey darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
             <v-spacer></v-spacer>
-            <v-form ref="form" @submit.prevent="search" autocomplete="on">
+            <v-form ref="form" id="login" @submit.prevent="search">
               <v-row class="mt-1" no-gutters>
                   <input
+                    type="text"
                     class="form_area pa-2 mx-2 mb-4"
                     lang="en"
-                    ref="id"
-                    v-model="id"
-                    id="id"
-                    name="id"
+                    ref="username"
+                    id="username"
+                    name="username"
+                    v-model="input.username"
                     @keydown.enter="id_enter"
+                    autocomplete="username"
                     placeholder="名前"
                   >
                   <input
+                    type="password"
                     class="form_area pa-2 mx-2 mb-4"
                     lang="en"
                     ref="password"
-                    v-model="password"
                     id="password"
                     name="password"
+                    v-model="input.password"
                     @keydown.enter="password_enter"
+                    autocomplete="password"
                     placeholder="パスワード"
                   >
+                    <v-btn class="mx-2" icon @click="show_password">
+                      <v-icon>
+                        visibility
+                      </v-icon>
+                    </v-btn>
                   <v-btn 
                     class="accent mx-2 mt-3"
                     type="submit"
                     color="white"
-                    :disabled="id == '' || password == ''"
+                    :disabled="input.username == '' || input.password == ''"
                   ><v-icon>search</v-icon>検索
                   </v-btn>
               </v-row>
             </v-form>
-            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="name == '' || password == '' || calendar_events == ''">
+            <v-btn class="info mx-2" color="white" @click="dialog = true" :disabled="input.username == '' || input.password == '' || calendar_events == ''">
               <v-icon>cloud_upload</v-icon>登録
             </v-btn>
           </v-toolbar>
@@ -158,9 +167,14 @@ export default {
   },
   data: () => ({
     colors: ['grey darken-2','orange','teal accent-4'],
-    id: '',
-    password: '',
-    search_date: {},
+    input: {
+      username: '',
+      password: ''
+    },
+    search_date: {
+      start_date: '',
+      end_date: ''
+    },
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
@@ -180,7 +194,7 @@ export default {
     root_folder: '/schedule',
   }),
   created() {
-    this.$store.commit('set_client_agenda', this.root_folder)
+    this.$store.commit('set_root_folder', this.root_folder)
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -188,9 +202,6 @@ export default {
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
-    // document.addEventListener('keydown', (event) => {
-    //   this.keyBoardEvent(event)
-    // }, false);
   },
   computed: {
   },
@@ -215,12 +226,6 @@ export default {
       event.preventDefault()
       this.search()
     },
-    // keyBoardEvent(event) {
-    //   if ( event.which != 13) {
-    //     return;
-    //   }
-    //   this.search();
-    // },
     select({ date }) {
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
@@ -243,33 +248,22 @@ export default {
       this.calendar_events.push({
         date: date,
         agenda: '',
-        start_time: '',
-        end_time: '',
-        total_time: '',
-        admin_total_tome: '',
-        staff_hour_salary: '',
-        staff_day_salary: '',
-        staff_expense: '',
         start: startTime,
         color: this.colors[0],
       });    
     },
     search() {
-      let name = this.id;
-      name = name.replace(/^\s+|\s+$/gm,'')
-      let password = this.password;
-      password = password.replace(/^\s+|\s+$/gm,'')
       const url = this.root_folder + "/app/staffSearchSchedule.php";
       const data = {
-        name: name,
-        password: password,
+        name: this.input.username.replace(/^\s+|\s+$/gm,''),
+        password: this.input.password.replace(/^\s+|\s+$/gm,''),
         start_date: this.search_date.start_date,
         end_date: this.search_date.end_date
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
           this.search_condition = true
-          this.$store.commit('set_staff_name', name)  
+          this.$store.commit('set_staff_name', this.input.username.replace(/^\s+|\s+$/gm,''))  
           this.fetch_data(response.data.data);
         } else {
           this.search_condition = false
@@ -301,7 +295,7 @@ export default {
     },
     analytics() {
       const data = JSON.parse(JSON.stringify(this.calendar_events))
-      this.analytics_items = data.filter(obj => obj.name == this.id && obj.agenda != '')
+      this.analytics_items = data.filter(obj => obj.agenda != '')
       this.analytics_show = true
     },
     close_analytics() {
@@ -318,16 +312,11 @@ export default {
       this.calendar_events[index].staff_day_salary = event.staff_day_salary;
       this.calendar_events[index].staff_expense = event.staff_expense;
 
-      let name = this.id;
-      name = name.replace(/^\s+|\s+$/gm,'')
-      let password = this.password;
-      password = password.replace(/^\s+|\s+$/gm,'')
-
-      if (name != '' && password != '') {
+      if (this.input.username != '' && this.input.password != '') {
         const url = this.root_folder + "/app/staffEditSchedule.php";
         const data = {
-          name: name,
-          password: password,
+          name: this.input.username.replace(/^\s+|\s+$/gm,''),
+          password: this.input.password.replace(/^\s+|\s+$/gm,''),
           date: event.date,
           start_time: event.start_time,
           end_time: event.end_time,
@@ -349,15 +338,11 @@ export default {
       this.edit_show = false;
     }, 
     async upload() {
-      let name = this.id;
-      name = name.replace(/^\s+|\s+$/gm,'')
-      let password = this.password;
       const event = this.calendar_events.filter(e => e.agenda == '')
-      password = password.replace(/^\s+|\s+$/gm,'')
       const url = this.root_folder + "/app/staffUploadSchedule.php";
       const data = {
-        name: name,
-        password: password,
+        name: this.input.username.replace(/^\s+|\s+$/gm,''),
+        password: this.input.password.replace(/^\s+|\s+$/gm,''),
         search_condition: this.search_condition,
         event: event,
         start_date: this.search_date.start_date,
@@ -386,6 +371,14 @@ export default {
     },
     nextDate() {
       this.$refs.calendar.next()
+    },
+    show_password() {
+      var x = document.getElementById("password");
+      if (x.type === "password") {
+        x.type = "text";
+      } else {
+        x.type = "password";
+      }
     },
   },
 }
