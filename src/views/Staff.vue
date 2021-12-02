@@ -202,6 +202,13 @@ export default {
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
+
+    if (this.getCookie("username")) {
+      this.input.username = this.getCookie("username")
+    }
+    if (this.getCookie("password")) {
+      this.input.password = this.getCookie("password")
+    }
   },
   computed: {
   },
@@ -265,6 +272,8 @@ export default {
           this.search_condition = true
           this.$store.commit('set_staff_name', this.input.username.replace(/^\s+|\s+$/gm,''))  
           this.fetch_data(response.data.data);
+          this.setCookie('username', this.input.username, 7)
+          this.setCookie('password', this.input.password, 7)
         } else {
           this.search_condition = false
           this.$store.commit('set_staff_name', '')  
@@ -380,6 +389,30 @@ export default {
         x.type = "password";
       }
     },
+    setCookie(cookieName, value, exdays){
+      var exdate = new Date();
+      exdate.setDate(exdate.getDate() + exdays);
+      var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
+      document.cookie = cookieName + "=" + cookieValue;
+    },
+    deleteCookie(cookieName){
+      var expireDate = new Date();
+      expireDate.setDate(expireDate.getDate() - 1);
+      document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+    },
+    getCookie(cookieName) {
+      cookieName = cookieName + '=';
+      var cookieData = document.cookie;
+      var start = cookieData.indexOf(cookieName);
+      var cookieValue = '';
+      if(start != -1){
+          start += cookieName.length;
+          var end = cookieData.indexOf(';', start);
+          if(end == -1)end = cookieData.length;
+          cookieValue = cookieData.substring(start, end);
+      }
+      return unescape(cookieValue);
+    }
   },
 }
 </script>
