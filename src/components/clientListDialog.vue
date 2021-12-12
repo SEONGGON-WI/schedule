@@ -1,5 +1,5 @@
 <template>
-  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
+  <v-dialog content-class="custom_dialog" v-model="dialog" persistent>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
@@ -93,18 +93,98 @@
               ></v-text-field>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn class="error" icon color="white" @click="remove(item)">
+              <v-btn class="info mx-2" icon color="white" @click="edit(item)">
+                <v-icon>edit</v-icon>
+              </v-btn>
+              <v-btn class="error mx-2" icon color="white" @click="remove_check(item)">
                 <v-icon>delete</v-icon>
               </v-btn>
             </template>
           </v-data-table>
       </v-card>
     </v-container>
+    <v-dialog v-model="edit_dialog" persistent width="70%">
+      <v-container class="pa-0" fluid>
+        <v-card color="grey lighten-4">
+          <v-toolbar color="primary" dark>
+            <v-toolbar-title class="px-2 title_text">
+              クライアント管理
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn class="success mx-2 botton_size" @click="edit_client">
+              <v-icon>edit</v-icon>保存
+            </v-btn>
+            <v-btn class="error mx-2 botton_size" @click="edit_dialog = false">
+              <v-icon>cancel</v-icon>キャンセル
+            </v-btn>
+          </v-toolbar>
+            <v-row no-gutters class="mb-2">
+              <v-col cols="3" class="name_agenda pt-3 pl-8">
+                <div>{{ edit_item.client }}</div>
+              </v-col>
+              <v-col cols="9" class="name_agenda pt-3 pl-8">
+                <div>{{ edit_item.agenda }}</div>
+              </v-col>
+            </v-row>
+          <v-data-table
+            :headers="header" 
+            :items="[edit_item]" 
+            hide-default-footer 
+            disable-pagination
+            disable-sort
+          >
+            <template v-slot:item.hour_salary="{ item }">
+              <v-text-field
+                type="number"
+                ref="hour_salary"
+                v-model="item.hour_salary"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                @keydown.enter="enter(3)"
+                class="py-3"
+                label="時給"
+                height="60"
+                outlined
+                single-line
+                hide-details
+              ></v-text-field>
+            </template>
+            <template v-slot:item.day_salary="{ item }">
+              <v-text-field
+                type="number"
+                v-model="item.day_salary"
+                ref="day_salary"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                @keydown.enter="enter(4)"
+                class="py-3"
+                label="日給"
+                height="60"
+                outlined
+                single-line
+                hide-details
+              ></v-text-field>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-container>
+    </v-dialog>
     <alert
       @close="alert_show = false"
       :text="alert_text"
       v-if="alert_show"
     ></alert>
+    <admin-dialog
+      @accept="upload"
+      @close="check_dialog = false"
+      v-if="check_dialog"
+      :text="check_text"
+    ></admin-dialog>
+
+    <admin-dialog
+      @accept="remove"
+      @close="remove_dialog = false"
+      v-if="remove_dialog"
+      text="削除しますか？"
+    ></admin-dialog>
   </v-dialog>
 </template>
 <style lang="scss">
@@ -113,11 +193,13 @@
 }
 </style>
 <script>
+import AdminDialog from '@/components/AdminDialog.vue';
 import alert from './alert.vue';
 import axios from 'axios';
 export default {
   name: "clientlistdialog",
   components: {
+    AdminDialog,
     alert,
   },
   props: [
@@ -126,11 +208,15 @@ export default {
   data: () => ({
     items: [],
     headers: [
-      { value:"client", text:"クライアント名", width: "20%", align: 'start'},
-      { value:"agenda", text:"案件名", width: "40%", align: 'start'},
+      { value:"client", text:"クライアント名", width: "10%", align: 'start'},
+      { value:"agenda", text:"案件名", width: "35%", align: 'start'},
       { value:"hour_salary", text:"時給", width: "15%", align: 'start'},
       { value:"day_salary", text:"日給", width: "15%", align: 'start'},
-      { value:"action", text:"削除", width:"10%", align: 'center', sortable: false}
+      { value:"action", text:"編集", width:"15%", align: 'center', sortable: false}
+    ],
+    header: [
+      { value:"hour_salary", text:"時給", width: "50%", align: 'start'},
+      { value:"day_salary", text:"日給", width: "50%", align: 'start'},
     ],
     footer : {
       itemsPerPageText:"1ページあたりの行数",
@@ -150,6 +236,17 @@ export default {
     alert_text: '',
     alert_show: false,
     dialog: false,
+    edit_item: {
+      client: '',
+      agenda: '',
+      hour_salary: '',
+      day_salary: ''
+    },
+    edit_dialog: false,
+    check_text: 'しますか？',
+    check_dialog: false,
+    remove_dialog: false,
+    remove_item: [],
     root_folder: '',
   }),
   created() {
@@ -236,12 +333,18 @@ export default {
         }
       }.bind(this))
     },
-    remove(item) {
-      const url = this.root_folder + "/app/adminRemoveClient.php";
+    edit(item) {
+      this.edit_item = item
+      this.edit_dialog = true
+    },
+    edit_client() {
+      const url = this.root_folder + "/app/adminEditClient.php";
       const data = {
         start_date: this.start_date,
-        client: item.client,
-        agenda: item.agenda,
+        client: this.edit_item.client,
+        agenda: this.edit_item.agenda,
+        hour_salary: this.edit_item.hour_salary,
+        day_salary: this.edit_item.day_salary,
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
@@ -250,6 +353,28 @@ export default {
           this.alert(response.data.message)
         }
       }.bind(this))
+      this.edit_dialog = false
+    },
+    remove_check(item) {
+      this.remove_item = item
+      this.remove_dialog = true
+    },  
+    remove() {
+      const url = this.root_folder + "/app/adminRemoveClient.php";
+      const data = {
+        start_date: this.start_date,
+        client: this.remove_item.client,
+        agenda: this.remove_item.agenda,
+      }
+      axios.post(url, data).then(function(response) {
+        if (response.data.status == true) {
+          this.fetch_data()
+        } else {
+          this.alert(response.data.message)
+        }
+        this.remove_item = []
+      }.bind(this))
+      this.remove_dialog = false
     },
     enter(index) {
       switch (index) {
@@ -262,6 +387,18 @@ export default {
             break
           } else {
             this.setClient()
+            break
+          }
+
+        case 3:
+          this.$refs.day_salary.focus()
+          break;
+
+        case 4:
+          if(this.edit_item.client == '' || this.edit_item.agenda == '' || this.start_date == '') {
+            break
+          } else {
+            this.edit_client()
             break
           }
 
