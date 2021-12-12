@@ -33,29 +33,11 @@ try {
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, staffUpload, $name, $condition\n");
     @fclose($log);
-    if ($search_condition == true) {
-      $dbConnect = new mysqlConnect();
-      $data = $dbConnect->getEditSchedule($name, $start_date, $end_date);
-      if (!empty($data)) { 
-        foreach ($data as $element) {
-          $duplicate = true;
-          foreach ($event as $values) {
-            if ($element['date'] == $values['date']) {
-              $duplicate = false;
-            }
-          }
-          if ($duplicate) {
-            $del = "DELETE FROM schedule WHERE name ='$name' AND date = '{$element['date']}'";
-            $dbConnect->mysql->query($del);
-          }
-        }
-      }
-    }
     if ($event != []) {
       $index = 0;
-      $sql = "INSERT IGNORE INTO schedule ( name, date, agenda, overlap, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense ) VALUES ";
+      $sql = "INSERT IGNORE INTO schedule ( name, date, overlap ) VALUES ";
       foreach ($event as $values) {
-        $sql_value = "( '{$name}', '{$values['date']}', '', '1', '', '', '', '', '', '' )";
+        $sql_value = "( '{$name}', '{$values['date']}', '1' )";
         $query = $sql.$sql_value;
         $dbConnect->mysql->query($query);
         $index++;
@@ -67,7 +49,8 @@ try {
         $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));  
       }
     } else {
-      $index = "empty";
+      $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date'";
+      $dbConnect->mysql->query($del);
       $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
     }
     $log = @fopen($path,"a+");

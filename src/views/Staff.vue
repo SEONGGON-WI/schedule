@@ -6,7 +6,7 @@
       {{ calendar_date }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn class="success mx-2" color="white" @click="dialog = true" :disabled="input.username == '' || input.password == '' || calendar_events == ''">
+    <v-btn class="success mx-2" color="white" @click="dialog = true" :disabled="input.username == '' || input.password == ''">
       <v-icon>cloud_upload</v-icon>登録
     </v-btn>
     <v-btn class="mx-2" color="yellow darken-4" @click="analytics()" :disabled="input.username == '' || search_condition == false">
