@@ -1,5 +1,5 @@
 <template>
-  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent scrollable>
+  <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable>
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
@@ -233,9 +233,9 @@ export default {
       { value:"name", text:"名前", width: "12%", align: 'start'},
       { value:"client", text:"顧客", width: "11%", align: 'start'},
       { value:"agenda", text:"案件", width: "20%", align: 'start'},
-      { value:"overlap", text:"人数", width: "9%", align: 'center'},
-      { value:"admin_total_time", text:"時間", width: "9%", align: 'center'},
-      { value:"admin_hour_salary", text:"時給", width: "11%", align: 'center'},
+      { value:"overlap", text:"人", width: "5%", align: 'center'},
+      { value:"admin_total_time", text:"時間", width: "12%", align: 'center'},
+      { value:"admin_hour_salary", text:"時給", width: "12%", align: 'center'},
       { value:"admin_day_salary", text:"日給", width: "12%", align: 'center'},
       { value:"admin_expense", text:"経費", width: "11%", align: 'center'},
       { value:"action", text:"", width:"5%", align: 'center'}
