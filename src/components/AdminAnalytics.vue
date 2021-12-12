@@ -1,5 +1,5 @@
 <template>
-  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent scrollable> 
+  <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable> 
     <v-card color="grey lighten-4">
       <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2 title_text">
@@ -7,7 +7,7 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-title class="mx-3">
-            {{ tab == 1 ? staff_total_salary : admin_total_salary }}
+            {{ tab == 1 ? get_total_salary : get_admin_total_salary }}
           </v-toolbar-title>
           <v-toolbar-title class="mx-3">
             {{ total_agenda }}
@@ -174,8 +174,6 @@ export default {
     alert_show: false,
     check_text: '登録しますか？',
     check_dialog: false,
-    staff_total_salary: 0,
-    admin_total_salary: 0,
     dialog: false,
     root_folder: '',
   }),
@@ -184,8 +182,6 @@ export default {
     this.total_agenda = this.items.length + "件"
     this.differ_name = this.name
     this.differ_agenda = this.agenda
-    this.staff_total_salary = this.get_total_salary()
-    this.admin_total_salary = this.get_admin_total_salary()
     this.dialog = true;
   },
   watch: {
@@ -229,23 +225,6 @@ export default {
       }, 0)
       return " - " + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-  },
-  methods: {
-    set_status(item) {
-      item.status = item.status == '1' ? '0' : '1'
-    },
-    admin_background(item) {
-      return item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
-    },
-    staff_background(item) {
-      if (item.status == 1) {
-        return 'paid_schedule'
-      } else if (item.staff_day_salary == '') {
-        return 'empty_salary'
-      } else {
-        return 'filled_salary'
-      }
-    },
     get_total_salary() {
       const salary = this.items.reduce((stack, obj) => {
         if (obj.staff_day_salary != '') {
@@ -269,6 +248,23 @@ export default {
         }
       }, 0)
       return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+  },
+  methods: {
+    set_status(item) {
+      item.status = item.status == '1' ? '0' : '1'
+    },
+    admin_background(item) {
+      return item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
+    },
+    staff_background(item) {
+      if (item.status == 1) {
+        return 'paid_schedule'
+      } else if (item.staff_day_salary == '') {
+        return 'empty_salary'
+      } else {
+        return 'filled_salary'
+      }
     },
     get_date(date) {
       const day = date.split("-")
