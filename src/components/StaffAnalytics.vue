@@ -1,5 +1,5 @@
 <template>
-  <v-dialog content-class="custom_dialog" v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent scrollable> 
+  <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable> 
     <v-card color="grey lighten-4">
       <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2 title_text">

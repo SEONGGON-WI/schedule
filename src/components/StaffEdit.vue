@@ -190,7 +190,7 @@ export default {
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
-    rules: [v => v.length == 4 || '時間の様式に合わせてください。'],
+    rules: [v => v.length == 4 || v == '' || '時間の様式に合わせてください。'],
     dialog: false,
     salary_change: 'hour',
     valid: true,
