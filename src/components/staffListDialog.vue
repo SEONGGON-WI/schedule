@@ -30,10 +30,10 @@
               ></v-text-field>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn class="info mx-2" icon color="white" @click="edit(item)">
+              <v-btn class="info mx-5" icon color="white" @click="edit(item)">
                 <v-icon>edit</v-icon>
               </v-btn>
-              <v-btn class="error mx-2" icon color="white" @click="remove_check(item)">
+              <v-btn class="error mx-5" icon color="white" @click="remove_check(item)">
                 <v-icon>delete</v-icon>
               </v-btn>
             </template>
@@ -117,9 +117,9 @@ export default {
   data: () => ({
     items: [],
     headers: [
-      { value:"name", text:"名前", width: "50%", align: 'start'},
-      { value:"access_time", text:"更新日", width: "35%", align: 'start'},
-      { value:"action", text:"編集", width:"15%", align: 'center', sortable: false}
+      { value:"name", text:"名前", width: "40%", align: 'start'},
+      { value:"access_time", text:"更新日", width: "30%", align: 'start'},
+      { value:"action", text:"編集", width:"30%", align: 'center', sortable: false}
     ],
     footer : {
       itemsPerPageText:"1ページあたりの行数",

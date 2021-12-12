@@ -41,7 +41,13 @@
             @change="change"
             append-icon="arrow_drop_down"
             hide-details
-          ></v-select>
+          >
+            <template v-slot:append-outer>
+              <v-btn icon @click.native="clear">
+                <v-icon>clear</v-icon>
+              </v-btn>
+            </template>
+          </v-select>
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="3" class="name_agenda pt-3 pl-8">
@@ -301,6 +307,11 @@ export default {
     },
     check() {
       this.check_dialog = true;
+    },
+    clear() {
+      this.differ_name = '全員'
+      this.differ_agenda = ''
+      this.change()
     },
     alert(text) {
       this.alert_text = text;

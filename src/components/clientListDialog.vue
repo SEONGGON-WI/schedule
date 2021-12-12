@@ -67,7 +67,7 @@
                 hide-details
               ></v-text-field>              
             </v-col>
-            <v-col cols="5">
+            <v-col cols="6">
               <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>cloud_upload</v-icon>登録</v-btn>
               <v-btn outlined class="success ma-2" color="white" @click="acceptClient"><v-icon>autorenew</v-icon>反映</v-btn>
               <v-btn outlined class="error ma-2" color="white" @click="deleteClient" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
