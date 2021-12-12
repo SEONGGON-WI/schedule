@@ -20,7 +20,7 @@ try {
     foreach ($data as $value) {
       $day = [];
       $day = explode("-", $value['date']);
-      $working_day = $day[1]."-".$day[2];
+      $working_day = $day[1]."/".$day[2];
     
       if ($value['admin_day_salary'] != '' ) {
         $admin_salary = number_format((int)$value['admin_day_salary']);
@@ -87,7 +87,7 @@ try {
           }
         }
         $month = explode("-", $start_date);
-        $working_day = $month[1]."-";
+        $working_day = $month[1]."/";
         foreach ($table as $element) {
           $day = [];
           $day = explode("-", $element['date']);
