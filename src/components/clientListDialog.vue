@@ -208,7 +208,7 @@ export default {
   data: () => ({
     items: [],
     headers: [
-      { value:"client", text:"クライアント名", width: "10%", align: 'start'},
+      { value:"client", text:"クライアント名", width: "20%", align: 'start'},
       { value:"agenda", text:"案件名", width: "35%", align: 'start'},
       { value:"hour_salary", text:"時給", width: "15%", align: 'start'},
       { value:"day_salary", text:"日給", width: "15%", align: 'start'},

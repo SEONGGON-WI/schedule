@@ -221,16 +221,6 @@ export default {
         this.items.staff_day_salary = '';
       }
     },
-    // hour_salary(element) {
-    //   if (!this.salary_change) {
-    //     this.items.staff_day_salary = Math.floor(element * this.items.total_time)
-    //   }
-    // },
-    // total(element) {
-    //   if (!this.salary_change) {
-    //     this.items.staff_day_salary = Math.floor(element * this.items.staff_hour_salary)
-    //   }
-    // },
   },
   methods: {
     timeColon(type) {
