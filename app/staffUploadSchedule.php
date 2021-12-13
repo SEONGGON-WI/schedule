@@ -33,6 +33,24 @@ try {
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, staffUpload, $name, $condition\n");
     @fclose($log);
+    if ($search_condition == true) {
+      $dbConnect = new mysqlConnect();
+      $data = $dbConnect->getEditSchedule($name, $start_date, $end_date);
+      if (!empty($data)) { 
+        foreach ($data as $element) {
+          $duplicate = false;
+          foreach ($event as $values) {
+            if ($element['date'] == $values['date']) {
+              $duplicate = true;
+            }
+          }
+          if (!$duplicate) {
+            $del = "DELETE FROM schedule WHERE name ='$name' AND date = '{$element['date']}'";
+            $dbConnect->mysql->query($del);
+          }
+        }
+      }
+    }
     if ($event != []) {
       $index = 0;
       $sql = "INSERT IGNORE INTO schedule ( name, date, overlap ) VALUES ";
