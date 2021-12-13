@@ -39,11 +39,10 @@
         >
           <template v-slot:item.start_time="{ item }">
             <v-text-field
-              type="number"
               ref="start"
               v-model="item.start_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
-              :rules="rules"
+              :rules="[rules.required]"
               :dense="salary_change == 'day'"
               :filled="salary_change == 'day'"
               :readonly="salary_change == 'day'"
@@ -60,11 +59,10 @@
 
           <template v-slot:item.end_time="{ item }">
             <v-text-field
-              type="number"
               ref="end"
               v-model="item.end_time"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
-              :rules="rules"
+              :rules="[rules.required]"
               :dense="salary_change == 'day'"
               :filled="salary_change == 'day'"
               :readonly="salary_change == 'day'"
@@ -103,10 +101,10 @@
         >
           <template v-slot:item.staff_hour_salary="{ item }">
             <v-text-field
-              type="number"
               ref="hour"
               v-model="item.staff_hour_salary"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              :rules="[rules.positive]"
               :dense="salary_change == 'day'"
               :filled="salary_change == 'day'"
               :readonly="salary_change == 'day'"
@@ -116,7 +114,6 @@
               height="60"
               outlined
               single-line
-              hide-details
             ></v-text-field>
           </template>
           <template v-slot:item.staff_day_salary="{ item }">
@@ -132,36 +129,33 @@
               height="60"
               outlined
               single-line
-              hide-details
             ></v-text-field>
             <v-text-field
               v-else
-              type="number"
-              v-model="item.staff_day_salary"
               ref="day"
+              v-model="item.staff_day_salary"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              :rules="[rules.positive]"
               @keydown.enter="enter(3)"
               class="mt-3 mb-10"
               label="日給"
               height="60"
               outlined
               single-line
-              hide-details
             ></v-text-field>
           </template>
           <template v-slot:item.staff_expense="{ item }">
             <v-text-field
-              type="number"
               ref="expense"
               v-model="item.staff_expense"
               :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+              :rules="[rules.positive]"
               @keydown.enter="enter(5)"
               class="mt-3 mb-10"
               label="経費"
               height="60"
               outlined
               single-line
-              hide-details
             ></v-text-field>
           </template>
         </v-data-table>
@@ -190,7 +184,10 @@ export default {
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
-    rules: [v => v.length == 4 || v == '' || '時間の様式に合わせてください。'],
+    rules:{
+      required: v => v.length == 4 || v == '' || '時間の様式に合わせてください。',
+      positive: v => v > 0 || v == '' || '正の整数を指定'
+    },
     dialog: false,
     salary_change: 'hour',
     valid: true,
