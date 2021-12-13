@@ -12,6 +12,7 @@
           </v-btn>
         </v-toolbar>
           <v-data-table 
+            item-class="mt-2"
             name="staff-list-table"
             :headers="headers" 
             :items="items" 
@@ -30,10 +31,10 @@
               ></v-text-field>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn class="info mx-5" icon color="white" @click="edit(item)">
+              <v-btn class="info mx-5 my-3" icon color="white" @click="edit(item)" :disabled="!valid">
                 <v-icon>edit</v-icon>
               </v-btn>
-              <v-btn class="error mx-5" icon color="white" @click="remove_check(item)">
+              <v-btn class="error mx-5 my-3" icon color="white" @click="remove_check(item)">
                 <v-icon>delete</v-icon>
               </v-btn>
             </template>
@@ -56,15 +57,16 @@
             </v-btn>
           </v-toolbar>
           <v-card-text>
+            <v-form ref="form" v-model="valid">
             <v-row>
               <v-col cols="6">
                 <v-text-field
                   v-model="staff_name"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
+                  :rules="[rules.required]"
+                  @keydown.enter="enter(1)"
                   label="名前"
                   single-line
-                  hide-details
-                  readonly
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -72,13 +74,13 @@
                   ref="password"
                   v-model="staff_password"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
-                  @keydown.enter="edit_staff"
+                  @keydown.enter="enter(2)"
                   label="パスワード"
                   single-line
-                  hide-details
                 ></v-text-field>
               </v-col>
             </v-row>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-container>
@@ -136,9 +138,14 @@ export default {
     edit_dialog: false,
     remove_dialog: false,
     remove_item: [],
+    current_staff_name: '',
     staff_name: '',
     staff_password: '',
     root_folder: '',
+    valid: true,
+    rules:{
+      required: value => !!value || '省略不可',
+    },
   }),
   created() {
     this.root_folder = this.$store.getters.root_folder
@@ -160,6 +167,7 @@ export default {
       }.bind(this))
     },
     edit(item) {
+      this.current_staff_name = item.name
       this.staff_name = item.name
       this.edit_dialog = true;
     },
@@ -170,8 +178,9 @@ export default {
       }
       const url = this.root_folder + "/app/adminEditStaff.php";
       const data = {
-        name: this.staff_name,
-        password: this.staff_password
+        current_name: this.current_staff_name,
+        name: this.staff_name.replace(/^\s+|\s+$/gm,''),
+        password: this.staff_password.replace(/^\s+|\s+$/gm,''),
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
@@ -205,6 +214,24 @@ export default {
         this.remove_item = []
       }.bind(this))
       this.remove_dialog = false
+    },
+    enter(index) {
+      switch (index) {
+        case 1:
+          this.$refs.password.focus()
+          break;
+
+        case 2:
+          if(this.staff_name == '' || this.current_staff_name == '') {
+            break
+          } else {
+            this.edit_staff()
+            break
+          }
+
+        default:
+          break;
+      }
     },
     alert(text) {
       this.alert_text = text;

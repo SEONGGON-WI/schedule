@@ -1,13 +1,21 @@
 <?php
 include 'defaultValue.php';
 $response = json_decode(file_get_contents('php://input'), true);
+$current_name = $response['current_name'];
 $name = $response['name'];
 $password = $response['password'];
 include 'sqlConnect.php';
 try {
+  $dbConnect = new mysqlConnect();
+  if ($current_name != $name) {
+    $sql = "UPDATE manager SET name = '$name' WHERE name = '$current_name'";
+    $dbConnect->mysql->query($sql);
+
+    $sql = "UPDATE schedule SET name = '$name' WHERE name = '$current_name'";
+    $dbConnect->mysql->query($sql);
+  }
   if ($password != '') {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $dbConnect = new mysqlConnect();
     $sql = "UPDATE manager SET password = '$hashedPassword' WHERE name = '$name'";
     $dbConnect->mysql->query($sql);
     $result = json_encode(array('status' => true));  
