@@ -182,6 +182,11 @@ export default {
     check_dialog: false,
     dialog: false,
     root_folder: '',
+    pay_total_salary: '',
+    paid_total_salary: '',
+    paid_status: '',
+    total_salary: '',
+    admin_total_salary: '',
   }),
   created() {
     this.root_folder = this.$store.getters.root_folder
@@ -193,68 +198,94 @@ export default {
   watch: {
     items(element) {
       this.total_agenda = element.length + "件"
+      var pay_total_salary = 0
+      var paid_total_salary = 0
+      var paid_status = 0
+      var total_salary = 0
+      var admin_total_salary = 0
+      element.map(item => {
+        var expense = item.staff_expense ? parseInt(item.staff_expense) : 0
+        if (item.staff_day_salary != '' && item.status == 0) {
+          pay_total_salary = pay_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+        }
+        if (item.staff_day_salary != '' && item.status == 1) {
+          paid_total_salary = paid_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+          paid_status = paid_status + (1000 * parseInt(item.overlap))
+        }
+        if (item.staff_day_salary != '') {
+          total_salary = total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+        }
+        if (item.admin_day_salary != '') {
+          admin_total_salary = admin_total_salary + parseInt(Math.floor(item.admin_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+        }
+      })
+      this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.total_salary = "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.admin_total_salary = "￥" + admin_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
   computed: {
-    get_pay_total_salary() {
-      const salary = this.items.reduce((stack, obj) => {
-        if (obj.staff_day_salary != '' && obj.status == 0) {
-          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-          // return stack + parseInt(obj.staff_day_salary) + expense
-          return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-        } else {
-          return stack
-        }
-      }, 0)
-      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    get_paid_total_salary() {
-      const salary = this.items.reduce((stack, obj) => {
-        if (obj.staff_day_salary != '' && obj.status == 1) {
-          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-          // return stack + parseInt(obj.staff_day_salary) + expense
-          return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-        } else {
-          return stack
-        }
-      }, 0)
-      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    get_paid_status() {
-      const salary = this.items.reduce((stack, obj) => {
-        if (obj.staff_day_salary != '' && obj.status == 1) {
-          return stack + (1000 * parseInt(obj.overlap))
-          // return stack + parseInt(Math.floor(100 * obj.overlap))
-        } else {
-          return stack
-        }
-      }, 0)
-      return " - " + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    get_total_salary() {
-      const salary = this.items.reduce((stack, obj) => {
-        if (obj.staff_day_salary != '') {
-          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-            // return stack + parseInt(obj.staff_day_salary) + expense
-            return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-        } else {
-          return stack
-        }
-      }, 0)
-      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    get_admin_total_salary() {
-      const salary = this.items.reduce((stack, obj) => {
-        if (obj.admin_day_salary != '') {
-          var expense = obj.admin_expense ? parseInt(obj.admin_expense) : 0
-          // return stack + parseInt(obj.admin_day_salary) + expense
-          return stack + parseInt(Math.floor(obj.admin_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-        } else {
-          return stack
-        }
-      }, 0)
-      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
+    // get_pay_total_salary() {
+    //   const salary = this.items.reduce((stack, obj) => {
+    //     if (obj.staff_day_salary != '' && obj.status == 0) {
+    //       var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
+    //       // return stack + parseInt(obj.staff_day_salary) + expense
+    //       return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
+    //     } else {
+    //       return stack
+    //     }
+    //   }, 0)
+    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // },
+    // get_paid_total_salary() {
+    //   const salary = this.items.reduce((stack, obj) => {
+    //     if (obj.staff_day_salary != '' && obj.status == 1) {
+    //       var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
+    //       // return stack + parseInt(obj.staff_day_salary) + expense
+    //       return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
+    //     } else {
+    //       return stack
+    //     }
+    //   }, 0)
+    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // },
+    // get_paid_status() {
+    //   const salary = this.items.reduce((stack, obj) => {
+    //     if (obj.staff_day_salary != '' && obj.status == 1) {
+    //       return stack + (1000 * parseInt(obj.overlap))
+    //       // return stack + parseInt(Math.floor(100 * obj.overlap))
+    //     } else {
+    //       return stack
+    //     }
+    //   }, 0)
+    //   return " - " + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // },
+    // get_total_salary() {
+    //   const salary = this.items.reduce((stack, obj) => {
+    //     if (obj.staff_day_salary != '') {
+    //       var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
+    //         // return stack + parseInt(obj.staff_day_salary) + expense
+    //         return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
+    //     } else {
+    //       return stack
+    //     }
+    //   }, 0)
+    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // },
+    // get_admin_total_salary() {
+    //   const salary = this.items.reduce((stack, obj) => {
+    //     if (obj.admin_day_salary != '') {
+    //       var expense = obj.admin_expense ? parseInt(obj.admin_expense) : 0
+    //       // return stack + parseInt(obj.admin_day_salary) + expense
+    //       return stack + parseInt(Math.floor(obj.admin_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
+    //     } else {
+    //       return stack
+    //     }
+    //   }, 0)
+    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // },
   },
   methods: {
     set_status(item) {
