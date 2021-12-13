@@ -36,7 +36,7 @@
                 <v-textarea
                   v-model="item.agenda"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
-                  class="py-3"
+                  class="py-2"
                   label="案件"
                   single-line
                   hide-details
@@ -49,7 +49,7 @@
                 <v-text-field
                   v-model="item.overlap"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
-                  class="py-3"
+                  class="py-3 my-4"
                   label=""
                   single-line
                   hide-details
@@ -59,7 +59,7 @@
                 <v-text-field
                   v-model="item.admin_total_time"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
-                  class="py-3"
+                  class="py-3 my-4"
                   label="時間"
                   single-line
                   hide-details
@@ -71,7 +71,7 @@
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   :dense="item.admin_total_time == ''"
                   :filled="item.admin_total_time == ''"
-                  class="py-3"
+                  class="py-3 my-4"
                   label="時給"
                   single-line
                   hide-details
@@ -84,7 +84,7 @@
                   dense
                   filled
                   readonly
-                  class="py-3"
+                  class="py-3 my-4"
                   label="日給"
                   single-line
                   hide-details
@@ -93,7 +93,7 @@
                   v-else
                   v-model="item.admin_day_salary"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"   
-                  class="py-3"
+                  class="py-3 my-4"
                   label="日給"
                   single-line
                   hide-details
@@ -103,14 +103,14 @@
                 <v-text-field
                   v-model="item.admin_expense"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  class="py-3"
+                  class="py-3 my-4"
                   label="経費"
                   single-line
                   hide-details
                 ></v-text-field>
               </template>
               <template v-slot:item.action="{ item }">
-                <v-btn class="error" small icon color="white" @click="remove(item)">
+                <v-btn class="error" icon color="white" @click="remove(item)">
                   <v-icon>delete</v-icon>
                 </v-btn>
               </template>
@@ -132,7 +132,7 @@
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
-                  class="py-3"
+                  class="py-3 my-4"
                   label="出勤"
                   placeholder="0900"
                   maxlength="5"
@@ -147,7 +147,7 @@
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
-                  class="py-3"
+                  class="py-3 my-4"
                   label="退勤"
                   placeholder="1800"
                   maxlength="5"
@@ -159,7 +159,7 @@
                 <v-text-field
                   v-model="item.total_time"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  class="py-3"
+                  class="py-3 my-4"
                   label="時間"
                   single-line
                   hide-details
@@ -171,7 +171,7 @@
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
-                  class="py-3"
+                  class="py-3 my-4"
                   label="時給"
                   single-line
                   hide-details
@@ -183,7 +183,7 @@
                   :value="item.staff_day_salary = get_staff_day_salary(item)"
                   dense
                   filled
-                  class="py-3"
+                  class="py-3 my-4"
                   label="日給"
                   single-line
                   hide-details
@@ -192,7 +192,7 @@
                   v-else
                   v-model="item.staff_day_salary"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  class="py-3"
+                  class="py-3 my-4"
                   label="日給"
                   single-line
                   hide-details
@@ -202,7 +202,7 @@
                 <v-text-field
                   v-model="item.staff_expense"
                   :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                  class="py-3"
+                  class="py-3 my-4"
                   label="経費"
                   single-line
                   hide-details
