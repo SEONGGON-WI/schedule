@@ -272,8 +272,8 @@ export default {
           this.search_condition = true
           this.$store.commit('set_staff_name', this.input.username.replace(/^\s+|\s+$/gm,''))  
           this.fetch_data(response.data.data);
-          this.setCookie('username', this.input.username, 7)
-          this.setCookie('password', this.input.password, 7)
+          this.setCookie('username', this.input.username, 28)
+          this.setCookie('password', this.input.password, 28)
         } else {
           this.search_condition = false
           this.$store.commit('set_staff_name', '')  
