@@ -2,12 +2,12 @@
   <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable> 
     <v-card color="grey lighten-4">
       <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2 title_text">
+          <v-toolbar-title class="mx-2">
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-title class="mx-3">
-            {{ tab == 1 ? get_total_salary : get_admin_total_salary }}
+            {{ tab == 1 ? total_salary : admin_total_salary }}
           </v-toolbar-title>
           <v-toolbar-title class="mx-3">
             {{ total_agenda }}
@@ -51,11 +51,11 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="3" class="name_agenda pt-3 pl-8">
-          {{ tab == 1 ? get_pay_total_salary : '' }}
+          {{ tab == 1 ? pay_total_salary : '' }}
         </v-col>
         <v-col cols="4" class="name_agenda pt-3 pr-2">
-          {{ tab == 1 ? get_paid_total_salary : '' }}
-          {{ tab == 1 ? get_paid_status : '' }}
+          {{ tab == 1 ? paid_total_salary : '' }}
+          {{ tab == 1 ? paid_status : '' }}
         </v-col>
       </v-row>
       <v-tabs v-model="tab" grow>
@@ -193,25 +193,27 @@ export default {
     this.total_agenda = this.items.length + "件"
     this.differ_name = this.name
     this.differ_agenda = this.agenda
+    this.get_salary(this.items)
+    this.get_pay_salary(this.items)
     this.dialog = true;
   },
   watch: {
     items(element) {
+      this.get_salary(element)
+      this.get_pay_salary(element)
+    },
+  },
+  methods: {
+    set_status(item) {
+      item.status = item.status == '1' ? '0' : '1'
+      this.get_pay_salary(this.items)
+    },
+    get_salary(element){
       this.total_agenda = element.length + "件"
-      var pay_total_salary = 0
-      var paid_total_salary = 0
-      var paid_status = 0
       var total_salary = 0
       var admin_total_salary = 0
       element.map(item => {
         var expense = item.staff_expense ? parseInt(item.staff_expense) : 0
-        if (item.staff_day_salary != '' && item.status == 0) {
-          pay_total_salary = pay_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
-        }
-        if (item.staff_day_salary != '' && item.status == 1) {
-          paid_total_salary = paid_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
-          paid_status = paid_status + (1000 * parseInt(item.overlap))
-        }
         if (item.staff_day_salary != '') {
           total_salary = total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
         }
@@ -219,77 +221,28 @@ export default {
           admin_total_salary = admin_total_salary + parseInt(Math.floor(item.admin_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
         }
       })
-      this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       this.total_salary = "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       this.admin_total_salary = "￥" + admin_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-  },
-  computed: {
-    // get_pay_total_salary() {
-    //   const salary = this.items.reduce((stack, obj) => {
-    //     if (obj.staff_day_salary != '' && obj.status == 0) {
-    //       var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-    //       // return stack + parseInt(obj.staff_day_salary) + expense
-    //       return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-    //     } else {
-    //       return stack
-    //     }
-    //   }, 0)
-    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // },
-    // get_paid_total_salary() {
-    //   const salary = this.items.reduce((stack, obj) => {
-    //     if (obj.staff_day_salary != '' && obj.status == 1) {
-    //       var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-    //       // return stack + parseInt(obj.staff_day_salary) + expense
-    //       return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-    //     } else {
-    //       return stack
-    //     }
-    //   }, 0)
-    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // },
-    // get_paid_status() {
-    //   const salary = this.items.reduce((stack, obj) => {
-    //     if (obj.staff_day_salary != '' && obj.status == 1) {
-    //       return stack + (1000 * parseInt(obj.overlap))
-    //       // return stack + parseInt(Math.floor(100 * obj.overlap))
-    //     } else {
-    //       return stack
-    //     }
-    //   }, 0)
-    //   return " - " + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // },
-    // get_total_salary() {
-    //   const salary = this.items.reduce((stack, obj) => {
-    //     if (obj.staff_day_salary != '') {
-    //       var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-    //         // return stack + parseInt(obj.staff_day_salary) + expense
-    //         return stack + parseInt(Math.floor(obj.staff_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-    //     } else {
-    //       return stack
-    //     }
-    //   }, 0)
-    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // },
-    // get_admin_total_salary() {
-    //   const salary = this.items.reduce((stack, obj) => {
-    //     if (obj.admin_day_salary != '') {
-    //       var expense = obj.admin_expense ? parseInt(obj.admin_expense) : 0
-    //       // return stack + parseInt(obj.admin_day_salary) + expense
-    //       return stack + parseInt(Math.floor(obj.admin_day_salary * obj.overlap)) + parseInt(Math.floor(expense * obj.overlap))
-    //     } else {
-    //       return stack
-    //     }
-    //   }, 0)
-    //   return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // },
-  },
-  methods: {
-    set_status(item) {
-      item.status = item.status == '1' ? '0' : '1'
+    get_pay_salary(element) {
+      this.total_agenda = element.length + "件"
+      var pay_total_salary = 0
+      var paid_total_salary = 0
+      var paid_status = 0
+      element.map(item => {
+        if (item.staff_day_salary != '') {
+          var expense = item.staff_expense ? parseInt(item.staff_expense) : 0
+          if (item.status == 0) {
+            pay_total_salary = pay_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))  
+          } else {
+            paid_total_salary = paid_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+            paid_status = paid_status + (1000 * parseInt(item.overlap))
+          }
+        }
+      })
+      this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     admin_background(item) {
       return item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
@@ -321,12 +274,12 @@ export default {
     upload() {
       const url = this.root_folder + "/app/adminEditAnalytics.php";
       let data = []
-      this.items.map(element => {
-        data.push({
+      this.items.map((element, index) => {
+        data[index] = {
           status: element.status,
           name: element.name,
           date: element.date
-        })
+        }
       })
       axios.post(url, {event:data}).then(function(response) {
         if (response.data.status == true) {
