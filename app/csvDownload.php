@@ -13,7 +13,7 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"日付","クライアント","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費","人数",,"時間","日數","時給","日給","月給","交通費",,,,"日払い"'. "\r\n";
+    $csv = '"日付","クライアント","案件名","名前","出勤","退勤","時間","時間(30分=0,5)","日數","時給","日給","残業代","月給","交通費",,"人数",,"時間","日數","時給","日給","月給","交通費",,,,"日払い"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
@@ -135,6 +135,7 @@ try {
           . '","'
           . $admin_total_salary . '","'
           . $admin_total_expense . '","'
+          . '","'
           . $value['overlap'] . '","'
           . '","'
           . $value['total_time'] . '","'
