@@ -217,13 +217,21 @@
       :text="alert_text"
       v-if="alert_show"
     ></alert>
+    <admin-dialog
+      @accept="remove"
+      @close="remove_dialog = false"
+      v-if="remove_dialog"
+      text="削除しますか？"
+    ></admin-dialog>
   </v-dialog>
 </template>
 <script>
+import AdminDialog from '@/components/AdminDialog.vue';
 import axios from 'axios';
 export default {
   name: "adminedit",
   components: {
+    AdminDialog,
   },
   props: [
     'items', 'date'
@@ -250,7 +258,9 @@ export default {
       { value:"staff_day_salary", text:"日給", width: "12%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "11%", align: 'center'}
     ],
+    remove_target: {name:''},
     remove_item: [],
+    remove_dialog: false,
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
     rules: [v => v.length == 4 || v == '' || '4桁入力'],
@@ -315,10 +325,15 @@ export default {
       this.edit();
       this.$emit("next");
     },
-    remove(item) {
-      this.remove_item.push({name: item.name})
-      const index = this.items.findIndex(obj => obj.name == item.name);
+    remove_check(item) {
+      this.remove_target = item
+      this.remove_dialog = true
+    },
+    remove() {
+      this.remove_item.push({name: this.remove_target.name})
+      const index = this.items.findIndex(obj => obj.name == this.remove_target.name);
       this.items.splice(index, 1);
+      this.remove_dialog = false
     },
     async edit() {
       let event = JSON.parse(JSON.stringify(this.items))

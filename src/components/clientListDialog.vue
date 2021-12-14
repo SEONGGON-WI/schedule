@@ -173,13 +173,6 @@
       v-if="alert_show"
     ></alert>
     <admin-dialog
-      @accept="upload"
-      @close="check_dialog = false"
-      v-if="check_dialog"
-      :text="check_text"
-    ></admin-dialog>
-
-    <admin-dialog
       @accept="remove"
       @close="remove_dialog = false"
       v-if="remove_dialog"
@@ -243,10 +236,8 @@ export default {
       day_salary: ''
     },
     edit_dialog: false,
-    check_text: 'しますか？',
-    check_dialog: false,
     remove_dialog: false,
-    remove_item: [],
+    remove_item: {client:'', agenda: ''},
     root_folder: '',
   }),
   created() {
@@ -372,7 +363,7 @@ export default {
         } else {
           this.alert(response.data.message)
         }
-        this.remove_item = []
+        this.remove_item = {client:'', agenda: ''}
       }.bind(this))
       this.remove_dialog = false
     },

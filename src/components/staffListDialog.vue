@@ -137,7 +137,7 @@ export default {
     dialog: false,
     edit_dialog: false,
     remove_dialog: false,
-    remove_item: [],
+    remove_item: {name: ''},
     current_staff_name: '',
     staff_name: '',
     staff_password: '',
@@ -211,7 +211,7 @@ export default {
         } else {
           this.alert(response.data.message)
         }
-        this.remove_item = []
+        this.remove_item = {name: ''}
       }.bind(this))
       this.remove_dialog = false
     },
