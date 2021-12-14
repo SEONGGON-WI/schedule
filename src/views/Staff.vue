@@ -47,11 +47,11 @@
                     class="form_area pa-2 mx-2 mb-4"
                     lang="en"
                     ref="password"
-                    id="password"
-                    name="password"
+                    id="current-password"
+                    name="current-password"
                     v-model="input.password"
                     @keydown.enter="password_enter"
-                    autocomplete="password"
+                    autocomplete="current-password"
                     placeholder="パスワード"
                   >
                     <v-btn class="mx-2" icon @click="show_password">
