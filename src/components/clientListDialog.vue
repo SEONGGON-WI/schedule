@@ -3,7 +3,7 @@
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2 title_text">
+          <v-toolbar-title class="mx-2 ">
             クライアント管理
           </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -107,7 +107,7 @@
       <v-container class="pa-0" fluid>
         <v-card color="grey lighten-4">
           <v-toolbar color="primary" dark>
-            <v-toolbar-title class="px-2 title_text">
+            <v-toolbar-title class="px-2">
               クライアント管理
             </v-toolbar-title>
             <v-spacer></v-spacer>

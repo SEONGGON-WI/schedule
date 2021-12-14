@@ -2,7 +2,7 @@
   <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable> 
     <v-card color="grey lighten-4">
       <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2 title_text">
+          <v-toolbar-title class="mx-2">
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>

@@ -52,18 +52,6 @@ tbody tr td {
   background-color: #81C784;
 }
 
-.not_paid_schedule {
-  background-color: white;
-}
-
-.odd_schedule {
-  background: rgba(170, 200, 99,0.2); 
-}
-
-.even_schedule {
-  background-color: white;
-}
-
 .v-input__control .v-text-field__details .v-messages .v-messages__wrapper .v-messages__message {
   font-size: 18px !important;
   margin-top: 5px !important;
@@ -71,7 +59,6 @@ tbody tr td {
 
 .custom_dialog {
   max-height: 80% !important;
-  width: 95% !important;
   position: fixed !important;
   top: 10% !important;
   display: flex !important;
@@ -84,7 +71,6 @@ tbody tr td {
 @media screen and ( max-width: 1000px ) {
   .custom_dialog {
     max-height: 80% !important;
-    width: 90% !important;
     position: fixed !important;
     top: 10% !important;
     display: flex !important;

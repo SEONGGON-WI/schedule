@@ -3,7 +3,7 @@
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2 title_text">
+          <v-toolbar-title class="mx-2">
             {{ date }}
           </v-toolbar-title>
           <v-btn icon text class="mx-2 pl-2" color="black darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
