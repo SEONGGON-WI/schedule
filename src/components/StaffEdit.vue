@@ -3,7 +3,7 @@
     <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title class="mx-2 title_text">
+          <v-toolbar-title class="mx-2">
             {{ date }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -185,7 +185,7 @@ export default {
     ],
     date: '',
     rules:{
-      required: v => v.length == 4 || v == '' || '時間の様式に合わせてください。',
+      required: v => (v.length == 4 && v > 0  && v < 2400) || v == '' || '時間の様式に合わせてください。',
       positive: v => v > 0 || v == '' || '正の整数を指定'
     },
     dialog: false,
