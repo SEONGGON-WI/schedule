@@ -13,22 +13,17 @@ try {
     $result = json_encode(array('status' => true , 'data' => ''));
   }
 
+  $month = date('m-');
   $time = (int)date('H');
-  if ($time < 9 && $time >= 1) {
-    $fileName = "1_backup.json";
-    $deleteName = "9_backup.json";
-  } else if ($time < 18 && $time >= 9) {
-    $fileName = "9_backup.json";
-    $deleteName = "18_backup.json";
-  } else if ($time < 22 && $time >= 18) {
-    $fileName = "18_backup.json";
-    $deleteName = "22_backup.json";
-  } else if ($time >= 22) {
-    $fileName = "22_backup.json";
-    $deleteName = "1_backup.json";
+  if ($time < 5 && $time >= 0) {
+    $fileName = $month."18_backup.json";
+    $deleteName = $month."6_backup.json";
+  } else if ($time < 18 && $time >= 6) {
+    $fileName = $month."6_backup.json";
+    $deleteName = $month."18_backup.json";
   } else {
-    $fileName = "22_backup.json";
-    $deleteName = "1_backup.json";
+    $fileName = $month."18_backup.json";
+    $deleteName = $month."6_backup.json";
   }
 
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
@@ -37,7 +32,7 @@ try {
 
   if (!file_exists($backup_path)) {
     $time = date('Y-m-');
-    $current_start = $time.'1';
+    $current_start = $time.'01';
     $current_end = $time.'31';
     $backup_data = $dbConnect->getAdmin($current_start, $current_end);
     $json_data = json_encode($backup_data);
