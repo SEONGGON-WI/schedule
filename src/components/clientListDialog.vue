@@ -300,6 +300,8 @@ export default {
       axios.post(url, data).then(function(response) {
         this.client = ''
         this.agenda = []
+        this.hour_salary = ''
+        this.day_salary = ''
         if (response.data.status == true) {
           this.fetch_data()
         } else {
