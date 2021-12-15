@@ -110,7 +110,7 @@
                 ></v-text-field>
               </template>
               <template v-slot:item.action="{ item }">
-                <v-btn class="error" icon color="white" @click="remove(item)">
+                <v-btn class="error" icon color="white" @click="remove_check(item)">
                   <v-icon>delete</v-icon>
                 </v-btn>
               </template>
