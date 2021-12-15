@@ -172,7 +172,7 @@ export default {
       this.edit_dialog = true;
     },
     edit_staff() {
-      if (this.staff_password == '') {
+      if (this.staff_name == '') {
         this.edit_dialog = false
         return
       }
