@@ -59,6 +59,7 @@ tbody tr td {
 
 .custom_dialog {
   max-height: 80% !important;
+  width: 95% !important;
   position: fixed !important;
   top: 10% !important;
   display: flex !important;
@@ -72,6 +73,7 @@ tbody tr td {
   .custom_dialog {
     max-height: 80% !important;
     position: fixed !important;
+    width: 90% !important;
     top: 10% !important;
     display: flex !important;
     flex-direction: column !important;
