@@ -5,6 +5,14 @@ $start_date = $response['start_date'];
 $client = $response['client'];
 include 'sqlConnect.php';
 try {
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ymd');
+  $path = $rootPath."error_".$logDate.".txt";
+  $log = @fopen($path,"a+");
+  @fwrite($log,"$time, adminDeleteClient, $client, $start_date\n");
+  @fclose($log);
+  $result = json_encode(array('status' => false , 'message' => '削除にエラーが発生しました。'));
   $dbConnect = new mysqlConnect();
   $del = "DELETE FROM client WHERE client = '$client' AND date = '$start_date'";
   $dbConnect->mysql->query($del);

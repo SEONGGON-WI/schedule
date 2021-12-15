@@ -9,9 +9,8 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminRemove, admin, $current_date\n");
+  @fwrite($log,"$time, adminRemoveSchedule, $current_date\n");
   @fclose($log);
-
   $dbConnect = new mysqlConnect();
   $del = "DELETE FROM schedule WHERE agenda = '' AND date < '$current_date'";
   $dbConnect->mysql->query($del);
