@@ -77,12 +77,6 @@
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
             </template>
-            <template v-slot:item.admin_day_salary="{ item }">
-              <div>{{ item.admin_day_salary == '' ? '' : String(Math.floor(item.admin_day_salary * item.overlap)) }}</div>
-            </template>
-            <template v-slot:item.admin_expense="{ item }">
-              <div>{{ item.admin_expense == '' ? '' : String(Math.floor(item.admin_expense * item.overlap)) }}</div>
-            </template>
           </v-data-table>
           <v-data-table 
             v-else
@@ -103,12 +97,6 @@
             </template>
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
-            </template>
-            <template v-slot:item.staff_day_salary="{ item }">
-              <div>{{ item.staff_day_salary == '' ? '' : String(Math.floor(item.staff_day_salary * item.overlap)) }}</div>
-            </template>
-            <template v-slot:item.staff_expense="{ item }">
-              <div>{{ item.staff_expense == '' ? '' : String(Math.floor(item.staff_expense * item.overlap)) }}</div>
             </template>
           </v-data-table>
         </v-tabs-items>
@@ -199,17 +187,22 @@ export default {
     let name_items = []
     let agenda_items = []
     data.map(element => {
+      element.admin_day_salary = element.admin_day_salary == '' ? '' : element.admin_day_salary * element.overlap
+      element.admin_expense = element.admin_expense == '' ? '' : element.admin_expense * element.overlap
+      element.staff_day_salary = element.staff_day_salary == '' ? '' : element.staff_day_salary * element.overlap
+      element.staff_expense = element.staff_expense == '' ? '' : element.staff_expense * element.overlap
+
       name_items = name_items.concat(element.name)
       agenda_items = agenda_items.concat(element.agenda)
     })
     const name_items_set = new Set(name_items)
     const agenda_items_set = new Set(agenda_items)
-    this.name_items = ['全員', ...name_items_set.sort(function (a, b) {
+    this.name_items = ['全員', ...name_items_set].sort(function (a, b) {
       return a.localeCompare(b, 'ja')
-    })]
-    this.agenda_items = ['', ...agenda_items_set.sort(function (a, b) {
+    })
+    this.agenda_items = ['', ...agenda_items_set].sort(function (a, b) {
       return a.localeCompare(b, 'ja')
-    })]
+    })
     if (this.agenda != '' && this.agenda != '空きスケジュール' && this.agenda != 'スタッフ日給未入力' && this.agenda != '管理者日給未入力') {
       this.differ_agenda = this.agenda
     } else {
@@ -233,12 +226,12 @@ export default {
       var total_salary = 0
       var admin_total_salary = 0
       this.analytics_data.map(item => {
-        var expense = item.staff_expense ? parseInt(item.staff_expense) : 0
+        var expense = item.staff_expense ? item.staff_expense : 0
         if (item.staff_day_salary != '') {
-          total_salary = total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+          total_salary = total_salary + parseInt(item.staff_day_salary * item.overlap) + parseInt(expense)
         }
         if (item.admin_day_salary != '') {
-          admin_total_salary = admin_total_salary + parseInt(Math.floor(item.admin_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+          admin_total_salary = admin_total_salary + parseInt(item.admin_day_salary) + parseInt(expense)
         }
       })
       this.total_salary = "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -250,11 +243,11 @@ export default {
       var paid_status = 0
       this.analytics_data.map(item => {
         if (item.staff_day_salary != '') {
-          var expense = item.staff_expense ? parseInt(item.staff_expense) : 0
+          var expense = item.staff_expense ? item.staff_expense : 0
           if (item.status == 0) {
-            pay_total_salary = pay_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))  
+            pay_total_salary = pay_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
           } else {
-            paid_total_salary = paid_total_salary + parseInt(Math.floor(item.staff_day_salary * item.overlap)) + parseInt(Math.floor(expense * item.overlap))
+            paid_total_salary = paid_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
             paid_status = paid_status + (1000 * parseInt(item.overlap))
           }
         }
@@ -294,7 +287,7 @@ export default {
     upload() {
       const url = this.root_folder + "/app/adminEditAnalytics.php";
       let data = []
-      this.items.map((element, index) => {
+      this.analytics_data.map((element, index) => {
         data[index] = {
           status: element.status,
           name: element.name,

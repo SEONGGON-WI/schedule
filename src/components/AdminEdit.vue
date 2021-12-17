@@ -245,7 +245,7 @@ export default {
     AdminDialog,
   },
   props: [
-    'client', 'name', 'agenda', 'date'
+    'client', 'name', 'agenda', 'edit_date'
   ],
   data: () => ({
     headers: [
@@ -270,6 +270,7 @@ export default {
       { value:"staff_expense", text:"経費", width: "11%", align: 'center'}
     ],
     items: [],
+    date: '',
     remove_target: {name:''},
     remove_item: [],
     remove_dialog: false,
@@ -277,7 +278,7 @@ export default {
     tab_item: ['管理者', 'スタッフ'],
     valid: false,
     rules:{
-      required: v => (v.length == 4 && v > 0  && v < 2400) || v == '' || '時間入力',
+      required: v => ((v.length == 4 || v.length == 5) && v > 0  && v < 2400) || v == '' || '時間入力',
       positive: v => v > 0 || v == '' || '正の整数を指定'
     },
     alert_text: '',
@@ -288,6 +289,7 @@ export default {
   }),
   created() {
     this.root_folder = this.$store.getters.root_folder
+    this.date = this.edit_date
     this.get_event()
     this.dialog = true;
   },
@@ -336,7 +338,7 @@ export default {
         client: this.client,
         name: this.name,
         agenda: this.agenda,
-        date: this.edit_date
+        date: this.date
       }
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
@@ -374,13 +376,14 @@ export default {
         remove_event: this.remove_item
       }
       await axios.post(url, data).then(function(response) {
-        this.remove_item = [];
         if (response.data.status == false){
           this.edit_condition = false
           this.alert(response.data.message)
         } else {
           this.edit_condition = true
         }
+        this.remove_item = [];
+        this.close()
       }.bind(this))
     },
     calculate_date(type) {
@@ -401,12 +404,12 @@ export default {
       return date
     },
     prevDate() {
-      this.date = this.calculate_edit_date('prev')
+      this.date = this.calculate_date('prev')
       this.edit();
       this.get_event()
     },
     nextDate() {
-      this.date = this.calculate_edit_date('next')
+      this.date = this.calculate_date('next')
       this.edit();
       this.get_event()
     },
@@ -439,8 +442,15 @@ export default {
       return item.agenda == '' || item.staff_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
     },
     make_colon(time) {
-      var hours = time.substring(0, 2)
-      var minute = time.substring(2, 4)
+      var hours = ''
+      var minute = ''
+      if (time.length == 4) {
+        hours = time.substring(0, 2)
+        minute = time.substring(2, 4)  
+      } else if (time.length == 5) {
+        hours = time.substring(0, 2)
+        minute = time.substring(3, 5)  
+      }
       if(isFinite(hours + minute) == false) {
         return false
       }
