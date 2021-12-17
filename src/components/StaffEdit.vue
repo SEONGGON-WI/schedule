@@ -184,13 +184,13 @@ export default {
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
     date: '',
+    valid: true,
     rules:{
       required: v => (v.length == 4 && v > 0  && v < 2400) || v == '' || '時間の様式に合わせてください。',
       positive: v => v > 0 || v == '' || '正の整数を指定'
     },
     dialog: false,
     salary_change: 'hour',
-    valid: true,
   }),
   created() {
     const day = this.items.date.split("-");

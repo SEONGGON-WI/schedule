@@ -31,12 +31,13 @@
             <v-col cols="9">
               <v-autocomplete
                 v-model="agenda" 
+                ref="agenda_filed"
                 :items="calculate_agenda"
                 :menu-props="{ maxHeight: '800' }"
                 :multiple="true"
                 :hide-selected="true"
                 :search-input.sync="search"
-                @keydown="keyboardEvent"
+                @keydown.enter="autocomplete_enter"
                 label="案件名を選択"
                 hide-details
                 clearable
@@ -68,9 +69,9 @@
               ></v-text-field>              
             </v-col>
             <v-col cols="6">
-              <v-btn outlined class="info ma-2" color="white" @click="setClient" :disabled="client == '' || agenda.length == 0"><v-icon>cloud_upload</v-icon>登録</v-btn>
-              <v-btn outlined class="success ma-2" color="white" @click="acceptClient"><v-icon>autorenew</v-icon>反映</v-btn>
-              <v-btn outlined class="error ma-2" color="white" @click="deleteClient" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
+              <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0"><v-icon>cloud_upload</v-icon>登録</v-btn>
+              <v-btn outlined class="success ma-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>
+              <v-btn outlined class="error ma-2" color="white" @click="confirm('delete')" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
             </v-col>
           </v-row>
         </v-card-text>
@@ -168,15 +169,15 @@
       </v-container>
     </v-dialog>
     <alert
+      v-if="alert_show"
       @close="alert_show = false"
       :text="alert_text"
-      v-if="alert_show"
     ></alert>
     <admin-dialog
-      @accept="remove"
-      @close="remove_dialog = false"
-      v-if="remove_dialog"
-      text="削除しますか？"
+      v-if="confirm_dialog"
+      @accept="confirm_accept"
+      @close="confirm_dialog = false"
+      :text="confirm_text"
     ></admin-dialog>
   </v-dialog>
 </template>
@@ -196,7 +197,7 @@ export default {
     alert,
   },
   props: [
-    'agenda_items', 'start_date'
+    'agenda_items', 'date'
   ],
   data: () => ({
     items: [],
@@ -226,18 +227,15 @@ export default {
     day_salary: '',
     search: '',
     search_table: '',
+    edit_item: {},
+    edit_dialog: false,
     alert_text: '',
     alert_show: false,
-    dialog: false,
-    edit_item: {
-      client: '',
-      agenda: '',
-      hour_salary: '',
-      day_salary: ''
-    },
-    edit_dialog: false,
-    remove_dialog: false,
+    confirm_dialog: false,
+    confirm_type: '',
+    confirm_text: '',
     remove_item: {client:'', agenda: ''},
+    dialog: false,
     root_folder: '',
   }),
   created() {
@@ -247,7 +245,7 @@ export default {
     this.agenda_list.shift()
     this.agenda_list.shift()
     this.agenda_list.shift()
-    this.fetch_data()
+    this.items = JSON.parse(JSON.stringify(this.$store.getters.client_agenda))
     this.dialog = true;
   },
   computed: {
@@ -266,61 +264,106 @@ export default {
     },
   },
   methods: {
-    keyboardEvent: function(e) {
-      if (e.which !== 13 || this.client == '') {
-        return
-      }
+    autocomplete_enter() {
       this.sy_search = null;
-      this.setClient();
+      this.$refs.agenda_filed.isFocused = false;
     },
-    fetch_data() {
-      const url = this.root_folder + "/app/adminGetClient.php";
-      const data = {
-        start_date: this.start_date,
+    confirm(type) {
+      this.confirm_type = type
+      switch (type) {
+        case 'set':
+          if (this.client != '' && this.agenda.length != 0) {
+            this.confirm_text = "登録しますか？"
+            this.confirm_dialog = true
+          }
+          break;
+
+        case 'apply':
+          this.confirm_text = "反映しますか？"
+          this.confirm_dialog = true
+          break
+
+        case 'delete':
+          this.confirm_text = "一括削除しますか？"
+          this.confirm_dialog = true
+          break;
+
+        case 'remove':
+          this.confirm_text = "削除しますか？"
+          this.confirm_dialog = true
+          break
+
+        default:
+          break;
       }
-      axios.post(url, data).then(function(response) {
-        if (response.data.status == true && response.data.data != '') {
-          this.$store.commit('set_client_agenda', response.data.data)
-          this.items = response.data.data
-        } else {
-          this.$store.commit('set_client_agenda', [])
-          this.items = [];
-        }
-      }.bind(this))
+    },
+    confirm_accept() {
+      switch (this.confirm_type) {
+        case 'set':
+          this.setClient()
+          break
+
+        case 'apply':
+          this.applyClient()
+          break
+
+        case 'delete':
+          this.deleteClient()
+          break;
+
+        case 'remove':
+          this.removeClient()
+          break
+
+        default:
+          break;
+      }
+      this.confirm_dialog = false
     },
     setClient() {
       const url = this.root_folder + "/app/adminUploadClient.php";
       const data = {
-        start_date: this.start_date,
+        start_date: this.date.start_date,
         client: this.client,
         agenda: this.agenda,
         hour_salary: this.hour_salary,
         day_salary: this.day_salary,
       }
       axios.post(url, data).then(function(response) {
-        this.client = ''
-        this.agenda = []
-        this.hour_salary = ''
-        this.day_salary = ''
         if (response.data.status == true) {
-          this.fetch_data()
+          this.agenda.map(element => this.items.unshift({
+            start_date: this.date.start_date,
+            client: this.client,
+            agenda: element.agenda,
+            hour_salary: this.hour_salary,
+            day_salary: this.day_salary
+          }))
         } else {
           this.alert(response.data.message)
         }
       }.bind(this))
     },
-    acceptClient() {
-      this.$emit("accept")
+    async applyClient() {
+      const url = this.root_folder + "/app/adminUploadSchedule.php";
+      const data = {
+        start_date: this.date.start_date,
+        end_date: this.date.end_date,
+      }
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status == false) {
+          this.alert(response.data.message);
+        }
+      }.bind(this))
     },
     deleteClient() {
       const url = this.root_folder + "/app/adminDeleteClient.php";
       const data = {
-        start_date: this.start_date,
+        start_date: this.date.start_date,
         client: this.client,
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
-          this.fetch_data()
+          this.items = this.items.filter(element => element.client != this.client)
         } else {
           this.alert(response.data.message)
         }
@@ -333,7 +376,7 @@ export default {
     edit_client() {
       const url = this.root_folder + "/app/adminEditClient.php";
       const data = {
-        start_date: this.start_date,
+        start_date: this.date.start_date,
         client: this.edit_item.client,
         agenda: this.edit_item.agenda,
         hour_salary: this.edit_item.hour_salary,
@@ -341,7 +384,8 @@ export default {
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
-          this.fetch_data()
+          const index = this.items.findIndex(element => element.agenda === this.edit_item.agenda)
+          this.items[index] = this.edit_item
         } else {
           this.alert(response.data.message)
         }
@@ -350,22 +394,22 @@ export default {
     },
     remove_check(item) {
       this.remove_item = item
-      this.remove_dialog = true
+      this.confirm('remove')
     },  
-    remove() {
+    removeClient() {
       const url = this.root_folder + "/app/adminRemoveClient.php";
       const data = {
-        start_date: this.start_date,
+        start_date: this.date.start_date,
         client: this.remove_item.client,
         agenda: this.remove_item.agenda,
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
-          this.fetch_data()
+          const index = this.items.findIndex(element => element.agenda === this.remove_item.agenda)
+          this.items.splice(index, 1);
         } else {
           this.alert(response.data.message)
         }
-        this.remove_item = {client:'', agenda: ''}
       }.bind(this))
       this.remove_dialog = false
     },
@@ -376,19 +420,17 @@ export default {
           break;
 
         case 2:
-          if(this.client == '' || this.agenda.length == 0) {
-            break
-          } else {
-            this.setClient()
-            break
+          if(this.client != '' && this.agenda.length != 0) {
+            this.confirm('set')
           }
+          break
 
         case 3:
           this.$refs.day_salary.focus()
           break;
 
         case 4:
-          if(this.edit_item.client == '' || this.edit_item.agenda == '' || this.start_date == '') {
+          if(this.edit_item.client == '' || this.edit_item.agenda == '' || this.date.start_date == '') {
             break
           } else {
             this.edit_client()
@@ -404,6 +446,7 @@ export default {
       this.alert_show = true;
     },
     close() {
+      this.$store.commit('set_client_agenda', this.items)
       this.dialog = false;
       this.$emit("close");
     },
