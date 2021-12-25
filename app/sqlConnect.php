@@ -74,8 +74,19 @@ class mysqlConnect {
     return $table;
   }
 
-  public function getEdit($date) {
-    $query = "SELECT * FROM schedule WHERE date = '$date' ORDER BY agenda, admin_day_salary DESC, name";
+  public function getEdit($client, $name, $agenda, $date) {
+    $condition = "date = '$date' AND ";
+    if ($client != '') {
+      $condition = $condition."client = '$client' AND ";
+    }
+    if ($name != '') {
+      $condition = $condition."name = '$name' AND ";
+    }
+    if ($agenda != '') {
+      $condition = $condition."agenda = '$agenda' AND ";
+    }
+    $condition = substr($condition, 0, 4);
+    $query = "SELECT * FROM schedule WHERE $condition ORDER BY agenda, admin_day_salary DESC, name";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;

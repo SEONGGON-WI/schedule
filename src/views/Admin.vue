@@ -36,7 +36,7 @@
     <v-toolbar-title class="mx-3">
       {{ get_agenda }}
     </v-toolbar-title>
-    <v-btn class="mx-2" color="yellow darken-4" @click="analytics()">
+    <v-btn class="mx-2" color="yellow darken-4" @click="analytics_show = true">
       <v-icon>analytics</v-icon>集計
     </v-btn>
     <v-btn class="success mx-2" color="white" @click="reload()">
@@ -69,7 +69,7 @@
                   height="30"
                   class="mt-6"
                   v-model="client" 
-                  :items="get_client_items"
+                  :items="client_items"
                   label="顧客"
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
@@ -81,7 +81,7 @@
                   height="30"
                   class="mt-6"
                   v-model="name" 
-                  :items="get_name_items"
+                  :items="name_items"
                   label="名前"
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
@@ -93,7 +93,7 @@
                   height="30"
                   class="mt-6"
                   v-model="agenda" 
-                  :items="get_agenda_items"
+                  :items="agenda_items"
                   label="案件"
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
@@ -136,46 +136,41 @@
   </v-main>
 
   <admin-edit
-    @prev="prev_edit()"
-    @next="next_edit()"
-    @close="edit_close()"
     v-if="edit_show"
-    :items="edit_items"
-    :date="edit_date"
+    @close="edit_close($event)"
+    :client="client"
+    :name="name"
+    :agenda="agenda"
+    :edit_date="edit_date"
   ></admin-edit>
 
   <admin-analytics
-    @change="change_analytics($event)"
-    @reload="reload()"
-    @close="analytics_show = false"
     v-if="analytics_show"
-    :items="analytics_items"
-    :name_items="analytics_name_items"
-    :name="analytics_name"
-    :agenda_items="analytics_agenda_items"
-    :agenda ="analytics_agenda"
+    @close="analytics_close($event)"
+    :client="client"
+    :name="name"
+    :agenda ="agenda"
     :date="calendar_date"
   ></admin-analytics>
 
   <admin-dialog
-    @accept="accept"
-    @close="close"
-    v-if="dialog"
-    :text="text"
+    v-if="remove_show"
+    @accept="remove"
+    @close="remove_close"
+    text="削除しますか？"
   ></admin-dialog>
 
   <alert
+    v-if="alert_show"
     @close="alert_show = false"
     :text="alert_text"
-    v-if="alert_show"
   ></alert>
 
   <client-list-dialog
     v-if="client_show"
-    :agenda_items="get_agenda_items"
-    :start_date="search_date.start_date"
-    @accept="click(2)"
-    @close="client_show = false"
+    @close="client_close"
+    :agenda_items="agenda_items"
+    :date="search_date"
   ></client-list-dialog>
 
   <staff-list-dialog
@@ -269,12 +264,15 @@ export default {
     ],
     client_show: false,
     staff_show: false,
-    data_show: false,
     colors: ['grey darken-2','orange','teal accent-4'],
-    search_date: {},
+    search_date: {start_date: '', end_date: ''},
+    today: '',
     client: '',
+    client_items: [],
     name: '全員',
+    name_items: [],
     agenda: '',
+    agenda_items: [],
     calendar: '',
     calendar_date: '',
     calendar_type: 'month',
@@ -285,23 +283,12 @@ export default {
     calendar_events: [],
     calendar_format : [1,2,3,4,5,6,0],
     edit_show: false,
-    editItems: [],
-    edit_items: [],
     edit_date: '',
     analytics_show: false,
-    analytics_items: [],
-    analytics_name_items: [],
-    analytics_name: '',
-    analytics_agenda_items: [],
-    analytics_agenda: '',
+    remove_show: false,
     alert_show: false,
-    alert_type: '',
     alert_text: '',
-    action: 0,
-    text: '',
-    dialog: false,
     downloading: false,
-    today: '',
     toggle_key: 0,
     root_folder: '/schedule',
   }),
@@ -319,39 +306,6 @@ export default {
     get_agenda() {
       return this.calendar_events.length + "件";
     },
-    get_client_items() {
-      const clients = this.$store.getters.client_agenda
-      const client_items = clients.map(element => element.client);
-      // return ['', ...client_items.filter((obj, index) => {
-      //   return client_items.indexOf(obj) === index;
-      // })];
-      return ['', ...client_items.filter((obj, index) => {
-        return client_items.indexOf(obj) === index;
-      }).sort(function (a, b) {
-        return a.localeCompare(b, 'ja')
-      })];
-    },
-    get_name_items() {
-      const data = this.$store.getters.calendar_events
-      const name_items = data.map(element => element.name);
-      // return ['全員', ...name_items.filter((obj, index) => {
-      //   return name_items.indexOf(obj) === index;
-      // })];
-      return ['全員', ...name_items.filter((obj, index) => {
-        return name_items.indexOf(obj) === index;
-      }).sort(function (a, b) {
-        return a.localeCompare(b, 'ja')
-      })];
-    },
-    get_agenda_items() {
-      const data = this.$store.getters.calendar_events
-      const agenda_items = data.map(element => element.agenda);
-      return ['', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力', ...agenda_items.filter((obj, index) => {
-        return agenda_items.indexOf(obj) === index;
-      }).sort(function (a, b) {
-        return a.localeCompare(b, 'ja')
-      })];
-    },
   },
   methods: {
     menu_action(type) {
@@ -365,7 +319,7 @@ export default {
           break;
 
         case 'remove':
-          this.click(1)
+          this.remove_show = true;
           break;
 
         case 'download':
@@ -388,6 +342,73 @@ export default {
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       this.reload()
     },
+    async get_data() {
+      const url = this.root_folder + "/app/adminGetSchedule.php";
+      const data = this.search_date;
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status) {
+          if (response.data.status == true && response.data.data != '') {
+            this.get_events_items()
+            this.$store.commit('set_calendar_events', response.data.data)  
+          } else {
+            this.name_items = []
+            this.agenda_items = []
+            this.calendar_events = [];
+            this.$store.commit('set_calendar_events', []);
+            if (response.data.status == false) {
+              this.alert(response.data.message);
+            }
+          }
+        }
+      }.bind(this))
+    },
+    get_events_items() {
+      const data = this.$store.getters.calendar_events
+      let name_items = []
+      let agenda_items = []
+      data.map(element => {
+        name_items = name_items.concat(element.name)
+        agenda_items = agenda_items.concat(element.agenda)
+      })
+      const name_items_set = new Set(name_items)
+      const agenda_items_set = new Set(agenda_items)
+      this.name_items = [...name_items_set].sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })
+      this.name_items.unshift('全員')
+      this.agenda_items = [...agenda_items_set].sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })
+      this.name_items.unshift('', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
+    },
+    async get_client() {
+      const url = this.root_folder + "/app/adminGetClient.php";
+      const data = {
+        start_date: this.search_date.start_date
+      }
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status) {
+          if (response.data.status == true && response.data.data != '') {
+            this.get_client_items()
+            this.$store.commit('set_client_agenda', response.data.data)
+          } else {
+            this.clients_items = []
+            this.$store.commit('set_client_agenda', []);
+            if (response.data.status == false) {
+              this.alert(response.data.message);
+            }
+          }
+        }
+      }.bind(this))
+    },
+    get_client_items() {
+      const clients = this.$store.getters.client_agenda
+      let clients_items = clients.map(element => element.client);
+      const clients_items_set = new Set(clients_items)
+      this.client_items = ['', ...clients_items_set.sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })]
+    },
     fetch_data(data) {
       this.calendar_events = [];
       var firstTimestamp = null;
@@ -406,59 +427,6 @@ export default {
       })
       this.calendar_events = data;
       this.toggle()
-    },
-    async get_data() {
-      const url = this.root_folder + "/app/adminGetSchedule.php";
-      const data = this.search_date;
-      await axios.post(url, data).then(function(response) {
-        if (response.data.status) {
-          if (response.data.status == true && response.data.data != '') {
-            this.$store.commit('set_calendar_events', response.data.data)  
-          } else {
-            this.calendar_events = [];
-            this.$store.commit('set_calendar_events', []);
-            if (response.data.status == false) {
-              this.alert(response.data.message);
-            }
-          }
-        }
-      }.bind(this))
-    },
-    async get_edit_data() {
-      const url = this.root_folder + "/app/adminGetEditSchedule.php";
-      const data = {
-        date: this.edit_date
-      }
-      await axios.post(url, data).then(function(response) {
-        if (response.data.status) {
-          if (response.data.status == true && response.data.data != '') {
-            this.editItems = response.data.data
-          } else {
-            this.editItems = []
-            if (response.data.status == false) {
-              this.alert(response.data.message);
-            }
-          }
-        }
-      }.bind(this))
-    },
-    async get_client() {
-      const url = this.root_folder + "/app/adminGetClient.php";
-      const data = {
-        start_date: this.search_date.start_date
-      }
-      await axios.post(url, data).then(function(response) {
-        if (response.data.status) {
-          if (response.data.status == true && response.data.data != '') {
-            this.$store.commit('set_client_agenda', response.data.data)
-          } else {
-            this.$store.commit('set_client_agenda', []);
-            if (response.data.status == false) {
-              this.alert(response.data.message);
-            }
-          }
-        }
-      }.bind(this))
     },
     search() {
       let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
@@ -484,215 +452,28 @@ export default {
       }
       this.fetch_data(data)
     },
-    analytics() {
-      let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      const client = this.client;
-      const name = this.name;
-      const agenda = this.agenda;
-      data = data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
-      
-      if (client != '') {
-        data = data.filter(obj => obj.client == client);
-      }
-
-      const name_items = data.map(element => element.name);
-      // this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
-      //   return name_items.indexOf(obj) === index;
-      // }).sort(this.sort_by([{key:'name'}]))];
-      this.analytics_name_items =  ['全員', ...name_items.filter((obj, index) => {
-        return name_items.indexOf(obj) === index;
-      }).sort(function (a, b) {
-        return a.localeCompare(b, 'ja')
-      })];
-
-      const agenda_items = data.map(element => element.agenda);
-      // this.analytics_agenda_items =  ['', ...agenda_items.filter((obj, index) => {
-      //   return agenda_items.indexOf(obj) === index;
-      // }).sort(this.sort_by([{key:'agenda'}]))];
-      this.analytics_agenda_items =  ['', ...agenda_items.filter((obj, index) => {
-        return agenda_items.indexOf(obj) === index;
-      }).sort(function (a, b) {
-        return a.localeCompare(b, 'ja')
-      })];
-      if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
-        data = data.filter(obj => obj.agenda == agenda);
-      }
-      if (name != '全員') {
-        data = data.filter(obj => obj.name == name);
-      }
-      const sort_list = [
-        {key:'date', type: 1},
-        {key:'agenda', type: 1},
-        {key:'admin_day_salary', type: 2},
-        {key:'staff_day_salary', type: 2},
-      ]
-      data.sort(this.sort_by(sort_list))
-      this.analytics_name = name
-      this.analytics_agenda = agenda
-      this.analytics_items = data
-      this.analytics_show = true
-    },
-    change_analytics(condition) {
-      const name = condition.name
-      const agenda = condition.agenda
-      let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      const client = this.client;
-      data = data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
-      if (client != '') {
-        data = data.filter(obj => obj.client == client);
-      }
-      if (name != '全員') {
-        data = data.filter(obj => obj.name == name);
-      }
-      if (agenda != '' && agenda != '空きスケジュール' && agenda != 'スタッフ日給未入力' && agenda != '管理者日給未入力') {
-        data = data.filter(obj => obj.agenda == agenda);
-      }
-      const sort_list = [
-        {key:'date', type: 1},
-        {key:'agenda', type: 1},
-        {key:'admin_day_salary', type: 2},
-        {key:'staff_day_salary', type: 2},
-      ]
-      data.sort(this.sort_by(sort_list))
-      this.analytics_name = name
-      this.analytics_agenda = agenda
-      this.analytics_items = data
-    },
-    remove() {
-      const url = this.root_folder + "/app/adminRemoveSchedule.php";
-      const today = new Date();
-      const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
-      const data = {
-        current_date: current_date
-      }
-      axios.post(url, data).then(function(response) {
-        if (response.data.status == true) {
-          this.reload()
-        } else {
-          this.alert(response.data.message);
-        }
-      }.bind(this))
-    },
-    clear() {
-      this.client = ''
-      this.name = '全員'
-      this.agenda = ''
-      this.search();
-    },
-    async edit(item) {
-      if (!this.calendar_events.find(e => e.date == item.date)) {
-        return;
-      }
+    edit(item) {
       this.edit_date = item.date
-      await this.get_edit_data()
-      // this.editItems = this.calendar_events.filter(element => element.date == this.edit_date)
-      let edit_items = this.editItems
-      if (edit_items == []) {
-        return
+      this.calendar_events.find(element => element.date == item.date)
+      if (this.calendar_events.find(element => element.date == item.date) != undefined) {
+        this.edit_show = true
       }
-      if (this.client != '') {
-        edit_items = edit_items.filter(obj => obj.client == this.client);
-      } 
-      if (this.name != '全員') {
-        edit_items = edit_items.filter(obj => obj.name == this.name);
-      }
-      if (this.agenda != '') {
-        if (this.agenda == '空きスケジュール') {
-          edit_items = edit_items.filter(obj => obj.agenda == '');
-        } else if (this.agenda == 'スタッフ日給未入力') {
-          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (this.agenda == '管理者日給未入力') {
-          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
-        } else {
-          edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
-        }
-      }
-      this.edit_items = edit_items
-      if (this.edit_items.length != 0) {
-        this.edit_show = true;
-      }
-      await this.search()
     },
-    calculate_edit_date(type) {
-      var date = this.edit_date.split("-")
-      var time = type === 'next' ? new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) + 1)
-                                 : new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) - 1);
-      date = time.getFullYear() +"-"
-      if (parseInt((time.getMonth()+1)) < 10) {
-        date = date + "0" + (time.getMonth()+1) + "-"
-      } else {
-        date = date + (time.getMonth()+1) + "-"
+    edit_close(event) {
+      if(event == true) {
+        this.reload()
       }
-      if (parseInt(time.getDate()) < 10) {
-        date = date + "0" + time.getDate()
-      } else {
-        date = date + time.getDate()
-      }
-      return date
-    },
-    async get_edit() {
-      await this.get_edit_data()
-      let edit_items = this.editItems
-      if (edit_items == []) {
-        return
-      }
-      if (this.client != '') {
-        edit_items = edit_items.filter(obj => obj.client == this.client);
-      }
-      if (this.name != '全員') {
-        edit_items = edit_items.filter(obj => obj.name == this.name);
-      }
-      if (this.agenda != '') {
-        if (this.agenda == '空きスケジュール') {
-          edit_items = edit_items.filter(obj => obj.agenda == '');
-        } else if (this.agenda == 'スタッフ日給未入力') {
-          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (this.agenda == '管理者日給未入力') {
-          edit_items = edit_items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
-        } else {
-          edit_items = edit_items.filter(obj => obj.agenda == this.agenda);
-        }
-      }
-      this.edit_items = edit_items
-      this.search();
-    },
-    prev_edit() {
-      this.edit_date = this.calculate_edit_date('prev')
-      this.get_edit()
-    },
-    next_edit() {
-      this.edit_date = this.calculate_edit_date('next')
-      this.get_edit()
-    },
-    edit_close() {
-      this.reload()
       this.edit_show = false
     },
-    click(action) {
-      if (action == 1) {
-        this.text = "削除しますか？"
-      } else if (action == 2) {
-        this.text = "反映しますか？"
+    analytics_close(event) {
+      if (event == true) {
+        this.reload()
       }
-      this.action = action;
-      this.dialog = true;
+      this.analytics_show = false
     },
-    accept() {
-      this.dialog = false;
-      if (this.action == 1) {
-        this.remove(); 
-      } else if (this.action == 2) {
-        this.load(); 
-      }
-      this.action = 0;
-    },
-    close() {
-      this.dialog = false;
-      this.action = 0;
-    },
-    alert(text) {
-      this.alert_text = text;
-      this.alert_show = true;
+    client_close() {
+      this.get_client_items()
+      this.client_show = false
     },
     async csv_download() {
       const file_name = "経理表_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
@@ -747,24 +528,42 @@ export default {
       }
       this.csvdownloading = false
     },
-    async reload() {
-      await this.get_data()
-      await this.get_client()
-      await this.search()
-    },
-    async load() {
-      const url = this.root_folder + "/app/adminUploadSchedule.php";
+    remove() {
+      const url = this.root_folder + "/app/adminRemoveSchedule.php";
+      const today = new Date();
+      const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
       const data = {
-        start_date: this.search_date.start_date,
-        end_date: this.search_date.end_date,
+        current_date: current_date
       }
-      await axios.post(url, data).then(function(response) {
+      axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
           this.reload()
         } else {
           this.alert(response.data.message);
         }
       }.bind(this))
+      this.remove_show = false
+    },
+    remove_close(event) {
+      if (event == true) {
+        this.remove()
+      }
+      this.remove_show = false;
+    },
+    alert(text) {
+      this.alert_text = text;
+      this.alert_show = true;
+    },
+    async reload() {
+      await this.get_data()
+      await this.get_client()
+      await this.search()
+    },
+    clear() {
+      this.client = ''
+      this.name = '全員'
+      this.agenda = ''
+      this.search();
     },
     setToday() {
       this.calendar = ''
@@ -780,21 +579,6 @@ export default {
     },
     toggle() {
       this.toggle_key = this.toggle_key === 0 ? 1 : 0
-    },
-    sort_by: function(orderlist) {
-        return (a, b) => {
-          for (let i=0; i<orderlist.length; i++) {
-            if (orderlist[i].type == 1) {
-              if (a[orderlist[i].key] < b[orderlist[i].key]) return -1 ;
-              if (a[orderlist[i].key] > b[orderlist[i].key]) return -1 * -1;
-            } else {
-              if (a[orderlist[i].key] < b[orderlist[i].key]) return 1 ;
-              if (a[orderlist[i].key] > b[orderlist[i].key]) return 1 * -1;
-            }
-          }
-          return 0;
-        }
-      // .sort(this.sort_by(this.sort_params))
     },
   }
 }

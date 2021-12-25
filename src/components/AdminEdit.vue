@@ -23,6 +23,7 @@
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
+          <v-form ref="form" v-model="valid">
             <v-data-table 
               v-if="tab == 0"
               :headers="headers" 
@@ -35,7 +36,7 @@
               <template v-slot:item.agenda="{ item }">
                 <v-textarea
                   v-model="item.agenda"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                   class="py-2"
                   label="案件"
                   single-line
@@ -48,7 +49,8 @@
               <template v-slot:item.overlap="{ item }">
                 <v-text-field
                   v-model="item.overlap"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label=""
                   single-line
@@ -58,7 +60,8 @@
               <template v-slot:item.admin_total_time="{ item }">
                 <v-text-field
                   v-model="item.admin_total_time"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label="時間"
                   single-line
@@ -68,7 +71,8 @@
               <template v-slot:item.admin_hour_salary="{ item }">
                 <v-text-field
                   v-model="item.admin_hour_salary"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   :dense="item.admin_total_time == ''"
                   :filled="item.admin_total_time == ''"
                   class="py-3 my-4"
@@ -92,7 +96,8 @@
                 <v-text-field
                   v-else
                   v-model="item.admin_day_salary"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"   
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label="日給"
                   single-line
@@ -102,7 +107,8 @@
               <template v-slot:item.admin_expense="{ item }">
                 <v-text-field
                   v-model="item.admin_expense"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label="経費"
                   single-line
@@ -128,8 +134,8 @@
               <template v-slot:item.start_time="{ item }">
                 <v-text-field
                   v-model="item.start_time"
-                  @input="item.start_time = timeColon(item.start_time)"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.required]"
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
                   class="py-3 my-4"
@@ -143,8 +149,8 @@
               <template v-slot:item.end_time="{ item }">
                 <v-text-field
                   v-model="item.end_time"
-                  @input="item.end_time = timeColon(item.end_time)"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.required]"
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
                   class="py-3 my-4"
@@ -158,7 +164,8 @@
               <template v-slot:item.total_time="{ item }">
                 <v-text-field
                   v-model="item.total_time"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label="時間"
                   single-line
@@ -168,7 +175,8 @@
               <template v-slot:item.staff_hour_salary="{ item }">
                 <v-text-field
                   v-model="item.staff_hour_salary"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   :dense="item.total_time == ''"
                   :filled="item.total_time == ''"
                   class="py-3 my-4"
@@ -191,7 +199,8 @@
                 <v-text-field
                   v-else
                   v-model="item.staff_day_salary"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label="日給"
                   single-line
@@ -201,7 +210,8 @@
               <template v-slot:item.staff_expense="{ item }">
                 <v-text-field
                   v-model="item.staff_expense"
-                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                  :rules="[rules.positive]"
                   class="py-3 my-4"
                   label="経費"
                   single-line
@@ -209,18 +219,19 @@
                 ></v-text-field>
               </template>
             </v-data-table>
+          </v-form>
         </v-tabs-items>
       </v-card>
     </v-container>
     <alert
+      v-if="alert_show"
       @close="alert_show = false"
       :text="alert_text"
-      v-if="alert_show"
     ></alert>
     <admin-dialog
+      v-if="remove_dialog"
       @accept="remove"
       @close="remove_dialog = false"
-      v-if="remove_dialog"
       text="削除しますか？"
     ></admin-dialog>
   </v-dialog>
@@ -234,7 +245,7 @@ export default {
     AdminDialog,
   },
   props: [
-    'items', 'date'
+    'client', 'name', 'agenda', 'edit_date'
   ],
   data: () => ({
     headers: [
@@ -258,45 +269,33 @@ export default {
       { value:"staff_day_salary", text:"日給", width: "12%", align: 'center'},
       { value:"staff_expense", text:"経費", width: "11%", align: 'center'}
     ],
+    items: [],
+    date: '',
     remove_target: {name:''},
     remove_item: [],
     remove_dialog: false,
     tab: null,
     tab_item: ['管理者', 'スタッフ'],
-    rules: [v => v.length == 4 || v == '' || '4桁入力'],
+    valid: false,
+    rules:{
+      required: v => ((v.length == 4 || v.length == 5) && v > 0  && v < 2400) || v == '' || '時間入力',
+      positive: v => v > 0 || v == '' || '正の整数を指定'
+    },
     alert_text: '',
     alert_show: false,
+    edit_condition: false,
     dialog: false,
     root_folder: '',
   }),
   created() {
     this.root_folder = this.$store.getters.root_folder
+    this.date = this.edit_date
+    this.get_event()
     this.dialog = true;
   },
   computed: {
   },
   methods: {
-    timeColon(time) {
-      let replaceTime = time.replace(":", "");
-      let hours = '00'
-      let minute = '00'
-
-      if(replaceTime.length >= 4 && replaceTime.length < 5) {
-        hours = replaceTime.substring(0, 2)
-        minute = replaceTime.substring(2, 4)
-        if(isFinite(hours + minute) == false) {
-          return "";
-        }
-        if (hours > 23 ) {
-          return "24:00";
-        }
-        if (minute > 59) {
-          return hours + ":00";
-        }
-        return hours + ":" + minute;
-      }
-      return time;
-    },
     get_admin_day_salary(item) {
       if (item.admin_hour_salary == '' || item.admin_total_time == '') {
         return ''
@@ -311,34 +310,56 @@ export default {
       let salary = Math.floor(item.staff_hour_salary * item.total_time)
       return String(salary)
     },
-    admin_background(item) {
-      return item.agenda == '' || item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
+    fetch_data() {
+      if (this.items == []) {
+        return
+      }
+      if (this.client != '') {
+        this.items = this.items.filter(obj => obj.client == this.client);
+      }
+      if (this.name != '全員') {
+        this.items = this.items.filter(obj => obj.name == this.name);
+      }
+      if (this.agenda != '') {
+        if (this.agenda == '空きスケジュール') {
+          this.items = this.items.filter(obj => obj.agenda == '');
+        } else if (this.agenda == 'スタッフ日給未入力') {
+          this.items = this.items.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
+        } else if (this.agenda == '管理者日給未入力') {
+          this.items = this.items.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
+        } else {
+          this.items = this.items.filter(obj => obj.agenda == this.agenda);
+        }
+      }
     },
-    staff_background(item) {
-      return item.agenda == '' || item.staff_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
-    },
-    prevDate() {
-      this.edit();
-      this.$emit("prev");
-    },
-    nextDate() {
-      this.edit();
-      this.$emit("next");
-    },
-    remove_check(item) {
-      this.remove_target = item
-      this.remove_dialog = true
-    },
-    remove() {
-      this.remove_item.push({name: this.remove_target.name})
-      const index = this.items.findIndex(obj => obj.name == this.remove_target.name);
-      this.items.splice(index, 1);
-      this.remove_dialog = false
+    async get_event() {
+      const url = this.root_folder + "/app/adminGetEditSchedule.php";
+      const data = {
+        client: this.client,
+        name: this.name,
+        agenda: this.agenda,
+        date: this.date
+      }
+      await axios.post(url, data).then(function(response) {
+        if (response.data.status) {
+          if (response.data.status == true && response.data.data != '') {
+            this.items = response.data.data
+          } else {
+            this.items = []
+            if (response.data.status == false) {
+              this.alert(response.data.message);
+            }
+          }
+        }
+        this.fetch_data()
+      }.bind(this))
     },
     async edit() {
       let event = JSON.parse(JSON.stringify(this.items))
       const client = this.$store.getters.client_agenda
       event.map(element => {
+        element.start_time = element.start_time == '' ? '' : this.make_colon(element.start_time)
+        element.end_time = element.end_time == '' ? '' :  this.make_colon(element.end_time)
         element.admin_total_time = element.admin_total_time == '' ? '' : parseFloat(element.admin_total_time).toFixed(2)
         element.total_time = element.total_time == '' ? '' : parseFloat(element.total_time).toFixed(2)
         var find = client.find(obj => obj.agenda == element.agenda)
@@ -355,15 +376,56 @@ export default {
         remove_event: this.remove_item
       }
       await axios.post(url, data).then(function(response) {
-        this.remove_item = [];
         if (response.data.status == false){
+          this.edit_condition = false
           this.alert(response.data.message)
+        } else {
+          this.edit_condition = true
         }
+        this.remove_item = [];
+        this.close()
       }.bind(this))
+    },
+    calculate_date(type) {
+      var date = this.date.split("-")
+      var time = type === 'next' ? new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) + 1)
+                                : new Date(parseInt(date[0]), parseInt(date[1]) -1, parseInt(date[2]) - 1);
+      date = time.getFullYear() +"-"
+      if (parseInt((time.getMonth()+1)) < 10) {
+        date = date + "0" + (time.getMonth()+1) + "-"
+      } else {
+        date = date + (time.getMonth()+1) + "-"
+      }
+      if (parseInt(time.getDate()) < 10) {
+        date = date + "0" + time.getDate()
+      } else {
+        date = date + time.getDate()
+      }
+      return date
+    },
+    prevDate() {
+      this.date = this.calculate_date('prev')
+      this.edit();
+      this.get_event()
+    },
+    nextDate() {
+      this.date = this.calculate_date('next')
+      this.edit();
+      this.get_event()
     },
     async accept() {
       await this.edit();
       this.close()
+    },
+    remove_check(item) {
+      this.remove_target = item
+      this.remove_dialog = true
+    },
+    remove() {
+      this.remove_item.push({name: this.remove_target.name})
+      const index = this.items.findIndex(obj => obj.name == this.remove_target.name);
+      this.items.splice(index, 1);
+      this.remove_dialog = false
     },
     alert(text) {
       this.alert_text = text;
@@ -371,7 +433,34 @@ export default {
     },
     close() {
       this.dialog = false;
-      this.$emit("close");
+      this.$emit("close", this.edit_condition);
+    },
+    admin_background(item) {
+      return item.agenda == '' || item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
+    },
+    staff_background(item) {
+      return item.agenda == '' || item.staff_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
+    },
+    make_colon(time) {
+      var hours = ''
+      var minute = ''
+      if (time.length == 4) {
+        hours = time.substring(0, 2)
+        minute = time.substring(2, 4)  
+      } else if (time.length == 5) {
+        hours = time.substring(0, 2)
+        minute = time.substring(3, 5)  
+      }
+      if(isFinite(hours + minute) == false) {
+        return false
+      }
+      if (hours > 23 ) {
+        return false
+      }
+      if (minute > 59) {
+        return false
+      }
+      return hours + ":" + minute;
     },
   },
 }

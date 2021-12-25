@@ -1,11 +1,14 @@
 <?php
 include 'defaultValue.php';
 $response = json_decode(file_get_contents('php://input'), true);
+$client = $response['client'];
+$name = $response['name'];
+$agenda = $response['agenda'];
 $date = $response['date'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $data = $dbConnect->getEdit($date);
+  $data = $dbConnect->getEdit($client, $name, $agenda, $date);
 
   if (!empty($data)) {
     $result = json_encode(array('status' => true , 'data' => $data));
