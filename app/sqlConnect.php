@@ -79,13 +79,13 @@ class mysqlConnect {
     if ($client != '') {
       $condition = $condition."client = '$client' AND ";
     }
-    if ($name != '') {
+    if ($name != '' && $name != '全員') {
       $condition = $condition."name = '$name' AND ";
     }
-    if ($agenda != '') {
+    if ($agenda != '' && $agenda != '空きスケジュール' && $agenda != 'スタッフ日給未入力' && $agenda != '管理者日給未入力') {
       $condition = $condition."agenda = '$agenda' AND ";
     }
-    $condition = substr($condition, 0, 4);
+    $condition = substr($condition, 0, -4);
     $query = "SELECT * FROM schedule WHERE $condition ORDER BY agenda, admin_day_salary DESC, name";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
@@ -208,7 +208,7 @@ class mysqlConnect {
     $query = $query."name varchar(32) not null,";
     $query = $query."date DATE not null,";
     $query = $query."client TEXT not null,";
-    $query = $query."agenda TEXT not null,";
+    $query = $query."agenda varchar(64) not null,";
     $query = $query."overlap TINYINT not null,";
     $query = $query."start_time varchar(5) not null,";
     $query = $query."end_time varchar(5) not null,";
@@ -220,7 +220,7 @@ class mysqlConnect {
     $query = $query."admin_hour_salary TEXT not null,";
     $query = $query."admin_day_salary TEXT not null,";
     $query = $query."admin_expense TEXT not null,";
-    $query = $query."primary key(name, date));";
+    $query = $query."primary key(name, date, agenda));";
     $this->mysql->query($query);
   }
 

@@ -17,9 +17,9 @@ try {
     @fclose($log);
     $deleteName = '';
     foreach ($remove_event as $values) {
-      $del = "DELETE FROM schedule WHERE date = '$date' AND name = '{$values['name']}'";
+      $del = "DELETE FROM schedule WHERE date = '{$values['data']}' AND name = '{$values['name']}' AND agenda = '{$values['agenda']}'";
       $dbConnect->mysql->query($del);
-      $deleteName = $deleteName.$values['name'].',';
+      $deleteName = $deleteName.$values['name'].','.$values['agenda'].',';
     }
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, adminEditDeleteSchedule, $deleteName\n");
@@ -32,6 +32,8 @@ try {
               staff_hour_salary = VALUES(staff_hour_salary), staff_day_salary = VALUES(staff_day_salary),  staff_expense = VALUES(staff_expense),
               admin_hour_salary = VALUES(admin_hour_salary), admin_day_salary = VALUES(admin_day_salary), admin_expense = VALUES(admin_expense)";
     foreach ($event as $values) {
+      $del = "DELETE FROM schedule WHERE name = '{$values['name']}' AND date = '{$values['date']}'";
+      $dbConnect->mysql->query($del);
       $values['agenda'] = preg_replace('/\r\n|\r|\n/','', $values['agenda']);
       $values['agenda'] = trim($values['agenda']);
       $sql_values = "( '{$values['name']}', '{$values['date']}', '{$values['client']}', '{$values['agenda']}', '{$values['overlap']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['admin_total_time']}',

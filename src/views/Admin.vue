@@ -74,7 +74,17 @@
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
                   append-icon="arrow_drop_down"
-                ></v-select>
+                  multiple
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <div v-if="index === 0">
+                      <span>{{ item }}</span>
+                    </div>
+                    <span v-if="index === 1">
+                      &nbsp;++
+                    </span>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="2">
                 <v-select 
@@ -86,7 +96,17 @@
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
                   append-icon="arrow_drop_down"
-                ></v-select>
+                  multiple
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <div v-if="index === 0">
+                      <span>{{ item }}</span>
+                    </div>
+                    <span v-if="index === 1">
+                      &nbsp;++
+                    </span>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="2">
                 <v-select 
@@ -98,7 +118,17 @@
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
                   append-icon="arrow_drop_down"
-                ></v-select>
+                  multiple
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <div v-if="index === 0">
+                      <span>{{ item }}</span>
+                    </div>
+                    <span v-if="index === 1">
+                      &nbsp;++
+                    </span>
+                  </template>
+                </v-select>
               </v-col>
               <v-btn icon @click.native="clear" class="mr-2">
                 <v-icon>clear</v-icon>
@@ -141,6 +171,7 @@
     :client="client"
     :name="name"
     :agenda="agenda"
+    :name_items="name_items"
     :edit_date="edit_date"
   ></admin-edit>
 
@@ -194,6 +225,9 @@
 }
 .v-input__control .v-input__slot .v-text-field__slot label {
   font-size: 20px !important;
+}
+.v-autocomplete .v-input__control .v-input__slot .v-select__slot input{
+  font-size: 25px !important;
 }
 .v-text-field--filled .v-input__control{
   background-color: #BDBDBD !important;
@@ -267,11 +301,11 @@ export default {
     colors: ['grey darken-2','orange','teal accent-4'],
     search_date: {start_date: '', end_date: ''},
     today: '',
-    client: '',
+    client: [],
     client_items: [],
-    name: '全員',
+    name: [],
     name_items: [],
-    agenda: '',
+    agenda: [],
     agenda_items: [],
     calendar: '',
     calendar_date: '',
@@ -289,7 +323,6 @@ export default {
     alert_show: false,
     alert_text: '',
     downloading: false,
-    toggle_key: 0,
     root_folder: '/schedule',
   }),
   created() {
@@ -341,6 +374,7 @@ export default {
       }
       this.calendar_date = this.$refs.calendar.lastStart.year + "年 " + this.$refs.calendar.lastStart.month + "月"
       this.reload()
+      this.get_client()
     },
     async get_data() {
       const url = this.root_folder + "/app/adminGetSchedule.php";
@@ -348,13 +382,15 @@ export default {
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
           if (response.data.status == true && response.data.data != '') {
-            this.get_events_items()
-            this.$store.commit('set_calendar_events', response.data.data)  
+            this.$store.commit('set_fetch_calendar_events', [])
+            this.$store.commit('set_calendar_events', response.data.data)
+            this.get_events_items()  
           } else {
+            this.$store.commit('set_fetch_calendar_events', [])
+            this.$store.commit('set_calendar_events', []);
             this.name_items = []
             this.agenda_items = []
             this.calendar_events = [];
-            this.$store.commit('set_calendar_events', []);
             if (response.data.status == false) {
               this.alert(response.data.message);
             }
@@ -366,20 +402,20 @@ export default {
       const data = this.$store.getters.calendar_events
       let name_items = []
       let agenda_items = []
-      data.map(element => {
-        name_items = name_items.concat(element.name)
-        agenda_items = agenda_items.concat(element.agenda)
+      data.map((element, index) => {
+        name_items[index] = element.name
+          agenda_items[index] = element.agenda
       })
       const name_items_set = new Set(name_items)
       const agenda_items_set = new Set(agenda_items)
       this.name_items = [...name_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
       })
-      this.name_items.unshift('全員')
       this.agenda_items = [...agenda_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
       })
-      this.name_items.unshift('', '空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
+      this.agenda_items.splice(this.agenda_items.indexOf(''),1)
+      this.agenda_items.unshift('空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
     },
     async get_client() {
       const url = this.root_folder + "/app/adminGetClient.php";
@@ -389,8 +425,8 @@ export default {
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
           if (response.data.status == true && response.data.data != '') {
-            this.get_client_items()
             this.$store.commit('set_client_agenda', response.data.data)
+            this.get_client_items()
           } else {
             this.clients_items = []
             this.$store.commit('set_client_agenda', []);
@@ -402,20 +438,31 @@ export default {
       }.bind(this))
     },
     get_client_items() {
-      const clients = this.$store.getters.client_agenda
-      let clients_items = clients.map(element => element.client);
+      const clients_items = this.$store.getters.client_agenda.map(element => element.client);
       const clients_items_set = new Set(clients_items)
-      this.client_items = ['', ...clients_items_set.sort(function (a, b) {
+      this.client_items =  [...clients_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
-      })]
+      })
     },
-    fetch_data(data) {
-      this.calendar_events = [];
-      var firstTimestamp = null;
-      var startTime = null;
-      data.map(element => {
-        firstTimestamp = new Date(`${element.date}T09:00:00`)
-        startTime = new Date(firstTimestamp)
+    search() {
+      const data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
+      if (this.client.length === 0 && this.name.length === 0 && this.agenda.length === 0 && this.$store.getters.fetch_calendar_events.length !== 0) {
+        this.calendar_events = this.$store.getters.fetch_calendar_events
+        return
+      }
+      const empty_agenda = this.agenda.includes('空きスケジュール')
+      const empty_staff = this.agenda.includes('スタッフ日給未入力')
+      const empty_admin = this.agenda.includes('管理者日給未入力')
+      const agenda = this.agenda.filter(element => element != '空きスケジュール' && element != 'スタッフ日給未入力' && element != '管理者日給未入力')
+      var fetch_data = data.filter(element => (this.client.length === 0 ? true : this.client.includes(element.client)) 
+                                                    && (this.name.length === 0 ? true : this.name.includes(element.name)) 
+                                                    && (empty_agenda || empty_staff || empty_admin 
+                                                        ? ((empty_agenda ? (element.agenda == '' ? true : false) : false) 
+                                                          || (empty_staff ? (element.agenda != '' && element.staff_day_salary == '' ? true : false) : false) 
+                                                          || (empty_admin ? (element.agenda != '' && element.admin_day_salary == '' ? true : false) : false)) 
+                                                        : true) 
+                                                    && (agenda.length === 0 ? true : agenda.includes(element.agenda)))
+      fetch_data.map(element => {
         if ((element.date <= this.today) && (element.staff_day_salary != '')) {
           element.color = this.colors[2]
         } else if (element.agenda != '') {
@@ -423,38 +470,15 @@ export default {
         } else {
           element.color = this.colors[0]
         }
-        element.start = startTime
+        element.start = element.date
       })
-      this.calendar_events = data;
-      this.toggle()
-    },
-    search() {
-      let data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-      const client = this.client;
-      const name = this.name;
-      const agenda = this.agenda;
-      if (client != '') {
-        data = data.filter(obj => obj.client == client);
+      if (this.client.length === 0 && this.name.length === 0 && this.agenda.length === 0) {
+        this.$store.commit('set_fetch_calendar_events', fetch_data)
       }
-      if (name != '全員') {
-        data = data.filter(obj => obj.name == name);
-      }
-      if (agenda != '') {
-        if (agenda == '空きスケジュール') {
-          data = data.filter(obj => obj.agenda == '');
-        } else if (agenda == 'スタッフ日給未入力') {
-          data = data.filter(obj => obj.agenda != '' && obj.staff_day_salary == '');
-        } else if (agenda == '管理者日給未入力') {
-          data = data.filter(obj => obj.agenda != '' && obj.admin_day_salary == '');
-        } else {
-          data = data.filter(obj => obj.agenda == agenda);
-        }
-      }
-      this.fetch_data(data)
+      this.calendar_events = fetch_data
     },
     edit(item) {
       this.edit_date = item.date
-      this.calendar_events.find(element => element.date == item.date)
       if (this.calendar_events.find(element => element.date == item.date) != undefined) {
         this.edit_show = true
       }
@@ -490,24 +514,41 @@ export default {
       }.bind(this))
     },
     async csv_download2() {
-      if (this.client == '') {
+      if (this.client.length === 0) {
         return
       }
-      const file_name = "請求書_" + this.client + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
-       var config = {
-        responseType: "blob",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      };
-      this.csvdownloading = true
-      const data = {
-        start_date: this.search_date.start_date,
-        end_date: this.search_date.end_date,
-        client: this.client
-      }
-      const url = this.root_folder + "/app/csvDownload2.php"
-      await axios.post(url, data, config).then(function (response) {
-        this.downloadCSV(file_name, response)
-      }.bind(this))
+      this.client.map(async client => {
+        var file_name = "請求書_" + client + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+        var config = {
+          responseType: "blob",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        };
+        this.csvdownloading = true
+        var data = {
+          start_date: this.search_date.start_date,
+          end_date: this.search_date.end_date,
+          client: client
+        }
+        var url = this.root_folder + "/app/csvDownload2.php"
+        await axios.post(url, data, config).then(function (response) {
+          this.downloadCSV(file_name, response)
+        }.bind(this))
+      })
+      // const file_name = "請求書_" + this.client + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+      //  var config = {
+      //   responseType: "blob",
+      //   headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      // };
+      // this.csvdownloading = true
+      // const data = {
+      //   start_date: this.search_date.start_date,
+      //   end_date: this.search_date.end_date,
+      //   client: this.client
+      // }
+      // const url = this.root_folder + "/app/csvDownload2.php"
+      // await axios.post(url, data, config).then(function (response) {
+      //   this.downloadCSV(file_name, response)
+      // }.bind(this))
     },
     downloadCSV(file_name, res) {
       var blob = new Blob([res.data], { type: "text/csv" });
@@ -556,13 +597,12 @@ export default {
     },
     async reload() {
       await this.get_data()
-      await this.get_client()
       await this.search()
     },
     clear() {
-      this.client = ''
-      this.name = '全員'
-      this.agenda = ''
+      this.client = []
+      this.name = []
+      this.agenda = []
       this.search();
     },
     setToday() {
@@ -576,9 +616,6 @@ export default {
     },
     get_event_color(event) {
       return event.color;
-    },
-    toggle() {
-      this.toggle_key = this.toggle_key === 0 ? 1 : 0
     },
   }
 }

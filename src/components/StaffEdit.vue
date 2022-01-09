@@ -16,13 +16,25 @@
         </v-toolbar>
         <v-row no-gutters>
           <v-col cols="3" class="name_agenda pt-3 pl-8">
-            <div>{{ items.name }}</div>
+            <div>{{ items[edit_index].name }}</div>
           </v-col>
           <v-col cols="5" class="name_agenda pt-3 pl-8">
-            <div>{{ items.agenda }}</div>
+            <v-select
+              v-if="items.length !== 0"
+              height="30"
+              class="pr-3"
+              v-model="agenda" 
+              :items="items"
+              item-text="agenda"
+              item-value="agenda"
+              label="案件"
+              @change="search"
+              append-icon="arrow_drop_down"
+            >
+            </v-select>
           </v-col>
           <v-col cols="4">
-            <v-radio-group v-model="salary_change" row class="">  
+            <v-radio-group v-model="salary_change" row class="" @change="change()">  
             <v-radio label="時給" value="hour"></v-radio>
             <v-radio label="日給" value="day" class="pl-2"></v-radio>
           </v-radio-group>  
@@ -32,7 +44,7 @@
         <v-data-table 
           class="pt-5"
           :headers="header" 
-          :items="[items]" 
+          :items="[items[edit_index]]" 
           hide-default-footer 
           disable-pagination
           disable-sort
@@ -93,8 +105,8 @@
           </template>
         </v-data-table>
         <v-data-table 
-          :headers="headers" 
-          :items="[items]" 
+          :headers="headers"
+          :items="[items[edit_index]]" 
           hide-default-footer 
           disable-pagination
           disable-sort
@@ -170,7 +182,7 @@ export default {
   components: {
   },
   props: [
-    'items'
+    'items', 'edit_date'
   ],
   data: () => ({
     header: [
@@ -183,7 +195,10 @@ export default {
       { value:"staff_day_salary", text:"日給", width:"33%", align: 'center'},
       { value:"staff_expense", text:"経費", width:"33%", align: 'center'}
     ],
+    edit_index: 0,
+    name: '',
     date: '',
+    agenda: '',
     valid: true,
     rules:{
       required: v => (v.length == 4 && v > 0  && v < 2400) || v == '' || '時間の様式に合わせてください。',
@@ -193,56 +208,22 @@ export default {
     salary_change: 'hour',
   }),
   created() {
-    const day = this.items.date.split("-");
+    const day = this.edit_date.split("-");
     this.date = day[0] +'年 '+ day[1] +'月 '+ day[2]+'日';
-    if (this.items.staff_hour_salary == '' && this.items.staff_day_salary == '') {
-      this.salary_change = 'hour'
-    } else if (this.items.staff_hour_salary != '') {
-      this.salary_change = 'hour';
-    } else {
-      this.salary_change = 'day';
-    }
-    this.items.start_time = this.items.start_time.replace(':','')
-    this.items.end_time = this.items.end_time.replace(':','')
+    this.agenda = this.items[this.edit_index].agenda
+    this.search()
     this.dialog = true;
   },
-  watch: {
-    salary_change(element) {
-      if (element == 'day') {
-        this.items.start_time = '';
-        this.items.end_time = '';
-        this.items.total_time = '';
-        this.items.admin_total_time = '';
-        this.items.staff_hour_salary = '';
-      } else {
-        this.items.staff_day_salary = '';
-      }
-    },
-  },
   methods: {
-    timeColon(type) {
-      let replaceTime = type === 1 ? this.items.start_time.replace(":", "") : this.items.end_time.replace(":", "");
-      let hours = '00'
-      let minute = '00'
-
-      if(replaceTime.length >= 4 && replaceTime.length < 5) {
-        hours = replaceTime.substring(0, 2)
-        minute = replaceTime.substring(2, 4)
-        if(isFinite(hours + minute) == false) {
-          type === 1 ? this.items.start_time = "" : this.items.end_time = "";
-          return false;
-        }
-        if (hours > 23 ) {
-          type === 1 ? this.items.start_time = "24:00" : this.items.end_time = "24:00";
-          return false;
-        }
-        if (minute > 59) {
-          type === 1 ? this.items.start_time = hours + ":00" : this.items.end_time = hours + ":00";
-          return false;
-        }
-        type === 1 ? this.items.start_time = hours + ":" + minute : this.items.end_time = hours + ":" + minute;
-        type === 1 ? this.enter(1) : this.enter(2);
-      }
+    search() {
+      this.edit_index = this.items.findIndex(element => element.agenda === this.agenda)
+      if (this.items[this.edit_index].staff_hour_salary == '' && this.items[this.edit_index].staff_day_salary == '') {
+        this.salary_change = 'hour'
+      } else if (this.items[this.edit_index].staff_hour_salary != '') {
+        this.salary_change = 'hour';
+      } else {
+        this.salary_change = 'day';
+      } 
     },
     get_total(item) {
       let time = ''
@@ -295,17 +276,17 @@ export default {
       }
     },
     edit() {
-      if ((this.items.start_time || this.items.end_time) && (this.items.start_time.length != 4 || this.items.end_time.length != 4)) {
+      if ((this.items[this.edit_index].start_time || this.items[this.edit_index].end_time) && (this.items[this.edit_index].start_time.length != 4 || this.items[this.edit_index].end_time.length != 4)) {
         return;
       }
-      this.items.start_time = this.items.start_time == '' ? '' : this.make_colon(this.items.start_time)
-      this.items.end_time = this.items.end_time == '' ? '' :  this.make_colon(this.items.end_time)
-      if (this.items.start_time === false) {
-        this.items.start_time = ''
+      this.items[this.edit_index].start_time = this.items[this.edit_index].start_time == '' ? '' : this.make_colon(this.items[this.edit_index].start_time)
+      this.items[this.edit_index].end_time = this.items[this.edit_index].end_time == '' ? '' :  this.make_colon(this.items[this.edit_index].end_time)
+      if (this.items[this.edit_index].start_time === false) {
+        this.items[this.edit_index].start_time = ''
         return;
       }
-      if (this.items.end_time === false) {
-        this.items.end_time = ''
+      if (this.items[this.edit_index].end_time === false) {
+        this.items[this.edit_index].end_time = ''
         return;
       }
       this.dialog = false;
@@ -324,6 +305,17 @@ export default {
         return false
       }
       return hours + ":" + minute;
+    },
+    change(element) {
+      if (element == 'day') {
+        this.items[this.edit_index].start_time = '';
+        this.items[this.edit_index].end_time = '';
+        this.items[this.edit_index].total_time = '';
+        this.items[this.edit_index].admin_total_time = '';
+        this.items[this.edit_index].staff_hour_salary = '';
+      } else {
+        this.items[this.edit_index].staff_day_salary = '';
+      }
     },
     close() {
       this.dialog = false;

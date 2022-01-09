@@ -5,12 +5,20 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    fetch_calendar_events: [],
+    fetch_analytic_events: [],
     calendar_events: [],
     client_agenda: [],
     staff_name: '',
     root_folder: '',
   },
   getters: {
+    fetch_calendar_events (state) {
+      return state.fetch_calendar_events
+    },
+    fetch_analytic_events (state) {
+      return state.fetch_analytic_events
+    },
     calendar_events (state) {
       return state.calendar_events
     },
@@ -25,6 +33,12 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    set_fetch_calendar_events(state, payload) {
+      state.fetch_calendar_events = payload
+    },
+    set_fetch_analytic_events(state, payload) {
+      state.fetch_analytic_events = payload
+    },
     set_calendar_events(state, payload) {
       state.calendar_events = payload
     },

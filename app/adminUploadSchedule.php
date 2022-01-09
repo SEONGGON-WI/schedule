@@ -14,12 +14,12 @@ try {
     $sql = "UPDATE schedule SET client = '' WHERE date >= '$start_date' AND date <= '$end_date'";
     $dbConnect->mysql->query($sql);
     foreach ($client as $values) {
-      $sql = "UPDATE schedule SET client = '{$values['client']}' WHERE agenda = '{$values['agenda']}' AND date >= '$start_date' AND date <= '$end_date'";
-      $dbConnect->mysql->query($sql);
-      $sql = "UPDATE schedule SET admin_hour_salary = '{$values['hour_salary']}' WHERE agenda = '{$values['agenda']}' AND admin_hour_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
-      $dbConnect->mysql->query($sql);
-      $sql = "UPDATE schedule SET admin_day_salary = '{$values['day_salary']}' WHERE agenda = '{$values['agenda']}' AND admin_day_salary = '' AND admin_total_time = '' date >= '$start_date' AND date <= '$end_date'";
-      $dbConnect->mysql->query($sql);
+      $client_sql = "UPDATE schedule SET client = '{$values['client']}' WHERE agenda = '{$values['agenda']}' AND date >= '$start_date' AND date <= '$end_date'";
+      $dbConnect->mysql->query($client_sql);
+      $hour_sql = "UPDATE schedule SET admin_hour_salary = '{$values['hour_salary']}' WHERE agenda = '{$values['agenda']}' AND admin_hour_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
+      $dbConnect->mysql->query($hour_sql);
+      $day_sql = "UPDATE schedule SET admin_day_salary = '{$values['day_salary']}' WHERE agenda = '{$values['agenda']}' AND admin_day_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
+      $dbConnect->mysql->query($day_sql);
     }
     $result = json_encode(array('status' => true));
   } else {

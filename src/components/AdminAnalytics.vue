@@ -28,9 +28,20 @@
             v-model="differ_name" 
             :items="name_items"
             @change="fetch_data"
+            :menu-props="{ maxHeight: '800' }"
             append-icon="arrow_drop_down"
             hide-details
-          ></v-select>
+            multiple
+          >
+            <template v-slot:selection="{ item, index }">
+              <div v-if="index === 0">
+                <span>{{ item }}</span>
+              </div>
+              <span v-if="index === 1">
+                &nbsp;++
+              </span>
+            </template>
+          </v-select>
         </v-col>
         <v-col cols="3" class="name_agenda pt-3 pl-8">
           <v-select 
@@ -39,9 +50,19 @@
             v-model="differ_agenda" 
             :items="agenda_items"
             @change="fetch_data"
+            :menu-props="{ maxHeight: '800' }"
             append-icon="arrow_drop_down"
             hide-details
+            multiple
           >
+            <template v-slot:selection="{ item, index }">
+              <div v-if="index === 0">
+                <span>{{ item }}</span>
+              </div>
+              <span v-if="index === 1">
+                &nbsp;++
+              </span>
+            </template>
             <template v-slot:append-outer>
               <v-btn icon @click.native="clear">
                 <v-icon>clear</v-icon>
@@ -163,8 +184,8 @@ export default {
     data: [],
     analytics_data: [],
     total_agenda: 0,
-    differ_name: '',
-    differ_agenda: '',
+    differ_name: [],
+    differ_agenda: [],
     alert_text: '',
     alert_show: false,
     check_dialog: false,
@@ -180,13 +201,11 @@ export default {
   created() {
     this.root_folder = this.$store.getters.root_folder
     this.data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
-    if (this.client != '') {
-      this.data = this.data.filter(obj => obj.client == this.client);
-    }
-    let data = this.data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
+    this.data = this.data.filter(element => (this.client.length === 0 ? true : this.client.includes(element.client)))
+    this.data = this.data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
     let name_items = []
     let agenda_items = []
-    data.map(element => {
+    this.data.map(element => {
       element.admin_day_salary = element.admin_day_salary == '' ? '' : element.admin_day_salary * element.overlap
       element.admin_expense = element.admin_expense == '' ? '' : element.admin_expense * element.overlap
       element.staff_day_salary = element.staff_day_salary == '' ? '' : element.staff_day_salary * element.overlap
@@ -197,64 +216,47 @@ export default {
     })
     const name_items_set = new Set(name_items)
     const agenda_items_set = new Set(agenda_items)
-    this.name_items = ['全員', ...name_items_set].sort(function (a, b) {
+    this.name_items = [...name_items_set].sort(function (a, b) {
       return a.localeCompare(b, 'ja')
     })
-    this.agenda_items = ['', ...agenda_items_set].sort(function (a, b) {
+    this.agenda_items = [...agenda_items_set].sort(function (a, b) {
       return a.localeCompare(b, 'ja')
     })
-    if (this.agenda != '' && this.agenda != '空きスケジュール' && this.agenda != 'スタッフ日給未入力' && this.agenda != '管理者日給未入力') {
-      this.differ_agenda = this.agenda
-    } else {
-      this.differ_agenda = ''
-    }
+    this.differ_agenda = this.agenda.filter(obj => (obj != '' && obj != '空きスケジュール' && obj != 'スタッフ日給未入力' && obj != '管理者日給未入力'))
     this.differ_name = this.name
 
     this.fetch_data()
-    this.get_salary(this.items)
-    this.get_pay_salary(this.items)
+    this.get_salary()
     this.dialog = true;
   },
-  // watch: {
-  //   analytics_data(element) {
-  //     this.get_salary(element)
-  //     this.get_pay_salary(element)
-  //   },
-  // },
   methods: {
     get_salary(){
-      var total_salary = 0
-      var admin_total_salary = 0
-      this.analytics_data.map(item => {
-        var expense = item.staff_expense ? item.staff_expense : 0
-        if (item.staff_day_salary != '') {
-          total_salary = total_salary + parseInt(item.staff_day_salary * item.overlap) + parseInt(expense)
-        }
-        if (item.admin_day_salary != '') {
-          admin_total_salary = admin_total_salary + parseInt(item.admin_day_salary) + parseInt(expense)
-        }
-      })
-      this.total_salary = "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      this.admin_total_salary = "￥" + admin_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    get_pay_salary() {
       var pay_total_salary = 0
       var paid_total_salary = 0
       var paid_status = 0
+      var total_salary = 0
+      var admin_total_salary = 0
       this.analytics_data.map(item => {
+        var expense = item.staff_expense != '' ? item.staff_expense : 0
+        var admin_expense = item.admin_expense != '' ? item.admin_expense : 0
         if (item.staff_day_salary != '') {
-          var expense = item.staff_expense ? item.staff_expense : 0
-          if (item.status == 0) {
-            pay_total_salary = pay_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
-          } else {
-            paid_total_salary = paid_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
-            paid_status = paid_status + (1000 * parseInt(item.overlap))
-          }
+          total_salary = total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
+        }
+        if (item.admin_day_salary != '') {
+          admin_total_salary = admin_total_salary + parseInt(item.admin_day_salary) + parseInt(admin_expense)
+        }
+        if (item.status == 0 && item.staff_day_salary != '') {
+          pay_total_salary = pay_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
+        } else if (item.staff_day_salary != '') {
+          paid_total_salary = paid_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
+          paid_status = paid_status + (1000 * parseInt(item.overlap))
         }
       })
-      this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      this.total_salary = "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.admin_total_salary = "￥" + admin_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     get_date(date) {
       const day = date.split("-")
@@ -265,13 +267,11 @@ export default {
       }
     },
     fetch_data() {
-      this.analytics_data = JSON.parse(JSON.stringify(this.data))
-      this.analytics_data = this.analytics_data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
-      if (this.differ_agenda != '') {
-          this.analytics_data = this.analytics_data.filter(obj => obj.agenda == this.differ_agenda);
-      }
-      if (this.differ_name != '全員') {
-        this.analytics_data = this.analytics_data.filter(obj => obj.name == this.differ_name);
+      if (this.differ_name.length === 0 && this.differ_agenda.length === 0 && this.$store.getters.fetch_analytic_events.length !== 0) {
+        this.analytics_data = this.$store.getters.fetch_analytic_events
+        this.total_agenda = this.analytics_data.length + "件"
+        this.get_salary()
+        return
       }
       const sort_list = [
         {key:'date', type: 1},
@@ -279,10 +279,16 @@ export default {
         {key:'admin_day_salary', type: 2},
         {key:'staff_day_salary', type: 2},
       ]
-      this.analytics_data.sort(this.sort_by(sort_list))
+      const data = JSON.parse(JSON.stringify(this.data))
+      let fetch_data = data.filter(element => element.agenda != '' && (element.staff_day_salary != '' || element.admin_day_salary != '')
+                                    && (this.differ_agenda.length === 0 ? true : this.differ_agenda.includes(element.agenda))
+                                    && (this.differ_name.length === 0 ? true : this.differ_name.includes(element.name))).sort(this.sort_by(sort_list))
+      if (this.differ_name.length === 0 && this.differ_agenda.length === 0) {
+        this.$store.commit('set_fetch_analytic_events', fetch_data)
+      }
+      this.analytics_data = fetch_data
       this.total_agenda = this.analytics_data.length + "件"
       this.get_salary()
-      this.get_pay_salary()
     },
     upload() {
       const url = this.root_folder + "/app/adminEditAnalytics.php";
@@ -296,6 +302,7 @@ export default {
       })
       axios.post(url, {event:data}).then(function(response) {
         if (response.data.status == true) {
+          this.$store.commit('set_fetch_analytic_events', [])
           this.upload_condition = true
         } else {
           this.upload_condition = false
@@ -304,8 +311,8 @@ export default {
       }.bind(this))
     },
     clear() {
-      this.differ_name = '全員'
-      this.differ_agenda = ''
+      this.differ_name = []
+      this.differ_agenda = []
       this.fetch_data()
     },
     alert(text) {
@@ -318,7 +325,7 @@ export default {
     },
     set_status(item) {
       item.status = item.status == '1' ? '0' : '1'
-      this.get_pay_salary(this.analytics_data)
+      this.get_salary()
     },
     admin_background(item) {
       return item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;

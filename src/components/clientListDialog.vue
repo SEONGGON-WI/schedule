@@ -76,6 +76,7 @@
           </v-row>
         </v-card-text>
           <v-data-table 
+            :key="toggle_key"
             name="client-list-table"
             :headers="headers" 
             :items="items" 
@@ -120,10 +121,7 @@
             </v-btn>
           </v-toolbar>
             <v-row no-gutters class="mb-2">
-              <v-col cols="3" class="name_agenda pt-3 pl-8">
-                <div>{{ edit_item.client }}</div>
-              </v-col>
-              <v-col cols="9" class="name_agenda pt-3 pl-8">
+              <v-col cols="12" class="name_agenda pt-3 pl-8">
                 <div>{{ edit_item.agenda }}</div>
               </v-col>
             </v-row>
@@ -134,13 +132,25 @@
             disable-pagination
             disable-sort
           >
+            <template v-slot:item.client="{ item }">
+              <v-text-field
+                v-model="item.client"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                @keydown.enter="enter(3)"
+                class="py-3"
+                label="クライアント"
+                height="60"
+                outlined
+                single-line
+                hide-details
+              ></v-text-field>
+            </template>
             <template v-slot:item.hour_salary="{ item }">
               <v-text-field
-                type="number"
                 ref="hour_salary"
                 v-model="item.hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                @keydown.enter="enter(3)"
+                @keydown.enter="enter(4)"
                 class="py-3"
                 label="時給"
                 height="60"
@@ -151,11 +161,10 @@
             </template>
             <template v-slot:item.day_salary="{ item }">
               <v-text-field
-                type="number"
                 v-model="item.day_salary"
                 ref="day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                @keydown.enter="enter(4)"
+                @keydown.enter="enter(5)"
                 class="py-3"
                 label="日給"
                 height="60"
@@ -209,8 +218,9 @@ export default {
       { value:"action", text:"編集", width:"15%", align: 'center', sortable: false}
     ],
     header: [
-      { value:"hour_salary", text:"時給", width: "50%", align: 'start'},
-      { value:"day_salary", text:"日給", width: "50%", align: 'start'},
+      { value:"client", text:"クライアント", width: "40%", align: 'start'},
+      { value:"hour_salary", text:"時給", width: "30%", align: 'start'},
+      { value:"day_salary", text:"日給", width: "30%", align: 'start'},
     ],
     footer : {
       itemsPerPageText:"1ページあたりの行数",
@@ -235,16 +245,14 @@ export default {
     confirm_type: '',
     confirm_text: '',
     remove_item: {client:'', agenda: ''},
+    toggle_key: 0,
     dialog: false,
     root_folder: '',
   }),
   created() {
     this.root_folder = this.$store.getters.root_folder
     this.agenda_list = JSON.parse(JSON.stringify(this.agenda_items))
-    this.agenda_list.shift()
-    this.agenda_list.shift()
-    this.agenda_list.shift()
-    this.agenda_list.shift()
+    this.agenda_list.splice(0, 4);
     this.items = JSON.parse(JSON.stringify(this.$store.getters.client_agenda))
     this.dialog = true;
   },
@@ -334,7 +342,7 @@ export default {
           this.agenda.map(element => this.items.unshift({
             start_date: this.date.start_date,
             client: this.client,
-            agenda: element.agenda,
+            agenda: element,
             hour_salary: this.hour_salary,
             day_salary: this.day_salary
           }))
@@ -359,6 +367,7 @@ export default {
       const url = this.root_folder + "/app/adminDeleteClient.php";
       const data = {
         start_date: this.date.start_date,
+        end_date: this.date.end_date,
         client: this.client,
       }
       axios.post(url, data).then(function(response) {
@@ -370,7 +379,7 @@ export default {
       }.bind(this))
     },
     edit(item) {
-      this.edit_item = item
+      this.edit_item = JSON.parse(JSON.stringify(item))
       this.edit_dialog = true
     },
     edit_client() {
@@ -386,6 +395,7 @@ export default {
         if (response.data.status == true) {
           const index = this.items.findIndex(element => element.agenda === this.edit_item.agenda)
           this.items[index] = this.edit_item
+          this.toggle()
         } else {
           this.alert(response.data.message)
         }
@@ -400,6 +410,7 @@ export default {
       const url = this.root_folder + "/app/adminRemoveClient.php";
       const data = {
         start_date: this.date.start_date,
+        end_date: this.date.end_date,
         client: this.remove_item.client,
         agenda: this.remove_item.agenda,
       }
@@ -407,6 +418,7 @@ export default {
         if (response.data.status == true) {
           const index = this.items.findIndex(element => element.agenda === this.remove_item.agenda)
           this.items.splice(index, 1);
+          this.toggle()
         } else {
           this.alert(response.data.message)
         }
@@ -426,10 +438,14 @@ export default {
           break
 
         case 3:
-          this.$refs.day_salary.focus()
+          this.$refs.hour_salary.focus()
           break;
 
         case 4:
+          this.$refs.day_salary.focus()
+          break;
+
+        case 5:
           if(this.edit_item.client == '' || this.edit_item.agenda == '' || this.date.start_date == '') {
             break
           } else {
@@ -449,6 +465,9 @@ export default {
       this.$store.commit('set_client_agenda', this.items)
       this.dialog = false;
       this.$emit("close");
+    },
+    toggle() {
+      this.toggle_key = this.toggle_key === 0 ? 1 : 0
     },
   },
 }

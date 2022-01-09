@@ -96,6 +96,7 @@
           @close="edit_show = false"
           v-if="edit_show"
           :items="edit_items"
+          :edit_date="edit_date"
         ></staff-edit>
 
         <staff-analytics
@@ -182,7 +183,7 @@ export default {
     calendar_format : [1,2,3,4,5,6,0],
     edit_show: false,
     edit_items: {},
-    edit_index: null,
+    edit_date: '',
     analytics_items: [],
     analytics_show: false,
     alert_show: false,
@@ -240,8 +241,8 @@ export default {
           this.calendar_events.splice(index, 1);
           return;
         } else {
-          this.edit_items = JSON.parse(JSON.stringify(this.calendar_events[index]))
-          this.edit_index = index;
+          this.edit_items = JSON.parse(JSON.stringify(this.calendar_events.filter(element => element.date === date)))
+          this.edit_date = date
           this.edit_show = true;
           return;
         }
@@ -312,28 +313,15 @@ export default {
       this.analytics_show = false
     },
     edit(event) {
-      const index = this.edit_index;
-      this.calendar_events[index].start_time = event.start_time;
-      this.calendar_events[index].end_time = event.end_time;
-      this.calendar_events[index].total_time = event.total_time;
-      this.calendar_events[index].admin_total_time = event.admin_total_time;
-      this.calendar_events[index].staff_hour_salary = event.staff_hour_salary;
-      this.calendar_events[index].staff_day_salary = event.staff_day_salary;
-      this.calendar_events[index].staff_expense = event.staff_expense;
-
+      let data = this.calendar_events.filter(element => element.date != this.edit_date)
+      this.fetch_data(data.concat(event))
       if (this.input.username != '' && this.input.password != '') {
         const url = this.root_folder + "/app/staffEditSchedule.php";
         const data = {
           name: this.input.username.replace(/^\s+|\s+$/gm,''),
           password: this.input.password.replace(/^\s+|\s+$/gm,''),
           date: event.date,
-          start_time: event.start_time,
-          end_time: event.end_time,
-          total_time: event.total_time,
-          admin_total_time: event.admin_total_time,
-          staff_hour_salary: event.staff_hour_salary,
-          staff_day_salary: event.staff_day_salary,
-          staff_expense: event.staff_expense
+          event: event,
         }
         axios.post(url, data).then(function(response) {
           if (response.data.status == true) {

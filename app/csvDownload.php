@@ -18,7 +18,7 @@ try {
 
     foreach ($data as $value) {
       $sql = "SELECT date FROM schedule ";
-      $sql = $sql."WHERE status = '{$value['status']}' AND date >= '$start_date' AND date <= '$end_date' AND name = '{$value['name']}' AND agenda = '{$value['agenda']}' AND start_time = '{$value['start_time']}' AND end_time = '{$value['end_time']}' AND total_time = '{$value['total_time']}' AND admin_total_time = '{$value['admin_total_time']}' ";
+      $sql = $sql."WHERE status = '{$value['status']}' AND date >= '$start_date' AND date <= '$end_date' AND name = '{$value['name']}' AND agenda = '{$value['agenda']}' AND overlap = '{$value['overlap']}' AND start_time = '{$value['start_time']}' AND end_time = '{$value['end_time']}' AND total_time = '{$value['total_time']}' AND admin_total_time = '{$value['admin_total_time']}' ";
       $sql = $sql."AND admin_hour_salary = '{$value['admin_hour_salary']}' AND admin_day_salary = '{$value['admin_day_salary']}' AND admin_expense = '{$value['admin_expense']}' ";
       $sql = $sql."AND staff_hour_salary = '{$value['staff_hour_salary']}' AND staff_day_salary = '{$value['staff_day_salary']}' AND staff_expense = '{$value['staff_expense']}' ";
       $sql = $sql."ORDER BY date";

@@ -4,13 +4,7 @@ $response = json_decode(file_get_contents('php://input'), true);
 $name = $response['name'];
 $password = $response['password'];
 $date = $response['date'];
-$start_time = $response['start_time'];
-$end_time = $response['end_time'];
-$total_time = $response['total_time'];
-$admin_total_time = $response['admin_total_time'];
-$staff_hour_salary = $response['staff_hour_salary'];
-$staff_day_salary = $response['staff_day_salary'];
-$staff_expense = $response['staff_expense'];
+$event= $response['event'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
@@ -29,9 +23,15 @@ try {
       @fwrite($log,"$time, staffEditSchedule, $name, $date\n");
       @fclose($log);
 
-      $sql = "UPDATE schedule SET start_time = '$start_time', end_time = '$end_time', total_time = '$total_time', admin_total_time = '$admin_total_time', staff_hour_salary = '$staff_hour_salary', staff_day_salary = '$staff_day_salary', staff_expense = '$staff_expense' WHERE name = '$name' AND date = '$date'";
-      $dbConnect->mysql->query($sql);
-      $result = json_encode(array('status' => true , 'message' => '登録を完了しました。'));
+      if ($event != []) {
+        foreach ($event as $values) {
+          $sql = "UPDATE schedule SET start_time = '{$values['start_time']}', end_time ='{$values['end_time']}', total_time = '{$values['total_time']}', admin_total_time = '{$values['admin_total_time']}', staff_hour_salary = '{$values['staff_hour_salary']}', staff_day_salary = '{$values['staff_day_salary']}', staff_expense = '{$values['staff_expense']}' WHERE name = '{$values['name']}' AND date = '{$values['date']}' AND agenda = '{$values['agenda']}'";
+          $dbConnect->mysql->query($sql);
+        }
+        $result = json_encode(array('status' => false , 'message' => '登録を完了しました。'));
+      } else {
+        $result = json_encode(array('status' => true, 'message' => '登録にエラーが発生しました。'));  
+      }
     } else {
       $result = json_encode(array('status' => false , 'message' => 'パスワードを確認してください。'));
     }
