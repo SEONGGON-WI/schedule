@@ -641,13 +641,13 @@ export default {
       return date
     },
     async prevDate() {
-      this.date = this.calculate_date('prev')
       await this.edit();
+      this.date = this.calculate_date('prev')
       this.get_event()
     },
     async nextDate() {
-      this.date = this.calculate_date('next')
       await this.edit();
+      this.date = this.calculate_date('next')
       this.get_event()
     },
     async accept() {
