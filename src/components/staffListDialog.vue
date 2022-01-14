@@ -115,6 +115,7 @@ export default {
     alert,
   },
   props: [
+    'date'
   ],
   data: () => ({
     items: [],
@@ -141,11 +142,12 @@ export default {
     current_staff_name: '',
     staff_name: '',
     staff_password: '',
-    root_folder: '',
     valid: true,
     rules:{
       required: value => !!value || '省略不可',
     },
+    edit_condition: false,
+    root_folder: '',
   }),
   created() {
     this.root_folder = this.$store.getters.root_folder
@@ -160,7 +162,7 @@ export default {
       const data = {}
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
-          this.items = response.data.data
+          this.items = response.data.data.filter(element => element.access_time >= this.date.start_date && element.access_time <= this.date.end_date)
         } else {
           this.items = []
         }
@@ -185,6 +187,7 @@ export default {
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
           this.fetch_data()
+          this.edit_condition = true
         } else {
           this.alert(response.data.message)
         }
@@ -212,6 +215,7 @@ export default {
           this.alert(response.data.message)
         }
         this.remove_item = {name: ''}
+        this.edit_condition = true
       }.bind(this))
       this.remove_dialog = false
     },
@@ -239,7 +243,7 @@ export default {
     },
     close() {
       this.dialog = false;
-      this.$emit("close");
+      this.$emit("close", this.edit_condition);
     },
   },
 }
