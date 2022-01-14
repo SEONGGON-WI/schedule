@@ -14,6 +14,8 @@ try {
   $dbConnect = new mysqlConnect();
   $del = "DELETE FROM manager WHERE name = '$name'";
   $dbConnect->mysql->query($del);
+  $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = ''";
+  $dbConnect->mysql->query($del);
   $result = json_encode(array('status' => true));
 } catch(Exception $e) {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
