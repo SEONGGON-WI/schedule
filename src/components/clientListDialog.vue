@@ -231,7 +231,7 @@ export default {
       itemsPerPage: 10,
     },
     client: '',
-    agenda: '',
+    agenda: [],
     agenda_list: [],
     hour_salary: '',
     day_salary: '',
@@ -246,6 +246,7 @@ export default {
     confirm_text: '',
     remove_item: {client:'', agenda: ''},
     toggle_key: 0,
+    edit_condition: false,
     dialog: false,
     root_folder: '',
   }),
@@ -346,6 +347,7 @@ export default {
             hour_salary: this.hour_salary,
             day_salary: this.day_salary
           }))
+          this.agenda = []
         } else {
           this.alert(response.data.message)
         }
@@ -373,6 +375,7 @@ export default {
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
           this.items = this.items.filter(element => element.client != this.client)
+          this.edit_condition = true
         } else {
           this.alert(response.data.message)
         }
@@ -395,6 +398,7 @@ export default {
         if (response.data.status == true) {
           const index = this.items.findIndex(element => element.agenda === this.edit_item.agenda)
           this.items[index] = this.edit_item
+          this.edit_condition = true
           this.toggle()
         } else {
           this.alert(response.data.message)
@@ -418,6 +422,7 @@ export default {
         if (response.data.status == true) {
           const index = this.items.findIndex(element => element.agenda === this.remove_item.agenda)
           this.items.splice(index, 1);
+          this.edit_condition = true
           this.toggle()
         } else {
           this.alert(response.data.message)
@@ -464,7 +469,7 @@ export default {
     close() {
       this.$store.commit('set_client_agenda', this.items)
       this.dialog = false;
-      this.$emit("close");
+      this.$emit("close", this.edit_condition);
     },
     toggle() {
       this.toggle_key = this.toggle_key === 0 ? 1 : 0
