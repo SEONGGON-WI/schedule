@@ -9,7 +9,7 @@ try {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
-  $path = $rootPath."error_".$logDate.".txt";
+  $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminDeleteClient, $client, $start_date\n");
   @fclose($log);

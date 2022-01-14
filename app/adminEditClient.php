@@ -11,7 +11,7 @@ try {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
-  $path = $rootPath."error_".$logDate.".txt";
+  $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
   @fwrite($log,"$time, adminEditClient, $client, $start_date, $agenda, $hour_salary, $day_salary\n");
   @fclose($log);
