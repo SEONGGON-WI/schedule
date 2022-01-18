@@ -27,7 +27,7 @@ class mysqlConnect {
   }
 
   public function getSchedule($name, $start_date, $end_date) {
-    $query = "SELECT name, date, agenda, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense FROM schedule WHERE name = '$name' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
+    $query = "SELECT _id, name, date, agenda, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense FROM schedule WHERE name = '$name' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -43,7 +43,7 @@ class mysqlConnect {
   }
 
   public function getEditSchedule($name, $start_date, $end_date) {
-    $query = "SELECT name, date FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
+    $query = "SELECT _id, name, date FROM schedule WHERE name = '$name' AND agenda = '' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -204,6 +204,7 @@ class mysqlConnect {
 
   public function createScheduleTable() {
     $query = "CREATE TABLE IF NOT EXISTS schedule (";
+    $query = $query."_id BOOLEAN not null,";
     $query = $query."status BOOLEAN not null,";
     $query = $query."name varchar(32) not null,";
     $query = $query."date DATE not null,";

@@ -201,7 +201,7 @@ export default {
     agenda: '',
     valid: true,
     rules:{
-      required: v => (v.length == 4 && v > 0  && v < 2400) || v == '' || '時間の様式に合わせてください。',
+      required: v => ((v.length == 4 || v.length == 5) && v > 0  && v < 2400) || v == '' || '時間の様式に合わせてください。',
       positive: v => v > 0 || v == '' || '正の整数を指定'
     },
     dialog: false,
@@ -228,13 +228,23 @@ export default {
     get_total(item) {
       let time = ''
       let admin_time = ''
-      if (this.salary_change === 'hour' && item.start_time != '' && item.end_time != '' && item.start_time.length == 4 && item.end_time.length == 4) {
+      if (this.salary_change === 'hour' && item.start_time != '' && item.end_time != '' && ((item.start_time.length == 4 || item.start_time.length == 5) && (item.end_time.length == 4 || item.end_time.length == 5))) {
         var start = []
-        start[0] = item.start_time.substring(0, 2)
-        start[1] = item.start_time.substring(2, 4)
+        if (item.start_time.length == 4) {
+          start[0] = item.start_time.substring(0, 2)
+          start[1] = item.start_time.substring(2, 4)
+        } else if (item.start_time.length == 5) {
+          start[0] = item.start_time.substring(0, 2)
+          start[1] = item.start_time.substring(3, 5)
+        }
         var end = []
-        end[0] = item.end_time.substring(0, 2)
-        end[1] = item.end_time.substring(2, 4)
+        if (item.end_time.length == 4) {
+          end[0] = item.end_time.substring(0, 2)
+          end[1] = item.end_time.substring(2, 4)
+        } else if (item.end_time.length == 5) {
+          end[0] = item.end_time.substring(0, 2)
+          end[1] = item.end_time.substring(3, 5)
+        }
         var start_date = new Date (2020,11,31,start[0],start[1],0)
         var end_date = new Date (2020,11,31,end[0],end[1],0)
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
@@ -276,25 +286,52 @@ export default {
       }
     },
     edit() {
-      if ((this.items[this.edit_index].start_time || this.items[this.edit_index].end_time) && (this.items[this.edit_index].start_time.length != 4 || this.items[this.edit_index].end_time.length != 4)) {
-        return;
+      var condition = true
+      this.items.map(item => {
+        if ((item.start_time || item.end_time) && (item.start_time.length != 4 || item.end_time.length != 4)) {
+          condition = false
+        }
+        item.start_time = item.start_time == '' ? '' : this.make_colon(item.start_time)
+        item.end_time = item.end_time == '' ? '' :  this.make_colon(item.end_time)
+        if (item.start_time === false) {
+          item.start_time = ''
+          condition = false
+        }
+        if (item.end_time === false) {
+          item.end_time = ''
+          condition = false
+        }
+
+      })
+      if (condition === false) {
+        return
       }
-      this.items[this.edit_index].start_time = this.items[this.edit_index].start_time == '' ? '' : this.make_colon(this.items[this.edit_index].start_time)
-      this.items[this.edit_index].end_time = this.items[this.edit_index].end_time == '' ? '' :  this.make_colon(this.items[this.edit_index].end_time)
-      if (this.items[this.edit_index].start_time === false) {
-        this.items[this.edit_index].start_time = ''
-        return;
-      }
-      if (this.items[this.edit_index].end_time === false) {
-        this.items[this.edit_index].end_time = ''
-        return;
-      }
+      // if ((this.items[this.edit_index].start_time || this.items[this.edit_index].end_time) && (this.items[this.edit_index].start_time.length != 4 || this.items[this.edit_index].end_time.length != 4)) {
+      //   return;
+      // }
+      // this.items[this.edit_index].start_time = this.items[this.edit_index].start_time == '' ? '' : this.make_colon(this.items[this.edit_index].start_time)
+      // this.items[this.edit_index].end_time = this.items[this.edit_index].end_time == '' ? '' :  this.make_colon(this.items[this.edit_index].end_time)
+      // if (this.items[this.edit_index].start_time === false) {
+      //   this.items[this.edit_index].start_time = ''
+      //   return;
+      // }
+      // if (this.items[this.edit_index].end_time === false) {
+      //   this.items[this.edit_index].end_time = ''
+      //   return;
+      // }
       this.dialog = false;
       this.$emit("edit", this.items);
     },
     make_colon(time) {
-      var hours = time.substring(0, 2)
-      var minute = time.substring(2, 4)
+      var hours = ''
+      var minute = ''
+      if (time.length == 4) {
+        hours = time.substring(0, 2)
+        minute = time.substring(2, 4)  
+      } else if (time.length == 5) {
+        hours = time.substring(0, 2)
+        minute = time.substring(3, 5)  
+      }
       if(isFinite(hours + minute) == false) {
         return false
       }
