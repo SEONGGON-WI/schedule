@@ -16,12 +16,7 @@ try {
   $index = 0;
   if ($event != []) {
     foreach ($event as $values) {
-      // if ($values['status'] == '1') {
-      //   $status = true;
-      // } else {
-      //   $status = false;
-      // }
-      $sql = "UPDATE schedule SET status = '{$values['status']}' WHERE name = '{$values['name']}' AND date = '{$values['date']}'";
+      $sql = "UPDATE schedule SET status = '{$values['status']}' WHERE name = '{$values['name']}' AND date = '{$values['date']}' AND _id = '{$values['id']}'";
       $dbConnect->mysql->query($sql);
       $index ++;
     }

@@ -184,12 +184,11 @@
     :date="calendar_date"
   ></admin-analytics>
 
-  <admin-dialog
+  <delete-dialog
     v-if="remove_show"
-    @accept="remove"
-    @close="remove_close"
-    text="削除しますか？"
-  ></admin-dialog>
+    @close="remove_close($event)"
+    :date="search_date"
+  ></delete-dialog>
 
   <alert
     v-if="alert_show"
@@ -199,14 +198,15 @@
 
   <client-list-dialog
     v-if="client_show"
-    @close="client_close"
+    @close="client_close($event)"
     :agenda_items="agenda_items"
     :date="search_date"
   ></client-list-dialog>
 
   <staff-list-dialog
     v-if="staff_show"
-    @close="staff_show = false"
+    @close="staff_close($event)"
+    :date="search_date"
   ></staff-list-dialog>
 </v-app>
 </template>
@@ -272,10 +272,10 @@
 <script>
 import alert from '@/components/alert.vue';
 import AdminEdit from '@/components/AdminEdit.vue';
-import AdminDialog from '@/components/AdminDialog.vue';
 import ClientListDialog from '../components/clientListDialog.vue';
 import StaffListDialog from '@/components/staffListDialog.vue';
 import AdminAnalytics from '@/components/AdminAnalytics.vue';
+import DeleteDialog from '@/components/DeleteDialog.vue';
 import axios from 'axios';
 
 export default {
@@ -283,10 +283,10 @@ export default {
   components: {
     alert,
     AdminEdit,
-    AdminDialog,
     ClientListDialog,
     StaffListDialog,
     AdminAnalytics,
+    DeleteDialog,
   },
   data: () => ({
     menu_item: [
@@ -485,7 +485,8 @@ export default {
     },
     edit_close(event) {
       if(event == true) {
-        this.reload()
+        this.$store.commit('set_fetch_calendar_events', [])
+        this.search()
       }
       this.edit_show = false
     },
@@ -495,9 +496,25 @@ export default {
       }
       this.analytics_show = false
     },
-    client_close() {
+    client_close(edit_condition) {
+      if (edit_condition === true) {
+        this.reload()
+      }
       this.get_client_items()
       this.client_show = false
+    },
+    staff_close(condition) {
+      if (condition === true) {
+        this.reload()
+      }
+      this.staff_show = false
+    },
+    remove_close(event) {
+      if (event === true) {
+        this.reload()
+        this.get_client()
+      }
+      this.remove_show = false;
     },
     async csv_download() {
       const file_name = "経理表_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
@@ -534,21 +551,6 @@ export default {
           this.downloadCSV(file_name, response)
         }.bind(this))
       })
-      // const file_name = "請求書_" + this.client + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
-      //  var config = {
-      //   responseType: "blob",
-      //   headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      // };
-      // this.csvdownloading = true
-      // const data = {
-      //   start_date: this.search_date.start_date,
-      //   end_date: this.search_date.end_date,
-      //   client: this.client
-      // }
-      // const url = this.root_folder + "/app/csvDownload2.php"
-      // await axios.post(url, data, config).then(function (response) {
-      //   this.downloadCSV(file_name, response)
-      // }.bind(this))
     },
     downloadCSV(file_name, res) {
       var blob = new Blob([res.data], { type: "text/csv" });
@@ -568,28 +570,6 @@ export default {
         link.click();
       }
       this.csvdownloading = false
-    },
-    remove() {
-      const url = this.root_folder + "/app/adminRemoveSchedule.php";
-      const today = new Date();
-      const current_date = today.getFullYear() +"-"+ (today.getMonth()+1) +"-"+ today.getDate();
-      const data = {
-        current_date: current_date
-      }
-      axios.post(url, data).then(function(response) {
-        if (response.data.status == true) {
-          this.reload()
-        } else {
-          this.alert(response.data.message);
-        }
-      }.bind(this))
-      this.remove_show = false
-    },
-    remove_close(event) {
-      if (event == true) {
-        this.remove()
-      }
-      this.remove_show = false;
     },
     alert(text) {
       this.alert_text = text;

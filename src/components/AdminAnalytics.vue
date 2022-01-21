@@ -224,7 +224,7 @@ export default {
     })
     this.differ_agenda = this.agenda.filter(obj => (obj != '' && obj != '空きスケジュール' && obj != 'スタッフ日給未入力' && obj != '管理者日給未入力'))
     this.differ_name = this.name
-
+    this.$store.commit('set_fetch_analytic_events', [])
     this.fetch_data()
     this.get_salary()
     this.dialog = true;
@@ -297,7 +297,8 @@ export default {
         data[index] = {
           status: element.status,
           name: element.name,
-          date: element.date
+          date: element.date,
+          agenda: element.agenda,
         }
       })
       axios.post(url, {event:data}).then(function(response) {

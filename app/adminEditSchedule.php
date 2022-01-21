@@ -29,7 +29,7 @@ try {
     foreach ($event as $values) {
       if ($values['_id'] == '') {
         $sql = "INSERT INTO schedule ( name, date, client, agenda, overlap, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense, admin_hour_salary, admin_day_salary , admin_expense ) VALUES ";
-        $sql_values = "( '{$values['name']}', '{$values['date']}', '{$values['client']}', '{$values['agenda']}', '{$values['overlap']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['admin_total_time']}',
+        $sql .= "( '{$values['name']}', '{$values['date']}', '{$values['client']}', '{$values['agenda']}', '{$values['overlap']}', '{$values['start_time']}', '{$values['end_time']}', '{$values['total_time']}', '{$values['admin_total_time']}',
                           '{$values['staff_hour_salary']}', '{$values['staff_day_salary']}', '{$values['staff_expense']}', 
                           '{$values['admin_hour_salary']}', '{$values['admin_day_salary']}', '{$values['admin_expense']}' )";
       } else {
