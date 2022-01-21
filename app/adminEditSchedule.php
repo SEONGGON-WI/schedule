@@ -14,7 +14,6 @@ try {
     $path = $rootPath.$logDate.".txt";
     $log = @fopen($path,"a+");
     @fwrite($log,"$time, adminEditDeleteSchedule, $date\n");
-    @fclose($log);
     $deleteName = '';
     foreach ($remove_event as $values) {
       $del = "DELETE FROM schedule WHERE _id = '{$values['_id']}' AND date = '{$values['date']}' AND name = '{$values['name']}'";
