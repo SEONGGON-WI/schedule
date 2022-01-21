@@ -666,6 +666,7 @@ export default {
     },
     add_schedule() {
        this.add_item = {
+        _id: '',
         name: '',
         date: this.date,
         client: '',
