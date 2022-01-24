@@ -53,12 +53,12 @@ try {
     }
     if ($event != []) {
       $index = 0;
-      $sql = "INSERT IGNORE INTO schedule ( name, date, overlap ) VALUES ";
       foreach ($event as $values) {
-        $sql_value = "( '{$name}', '{$values['date']}', '1' )";
-        $query = $sql.$sql_value;
-        $dbConnect->mysql->query($query);
-        $index++;
+        if ($values['_id'] == '') {
+          $sql = "INSERT INTO schedule ( name , date, overlap ) VALUES ( '{$name}', '{$values['date']}', '1' )";
+          $dbConnect->mysql->query($sql);
+          $index++;
+        }
       }
       if ($index == 0) {
         $index = "empty";

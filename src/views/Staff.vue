@@ -254,6 +254,7 @@ export default {
       const firstTimestamp = new Date(`${date}T09:00:00`)
       const startTime = new Date(firstTimestamp)
       this.calendar_events.push({
+        _id: '',
         date: date,
         agenda: '',
         start: startTime,
