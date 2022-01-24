@@ -76,6 +76,15 @@
                   append-icon="arrow_drop_down"
                   multiple
                 >
+                  <template v-slot:prepend-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
+                      @click="reset_client"
+                    >
+                    </v-list-item>
+                    <v-divider class="mt-2"></v-divider>
+                  </template>
                   <template v-slot:selection="{ item, index }">
                     <div v-if="index === 0">
                       <span>{{ item }}</span>
@@ -98,6 +107,15 @@
                   append-icon="arrow_drop_down"
                   multiple
                 >
+                  <template v-slot:prepend-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
+                      @click="reset_name"
+                    >
+                    </v-list-item>
+                    <v-divider class="mt-2"></v-divider>
+                  </template>
                   <template v-slot:selection="{ item, index }">
                     <div v-if="index === 0">
                       <span>{{ item }}</span>
@@ -120,6 +138,15 @@
                   append-icon="arrow_drop_down"
                   multiple
                 >
+                  <template v-slot:prepend-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
+                      @click="reset_agenda"
+                    >
+                    </v-list-item>
+                    <v-divider class="mt-2"></v-divider>
+                  </template>
                   <template v-slot:selection="{ item, index }">
                     <div v-if="index === 0">
                       <span>{{ item }}</span>
@@ -570,6 +597,24 @@ export default {
         link.click();
       }
       this.csvdownloading = false
+    },
+    reset_client () {
+      this.$nextTick(() => {
+        this.client = []
+        this.search()
+      })
+    },
+    reset_name () {
+      this.$nextTick(() => {
+        this.name = []
+        this.search()
+      })
+    },
+    reset_agenda () {
+      this.$nextTick(() => {
+        this.agenda = []
+        this.search()
+      })
     },
     alert(text) {
       this.alert_text = text;
