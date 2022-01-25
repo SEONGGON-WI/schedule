@@ -6,6 +6,8 @@ $client = $response['client'];
 $agenda = $response['agenda'];
 $hour_salary = $response['hour_salary'];
 $day_salary = $response['day_salary'];
+$staff_hour_salary = $response['staff_hour_salary'];
+$staff_day_salary = $response['staff_day_salary'];
 include 'sqlConnect.php';
 try {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
@@ -13,10 +15,10 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditClient, $client, $start_date, $agenda, $hour_salary, $day_salary\n");
+  @fwrite($log,"$time, adminEditClient, $client, $start_date, $agenda, $hour_salary, $day_salary, $staff_hour_salary, $staff_day_salary\n");
   @fclose($log);
   $dbConnect = new mysqlConnect();
-  $sql = "UPDATE client SET hour_salary = '$hour_salary', day_salary = '$day_salary', client = '$client' WHERE agenda = '$agenda' AND date = '$start_date'";
+  $sql = "UPDATE client SET hour_salary = '$hour_salary', day_salary = '$day_salary', staff_hour_salary = '$staff_hour_salary', staff_day_salary = '$staff_day_salary', client = '$client' WHERE agenda = '$agenda' AND date = '$start_date'";
   $dbConnect->mysql->query($sql);
   $result = json_encode(array('status' => true));  
 } catch(Exception $e) {

@@ -584,7 +584,9 @@ export default {
         if (find != undefined) {
           element.client = find.client
           element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
-          element.admin_day_salary = element.admin_day_salary == '' ?  find.day_salary : element.admin_day_salary  
+          element.admin_day_salary = element.admin_day_salary == '' ?  find.day_salary : element.admin_day_salary
+          element.staff_hour_salary = element.staff_hour_salary == '' ? find.staff_hour_salary : element.staff_hour_salary
+          element.staff_day_salary = element.staff_day_salary == '' ?  find.staff_day_salary : element.staff_day_salary
         }
       })
       const url = this.root_folder + "/app/adminEditSchedule.php";

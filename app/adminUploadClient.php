@@ -6,14 +6,16 @@ $client = $response['client'];
 $agenda = $response['agenda'];
 $hour_salary = $response['hour_salary'];
 $day_salary = $response['day_salary'];
+$staff_hour_salary = $response['staff_hour_salary'];
+$staff_day_salary = $response['staff_day_salary'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
   $index = 0;
   $client = trim($client);
-  $sql = "INSERT IGNORE INTO client ( date, client, agenda, hour_salary, day_salary ) VALUES ";
+  $sql = "INSERT IGNORE INTO client ( date, client, agenda, hour_salary, day_salary, staff_hour_salary, staff_day_salary ) VALUES ";
   foreach ($agenda as $values) {
-    $sql_value = "( '{$start_date}', '{$client}', '{$values}', '{$hour_salary}', '{$day_salary}' )";
+    $sql_value = "( '{$start_date}', '{$client}', '{$values}', '{$hour_salary}', '{$day_salary}', '{$staff_hour_salary}', '{$staff_day_salary}' )";
     $query = $sql.$sql_value;
     $dbConnect->mysql->query($query);
     $index++;

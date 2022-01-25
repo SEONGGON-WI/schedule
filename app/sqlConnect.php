@@ -102,7 +102,7 @@ class mysqlConnect {
   }
 
   public function getClient($start_date) {
-    $query = "SELECT client, agenda, hour_salary, day_salary FROM client WHERE date = '$start_date' ORDER BY client, agenda";
+    $query = "SELECT client, agenda, hour_salary, day_salary, staff_hour_salary, staff_day_salary FROM client WHERE date = '$start_date' ORDER BY client, agenda";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -204,7 +204,7 @@ class mysqlConnect {
 
   public function createScheduleTable() {
     $query = "CREATE TABLE IF NOT EXISTS schedule (";
-    $query = $query."_id BOOLEAN not null,";
+    $query = $query."_id INT auto_increment ,";
     $query = $query."status BOOLEAN not null,";
     $query = $query."name varchar(32) not null,";
     $query = $query."date DATE not null,";
@@ -221,7 +221,7 @@ class mysqlConnect {
     $query = $query."admin_hour_salary TEXT not null,";
     $query = $query."admin_day_salary TEXT not null,";
     $query = $query."admin_expense TEXT not null,";
-    $query = $query."primary key(name, date, agenda));";
+    $query = $query."primary key(_id));";
     $this->mysql->query($query);
   }
 
@@ -232,6 +232,8 @@ class mysqlConnect {
     $query = $query."agenda varchar(64) not null,";
     $query = $query."hour_salary TEXT not null,";
     $query = $query."day_salary TEXT not null,";
+    $query = $query."staff_hour_salary TEXT not null,";
+    $query = $query."staff_day_salary TEXT not null,";
     $query = $query."primary key(date, client, agenda));";
     $this->mysql->query($query);
   }

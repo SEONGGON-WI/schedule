@@ -45,35 +45,54 @@
               ></v-autocomplete>
             </v-col>
           </v-row>
+          <v-form ref="form" v-model="valid">
           <v-row>
             <v-col cols="3">
               <v-text-field
-                ref="hour"
                 v-model="hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
-                @keydown.enter="enter(1)"
-                label="時給"
+                :rules="[rules.positive]"
+                label="管理者時給"
                 single-line
                 hide-details
               ></v-text-field>
             </v-col>
             <v-col cols="3">
               <v-text-field
-                ref="day"
                 v-model="day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
-                @keydown.enter="enter(2)"
-                label="日給"
+                :rules="[rules.positive]"
+                label="管理者日給"
                 single-line
                 hide-details
               ></v-text-field>              
             </v-col>
-            <v-col cols="6">
-              <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0"><v-icon>cloud_upload</v-icon>登録</v-btn>
-              <v-btn outlined class="success ma-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>
-              <v-btn outlined class="error ma-2" color="white" @click="confirm('delete')" :disabled="client == ''"><v-icon>delete</v-icon>削除</v-btn>
+            <v-col cols="3">
+              <v-text-field
+                v-model="staff_hour_salary"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                :rules="[rules.positive]"
+                label="スタッフ時給"
+                single-line
+                hide-details
+              ></v-text-field>
             </v-col>
+            <v-col cols="3">
+              <v-text-field
+                v-model="staff_day_salary"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
+                :rules="[rules.positive]"
+                label="スタッフ日給"
+                single-line
+                hide-details
+              ></v-text-field>              
+            </v-col>
+            <v-col cols="1"></v-col>
+            <v-spacer></v-spacer>
+            <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0 || !valid"><v-icon>cloud_upload</v-icon>登録</v-btn>
+            <v-btn outlined class="success ma-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>
           </v-row>
+          </v-form>
         </v-card-text>
           <v-data-table 
             :key="toggle_key"
@@ -113,7 +132,7 @@
               クライアント管理
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn class="success mx-2 botton_size" @click="edit_client">
+            <v-btn class="success mx-2 botton_size" :disabled="!edit_valid" @click="edit_client">
               <v-icon>edit</v-icon>保存
             </v-btn>
             <v-btn class="error mx-2 botton_size" @click="edit_dialog = false">
@@ -125,6 +144,7 @@
                 <div>{{ edit_item.agenda }}</div>
               </v-col>
             </v-row>
+          <v-form ref="form" v-model="edit_valid">
           <v-data-table
             :headers="header" 
             :items="[edit_item]" 
@@ -135,8 +155,8 @@
             <template v-slot:item.client="{ item }">
               <v-text-field
                 v-model="item.client"
+                :rules="[rules.required]"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                @keydown.enter="enter(3)"
                 class="py-3"
                 label="クライアント"
                 height="60"
@@ -147,12 +167,11 @@
             </template>
             <template v-slot:item.hour_salary="{ item }">
               <v-text-field
-                ref="hour_salary"
                 v-model="item.hour_salary"
+                :rules="[rules.positive]"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                @keydown.enter="enter(4)"
                 class="py-3"
-                label="時給"
+                label="管理者時給"
                 height="60"
                 outlined
                 single-line
@@ -162,11 +181,10 @@
             <template v-slot:item.day_salary="{ item }">
               <v-text-field
                 v-model="item.day_salary"
-                ref="day_salary"
+                :rules="[rules.positive]"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
-                @keydown.enter="enter(5)"
                 class="py-3"
-                label="日給"
+                label="管理者日給"
                 height="60"
                 outlined
                 single-line
@@ -174,6 +192,42 @@
               ></v-text-field>
             </template>
           </v-data-table>
+
+          <v-data-table
+            :headers="staff_header" 
+            :items="[edit_item]" 
+            hide-default-footer 
+            disable-pagination
+            disable-sort
+          >
+            <template v-slot:item.staff_hour_salary="{ item }">
+              <v-text-field
+                v-model="item.staff_hour_salary"
+                :rules="[rules.positive]"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                class="py-3"
+                label="スタッフ時給"
+                height="60"
+                outlined
+                single-line
+                hide-details
+              ></v-text-field>
+            </template>
+            <template v-slot:item.staff_day_salary="{ item }">
+              <v-text-field
+                v-model="item.staff_day_salary"
+                :rules="[rules.positive]"
+                :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"  
+                class="py-3"
+                label="スタッフ日給"
+                height="60"
+                outlined
+                single-line
+                hide-details
+              ></v-text-field>
+            </template>
+          </v-data-table>
+          </v-form>
         </v-card>
       </v-container>
     </v-dialog>
@@ -211,16 +265,23 @@ export default {
   data: () => ({
     items: [],
     headers: [
-      { value:"client", text:"クライアント名", width: "20%", align: 'start'},
-      { value:"agenda", text:"案件名", width: "35%", align: 'start'},
-      { value:"hour_salary", text:"時給", width: "15%", align: 'start'},
-      { value:"day_salary", text:"日給", width: "15%", align: 'start'},
+      { value:"client", text:"顧客", width: "15%", align: 'start'},
+      { value:"agenda", text:"案件名", width: "26%", align: 'start'},
+      { value:"hour_salary", text:"時給", width: "11%", align: 'start'},
+      { value:"day_salary", text:"日給", width: "11%", align: 'start'},
+      { value:"staff_hour_salary", text:"スタッフ時給", width: "11%", align: 'start'},
+      { value:"staff_day_salary", text:"スタッフ日給", width: "11%", align: 'start'},
       { value:"action", text:"編集", width:"15%", align: 'center', sortable: false}
     ],
     header: [
       { value:"client", text:"クライアント", width: "40%", align: 'start'},
-      { value:"hour_salary", text:"時給", width: "30%", align: 'start'},
-      { value:"day_salary", text:"日給", width: "30%", align: 'start'},
+      { value:"hour_salary", text:"管理者時給", width: "30%", align: 'start'},
+      { value:"day_salary", text:"管理者日給", width: "30%", align: 'start'},
+    ],
+    staff_header: [
+      { value:"", text:"", width: "40%", align: 'start'},
+      { value:"staff_hour_salary", text:"スタッフ時給", width: "30%", align: 'start'},
+      { value:"staff_day_salary", text:"スタッフ日給", width: "30%", align: 'start'},
     ],
     footer : {
       itemsPerPageText:"1ページあたりの行数",
@@ -235,6 +296,8 @@ export default {
     agenda_list: [],
     hour_salary: '',
     day_salary: '',
+    staff_hour_salary: '',
+    staff_day_salary: '',
     search: '',
     search_table: '',
     edit_item: {},
@@ -245,6 +308,12 @@ export default {
     confirm_type: '',
     confirm_text: '',
     remove_item: {client:'', agenda: ''},
+    rules:{
+      required: v => v != '' || '時間の様式に合わせてください。',
+      positive: v => v > 0 || v == '' || '正の整数を指定'
+    },
+    valid: true,
+    edit_valid: true,
     toggle_key: 0,
     edit_condition: false,
     dialog: false,
@@ -253,7 +322,7 @@ export default {
   created() {
     this.root_folder = this.$store.getters.root_folder
     this.agenda_list = JSON.parse(JSON.stringify(this.agenda_items))
-    this.agenda_list.splice(0, 4);
+    this.agenda_list.splice(0, 3);
     this.items = JSON.parse(JSON.stringify(this.$store.getters.client_agenda))
     this.dialog = true;
   },
@@ -292,11 +361,6 @@ export default {
           this.confirm_dialog = true
           break
 
-        case 'delete':
-          this.confirm_text = "一括削除しますか？"
-          this.confirm_dialog = true
-          break;
-
         case 'remove':
           this.confirm_text = "削除しますか？"
           this.confirm_dialog = true
@@ -316,10 +380,6 @@ export default {
           this.applyClient()
           break
 
-        case 'delete':
-          this.deleteClient()
-          break;
-
         case 'remove':
           this.removeClient()
           break
@@ -337,6 +397,8 @@ export default {
         agenda: this.agenda,
         hour_salary: this.hour_salary,
         day_salary: this.day_salary,
+        staff_hour_salary: this.staff_hour_salary,
+        staff_day_salary: this.staff_day_salary
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
@@ -345,9 +407,15 @@ export default {
             client: this.client,
             agenda: element,
             hour_salary: this.hour_salary,
-            day_salary: this.day_salary
+            day_salary: this.day_salary,
+            staff_hour_salary: this.staff_hour_salary,
+            staff_day_salary: this.staff_day_salary
           }))
           this.agenda = []
+          this.hour_salary = ''
+          this.day_salary = ''
+          this.staff_hour_salary = ''
+          this.staff_day_salary = ''
         } else {
           this.alert(response.data.message)
         }
@@ -365,22 +433,6 @@ export default {
         }
       }.bind(this))
     },
-    deleteClient() {
-      const url = this.root_folder + "/app/adminDeleteClient.php";
-      const data = {
-        start_date: this.date.start_date,
-        end_date: this.date.end_date,
-        client: this.client,
-      }
-      axios.post(url, data).then(function(response) {
-        if (response.data.status == true) {
-          this.items = this.items.filter(element => element.client != this.client)
-          this.edit_condition = true
-        } else {
-          this.alert(response.data.message)
-        }
-      }.bind(this))
-    },
     edit(item) {
       this.edit_item = JSON.parse(JSON.stringify(item))
       this.edit_dialog = true
@@ -393,6 +445,8 @@ export default {
         agenda: this.edit_item.agenda,
         hour_salary: this.edit_item.hour_salary,
         day_salary: this.edit_item.day_salary,
+        staff_hour_salary: this.edit_item.staff_hour_salary,
+        staff_day_salary: this.edit_item.staff_day_salary,
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
@@ -417,6 +471,10 @@ export default {
         end_date: this.date.end_date,
         client: this.remove_item.client,
         agenda: this.remove_item.agenda,
+        hour_salary: this.remove_item.hour_salary,
+        day_salary: this.remove_item.day_salary,
+        staff_hour_salary: this.remove_item.staff_hour_salary,
+        staff_day_salary: this.remove_item.staff_day_salary,
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
@@ -429,38 +487,6 @@ export default {
         }
       }.bind(this))
       this.remove_dialog = false
-    },
-    enter(index) {
-      switch (index) {
-        case 1:
-          this.$refs.day.focus()
-          break;
-
-        case 2:
-          if(this.client != '' && this.agenda.length != 0) {
-            this.confirm('set')
-          }
-          break
-
-        case 3:
-          this.$refs.hour_salary.focus()
-          break;
-
-        case 4:
-          this.$refs.day_salary.focus()
-          break;
-
-        case 5:
-          if(this.edit_item.client == '' || this.edit_item.agenda == '' || this.date.start_date == '') {
-            break
-          } else {
-            this.edit_client()
-            break
-          }
-
-        default:
-          break;
-      }
     },
     alert(text) {
       this.alert_text = text;
