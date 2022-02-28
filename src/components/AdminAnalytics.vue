@@ -12,6 +12,9 @@
           <v-toolbar-title class="mx-3">
             {{ total_agenda }}
           </v-toolbar-title>
+          <v-toolbar-title class="mx-3">
+            {{ total_people }}
+          </v-toolbar-title>
           <v-btn class="success mx-2 botton_size" @click="check_dialog = true">
             <v-icon>cloud_upload</v-icon>登録
           </v-btn>
@@ -184,6 +187,7 @@ export default {
     data: [],
     analytics_data: [],
     total_agenda: 0,
+    total_people: 0,
     differ_name: [],
     differ_agenda: [],
     alert_text: '',
@@ -270,6 +274,10 @@ export default {
       if (this.differ_name.length === 0 && this.differ_agenda.length === 0 && this.$store.getters.fetch_analytic_events.length !== 0) {
         this.analytics_data = this.$store.getters.fetch_analytic_events
         this.total_agenda = this.analytics_data.length + "件"
+        const total_people = this.analytics_data.reduce((total, schedule) => {
+          return total + parseInt(schedule.overlap);
+        }, 0);
+        this.total_people = total_people + "人"
         this.get_salary()
         return
       }
@@ -288,6 +296,10 @@ export default {
       }
       this.analytics_data = fetch_data
       this.total_agenda = this.analytics_data.length + "件"
+      const total_people = this.analytics_data.reduce((total, schedule) => {
+        return total + parseInt(schedule.overlap);
+      }, 0);
+      this.total_people = total_people + "人"
       this.get_salary()
     },
     upload() {
