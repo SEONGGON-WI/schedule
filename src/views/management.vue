@@ -431,7 +431,7 @@ export default {
       let agenda_items = []
       data.map((element, index) => {
         name_items[index] = element.name
-          agenda_items[index] = element.agenda
+        agenda_items[index] = element.agenda
       })
       const name_items_set = new Set(name_items)
       const agenda_items_set = new Set(agenda_items)
@@ -441,7 +441,7 @@ export default {
       this.agenda_items = [...agenda_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
       })
-      this.agenda_items.splice(this.agenda_items.indexOf(''),1)
+      // this.agenda_items.splice(this.agenda_items.indexOf(''),1)
       this.agenda_items.unshift('空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
     },
     async get_client() {
@@ -512,8 +512,7 @@ export default {
     },
     edit_close(event) {
       if(event == true) {
-        this.$store.commit('set_fetch_calendar_events', [])
-        this.search()
+        this.reload()
       }
       this.edit_show = false
     },
