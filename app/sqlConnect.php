@@ -134,9 +134,9 @@ class mysqlConnect {
   }
 
   public function getCsv($start_date, $end_date) {
-    $sql = "SELECT status, name, client, agenda, overlap, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense, COUNT(status) AS paid, COUNT(name) AS cnt FROM schedule ";
-    $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
-    $sql = $sql."GROUP BY status, name, client, agenda, overlap, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
+    $sql = "SELECT status, name, date, client, agenda, overlap, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, total_time, staff_expense FROM schedule ";
+    $sql = $sql."WHERE date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_day_salary != '' ";
+    // $sql = $sql."GROUP BY status, name, client, agenda, overlap, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, admin_expense, staff_hour_salary, staff_day_salary, staff_expense ";
     $sql = $sql."ORDER BY client, agenda, date, name";
 
     $result = $this->mysql->query($sql);
