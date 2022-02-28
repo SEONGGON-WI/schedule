@@ -19,16 +19,8 @@ try {
   @fwrite($log,"$time, adminRemoveClient, $client, $agenda, $start_date\n");
   @fclose($log);
   $dbConnect = new mysqlConnect();
-  $sql = "UPDATE schedule SET admin_hour_salary = '', admin_day_salary = '', client = '' WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
+  $sql = "UPDATE schedule SET admin_hour_salary = '', admin_day_salary = '', staff_hour_salary = '', staff_day_salary = '' client = '' WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
   $dbConnect->mysql->query($sql);
-  if ($staff_hour_salary != '') {
-    $hour = "UPDATE schedule SET staff_hour_salary = '' WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
-    $dbConnect->mysql->query($hour);
-  }
-  if ($staff_day_salary != '') {
-    $day = "UPDATE schedule SET staff_day_salary = '' WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
-    $dbConnect->mysql->query($day);
-  }
   $del = "DELETE FROM client WHERE client = '$client' AND agenda = '$agenda' AND date = '$start_date'";
   $dbConnect->mysql->query($del);
   $result = json_encode(array('status' => true));
