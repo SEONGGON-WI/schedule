@@ -54,7 +54,7 @@ try {
     if ($event != []) {
       $index = 0;
       foreach ($event as $values) {
-        if ($values['_id'] == '') {
+        if ($values['_id'] == '' || $values['_id'] == null) {
           $sql = "INSERT INTO schedule ( name , date, overlap ) VALUES ( '{$name}', '{$values['date']}', '1' )";
           $dbConnect->mysql->query($sql);
           $index++;

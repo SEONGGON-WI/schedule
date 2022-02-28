@@ -498,7 +498,7 @@ export default {
     valid: true,
     rules:{
       required: v => ((v.length == 4 || v.length == 5) && v > 0  && v < 2400) || v == '' || '時間入力',
-      positive: v => v > 0 || v == '' || '正の整数を指定'
+      positive: v => v >= 0 || v == '' || '正の整数を指定'
     },
     alert_text: '',
     alert_show: false,
