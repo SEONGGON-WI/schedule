@@ -12,7 +12,8 @@ const routes = [
   // {path: '/staff', name: 'staff', component: Staff},
   // {path: '/admin', name: 'admin', component: Admin},
   {path: '/staff', name: 'staff', component: () => import ('@/views/Staff.vue')},
-  {path: '/admin', name: 'admin', component: () => import ('@/views/Admin.vue')},
+  {path: '/admin', name: 'staff', component: () => import ('@/views/Staff.vue')},
+  {path: '/management', name: 'admin', component: () => import ('@/views/management.vue')},
   {path: '/master', name: 'master', component: Master},
 
   // {path: '/admin', name: 'admin', component: () => import(/* webpackChunkName: "about" */ '../views/Admin.vue')},
