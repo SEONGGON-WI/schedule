@@ -162,7 +162,12 @@ export default {
       const data = {}
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
-          this.items = response.data.data.filter(element => element.access_time >= this.date.start_date && element.access_time <= this.date.end_date)
+          const event = this.$store.getters.calendar_events.map(element => element.name)
+          this.items = response.data.data.filter(element => {
+            if (event.find(name => name == element.name) !== undefined) {
+              return element.name
+            }
+          })
         } else {
           this.items = []
         }
