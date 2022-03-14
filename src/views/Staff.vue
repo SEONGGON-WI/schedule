@@ -190,6 +190,7 @@ export default {
     alert_type: '',
     alert_text: '',
     search_condition: false,
+    month: '',
     today: '',
     dialog: false,
     root_folder: '/schedule',
@@ -200,10 +201,10 @@ export default {
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
     const day = ("0" + date.getDate()).slice(-2);
+    this.month = year + "-" + month
     this.today = year + "-" + month + "-" + day;
     this.calendar_date = year + "年 " + month + "月";
     this.setToday();
-
     if (this.getCookie("username")) {
       this.input.username = this.getCookie("username")
     }
@@ -235,6 +236,9 @@ export default {
       this.search()
     },
     select({ date }) {
+      if (date <= this.month) {
+        return
+      }
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
         if (this.calendar_events[index].agenda == '') {
