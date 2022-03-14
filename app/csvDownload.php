@@ -13,7 +13,7 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"日付","クライアント","案件名","名前","開始","終了","時間",,"時給(税抜)","時間(30分=0,5)","合計","経費","総合計","備考",,"人数",,"時給","時間","稼働合計","経費","日払い","総支払い額","利益"'. "\r\n";
+    $csv = '"日付","クライアント","案件名","名前","開始","終了","時間","時間(30分=0,5)","時給","日給","経費","合計","人数",,"時間(30分=0,5)","時給","日給","合計","経費","日払い","支払い額","利益"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
@@ -61,6 +61,9 @@ try {
       if ($value['admin_hour_salary'] != '' ) {
         $value['admin_hour_salary'] = number_format((int)$value['admin_hour_salary']);
       }
+      if ($value['admin_day_salary'] != '' ) {
+        $value['admin_day_salary'] = number_format((int)$value['admin_day_salary']);
+      }
       if ($admin_total_salary != '' ) {
         $admin_total = $admin_total_salary;
         $admin_total_salary = number_format((int)$admin_total_salary);
@@ -72,6 +75,9 @@ try {
 
       if ($value['staff_hour_salary'] != '' ) {
         $value['staff_hour_salary'] = number_format((int)$value['staff_hour_salary']);
+      }
+      if ($value['staff_day_salary'] != '' ) {
+        $value['staff_day_salary'] = number_format((int)$value['staff_day_salary']);
       }
       if ($staff_total_salary != '' ) {
         $staff_total = $staff_total_salary;
@@ -86,7 +92,7 @@ try {
         $paid = '';
       } else {
         $staff_total = $staff_total - (1000 * (int)$value['overlap']);
-        $paid = number_format(1000 * (int)$value['overlap']);
+        $paid =  number_format(-1000);
       }
       $profit = number_format($admin_total - $staff_total);
       $admin_total = number_format((int)$admin_total);
@@ -100,20 +106,18 @@ try {
           . $value['start_time'] . '","'
           . $value['end_time'] . '","'
           . $admin_clock_time . '","'
-          . '","'
-          . $value['admin_hour_salary'] . '","'
           . $value['admin_total_time'] . '","'
-          . $admin_total_salary . '","'
-          . $admin_total_expense . '","'
+          . $value['admin_hour_salary'] . '","'
+          . $value['admin_day_salary'] . '","'
+          . $value['admin_expense'] . '","'
           . $admin_total . '","'
-          . '","'
-          . '","'
           . $value['overlap'] . '","'
           . '","'
-          . $value['staff_hour_salary'] . '","'
           . $value['total_time'] . '","'
+          . $value['staff_hour_salary'] . '","'
+          . $value['staff_day_salary'] . '","'
           . $staff_total_salary . '","'
-          . $staff_total_expense . '","'
+          . $value['staff_expense'] . '","'
           . $paid . '","'
           . $staff_total . '","'
           . $profit . '"'
