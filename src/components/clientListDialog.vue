@@ -470,11 +470,7 @@ export default {
         start_date: this.date.start_date,
         end_date: this.date.end_date,
         client: this.remove_item.client,
-        agenda: this.remove_item.agenda,
-        hour_salary: this.remove_item.hour_salary,
-        day_salary: this.remove_item.day_salary,
-        staff_hour_salary: this.remove_item.staff_hour_salary,
-        staff_day_salary: this.remove_item.staff_day_salary,
+        agenda: this.remove_item.agenda
       }
       axios.post(url, data).then(function(response) {
         if (response.data.status == true) {
