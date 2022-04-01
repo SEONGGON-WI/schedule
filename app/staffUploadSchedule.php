@@ -53,11 +53,21 @@ try {
     }
     if ($event != []) {
       $index = 0;
+      $dbConnect = new mysqlConnect();
+      $data = $dbConnect->getEditSchedule($name, $start_date, $end_date);
       foreach ($event as $values) {
-        if ($values['_id'] == '' || $values['_id'] == null) {
+        $duplicate = false;
+        if (!empty($data)) { 
+          foreach ($data as $element) {
+            if ($element['date'] == $values['date']) {
+              $duplicate = true;
+            }
+          }
+        }
+        if (!$duplicate) {
+          $index++;
           $sql = "INSERT INTO schedule ( name , date, overlap ) VALUES ( '{$name}', '{$values['date']}', '1' )";
           $dbConnect->mysql->query($sql);
-          $index++;
         }
       }
       if ($index == 0) {
