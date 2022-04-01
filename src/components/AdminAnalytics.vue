@@ -80,6 +80,7 @@
         <v-col cols="4" class="name_agenda pt-3 pr-2">
           {{ tab == 1 ? paid_total_salary : '' }}
           {{ tab == 1 ? paid_status : '' }}
+          {{ tab == 1 ? paid_calculate : '' }}
         </v-col>
       </v-row>
       <v-tabs v-model="tab" grow>
@@ -198,6 +199,7 @@ export default {
     pay_total_salary: '',
     paid_total_salary: '',
     paid_status: '',
+    paid_calculate: '',
     total_salary: '',
     admin_total_salary: '',
     upload_condition: false,
@@ -226,6 +228,10 @@ export default {
     this.agenda_items = [...agenda_items_set].sort(function (a, b) {
       return a.localeCompare(b, 'ja')
     })
+    const index = this.agenda_items.indexOf('')
+    if (index != -1) {
+      this.agenda_items.splice(this.agenda_items.indexOf(''),1)
+    }
     this.differ_agenda = this.agenda.filter(obj => (obj != '' && obj != '空きスケジュール' && obj != 'スタッフ日給未入力' && obj != '管理者日給未入力'))
     this.differ_name = this.name
     this.$store.commit('set_fetch_analytic_events', [])
@@ -261,6 +267,7 @@ export default {
       this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.paid_calculate = " = " + parseInt(paid_total_salary-paid_status).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     get_date(date) {
       const day = date.split("-")
