@@ -266,8 +266,13 @@ export default {
       this.admin_total_salary = "￥" + admin_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      this.paid_calculate = " = " + parseInt(paid_total_salary-paid_status).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      if (paid_status != 0) {
+        this.paid_status = " - " + paid_status.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        this.paid_calculate = " = " + parseInt(paid_total_salary-paid_status).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      } else {
+        this.paid_status = ""
+        this.paid_calculate = ""
+      }
     },
     get_date(date) {
       const day = date.split("-")
