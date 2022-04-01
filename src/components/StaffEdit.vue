@@ -201,8 +201,8 @@ export default {
     agenda: '',
     valid: true,
     rules:{
-      required: v => ((v.length == 4 || v.length == 5) && v > 0  && v < 2400) || v == '' || '時間の様式に合わせてください。',
-      positive: v => v > 0 || v == '' || '正の整数を指定'
+      required: v => (v.length == 4 || v.length == 5) || v == '' || '時間の様式に合わせてください。',
+      positive: v => v >= 0 || v == '' || '正の整数を指定'
     },
     dialog: false,
     salary_change: 'hour',
@@ -288,7 +288,7 @@ export default {
     edit() {
       var condition = true
       this.items.map(item => {
-        if ((item.start_time || item.end_time) && (item.start_time.length != 4 || item.end_time.length != 4)) {
+        if ((item.start_time || item.end_time) && (!(item.start_time.length == 4 || item.start_time.length == 5) && !(item.end_time.length == 4 || item.end_time.length == 5))) {
           condition = false
         }
         item.start_time = item.start_time == '' ? '' : this.make_colon(item.start_time)
