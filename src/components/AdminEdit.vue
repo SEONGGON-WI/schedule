@@ -9,6 +9,9 @@
           <v-btn icon text class="mx-2 pl-2" color="black darken-2" @click="prevDate"><v-icon>arrow_back_ios</v-icon></v-btn>
           <v-btn icon text class="mx-2 pl-2" color="black darken-2" @click="nextDate"><v-icon>arrow_forward_ios</v-icon></v-btn>
           <v-spacer></v-spacer>
+          <v-toolbar-title class="mx-3">
+            {{ total_people }}
+          </v-toolbar-title>
           <v-btn class="mx-2 botton_size" color="yellow darken-4" @click="add_schedule">
             <v-icon>add</v-icon>登録
           </v-btn>
@@ -497,7 +500,7 @@ export default {
     tab_item: ['管理者', 'スタッフ'],
     valid: true,
     rules:{
-      required: v => ((v.length == 4 || v.length == 5) && v > 0  && v < 2400) || v == '' || '時間入力',
+      required: v => (v.length == 4 || v.length == 5) || v == '' || '時間入力',
       positive: v => v >= 0 || v == '' || '正の整数を指定'
     },
     alert_text: '',
@@ -534,6 +537,16 @@ export default {
     this.dialog = true;
   },
   computed: {
+    total_people() {
+      const total_people = this.items.reduce((total, schedule) => {
+        if (/^-?\d+$/.test(schedule.overlap)) {
+          return total + parseInt(schedule.overlap);
+        } else {
+          return total
+        }
+      }, 0);
+      return total_people + '人'
+    }
   },
   methods: {
     get_admin_day_salary(item) {
