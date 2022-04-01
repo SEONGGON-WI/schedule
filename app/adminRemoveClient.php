@@ -5,10 +5,6 @@ $start_date = $response['start_date'];
 $end_date = $response['end_date'];
 $client = $response['client'];
 $agenda = $response['agenda'];
-$hour_salary = $response['hour_salary'];
-$day_salary = $response['day_salary'];
-$staff_hour_salary = $response['staff_hour_salary'];
-$staff_day_salary = $response['staff_day_salary'];
 include 'sqlConnect.php';
 try {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
@@ -19,7 +15,7 @@ try {
   @fwrite($log,"$time, adminRemoveClient, $client, $agenda, $start_date\n");
   @fclose($log);
   $dbConnect = new mysqlConnect();
-  $sql = "UPDATE schedule SET admin_hour_salary = '', admin_day_salary = '', staff_hour_salary = '', staff_day_salary = '' client = '' WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
+  $sql = "UPDATE schedule SET admin_hour_salary = '', admin_day_salary = '', staff_hour_salary = '', staff_day_salary = '', client = '' WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
   $dbConnect->mysql->query($sql);
   $del = "DELETE FROM client WHERE client = '$client' AND agenda = '$agenda' AND date = '$start_date'";
   $dbConnect->mysql->query($del);
