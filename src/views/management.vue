@@ -441,7 +441,10 @@ export default {
       this.agenda_items = [...agenda_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
       })
-      // this.agenda_items.splice(this.agenda_items.indexOf(''),1)
+      const index = this.agenda_items.indexOf('')
+      if (index != -1) {
+        this.agenda_items.splice(this.agenda_items.indexOf(''),1)
+      }
       this.agenda_items.unshift('空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
     },
     async get_client() {
