@@ -44,7 +44,9 @@ try {
     if ($index == 0) {
       $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。')); 
     } else {
-      $result = json_encode(array('status' => true));  
+      $dbConnect = new mysqlConnect();
+      $data = $dbConnect->getEdit($date);
+      $result = json_encode(array('status' => true, 'data' => $data));  
     }
   } else {
     $result = json_encode(array('status' => true));  

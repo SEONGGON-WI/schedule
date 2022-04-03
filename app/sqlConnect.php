@@ -74,19 +74,8 @@ class mysqlConnect {
     return $table;
   }
 
-  public function getEdit($client, $name, $agenda, $date) {
-    $condition = "date = '$date' AND ";
-    if ($client != '') {
-      $condition = $condition."client = '$client' AND ";
-    }
-    if ($name != '' && $name != '全員') {
-      $condition = $condition."name = '$name' AND ";
-    }
-    if ($agenda != '' && $agenda != '空きスケジュール' && $agenda != 'スタッフ日給未入力' && $agenda != '管理者日給未入力') {
-      $condition = $condition."agenda = '$agenda' AND ";
-    }
-    $condition = substr($condition, 0, -4);
-    $query = "SELECT * FROM schedule WHERE $condition ORDER BY agenda, admin_day_salary DESC, name";
+  public function getEdit($date) {
+    $query = "SELECT * FROM schedule WHERE date = '$date' ORDER BY date, name";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
