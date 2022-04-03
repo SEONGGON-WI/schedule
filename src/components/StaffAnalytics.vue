@@ -79,15 +79,17 @@ export default {
   },
   computed: {
     get_total_salary() {
-      const salary = this.items.reduce((stack, obj) => {
-        if (obj.staff_day_salary != '') {
-          var expense = obj.staff_expense ? parseInt(obj.staff_expense) : 0
-          return stack + parseInt(obj.staff_day_salary) + expense
-        } else {
-          return stack
+      var total_salary = 0
+      var total_expense = 0
+      this.items.map(item => {
+        if (item.staff_day_salary) {
+          total_salary = total_salary + parseInt(item.staff_day_salary)
         }
-      }, 0)
-      return "￥" + salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if (item.staff_expense) {
+          total_expense = total_expense + parseInt(item.staff_expense)
+        }
+      })
+      return "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " + " + total_expense.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " = " + (total_salary + total_expense).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
   },
   methods: {
