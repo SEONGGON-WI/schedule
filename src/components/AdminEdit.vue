@@ -617,21 +617,22 @@ export default {
           }
         } else {
           this.edit_condition = true
-          const empty_agenda = this.agenda.includes('空きスケジュール')
-          const empty_staff = this.agenda.includes('スタッフ日給未入力')
-          const empty_admin = this.agenda.includes('管理者日給未入力')
-          const agenda = this.agenda.filter(element => element != '空きスケジュール' && element != 'スタッフ日給未入力' && element != '管理者日給未入力')
-          var fetch_data = this.$store.getters.calendar_events.filter(element => !((element.date == this.date)
-                                                                        && (this.client.length === 0 ? true : this.client.includes(element.client)) 
-                                                                        && (this.name.length === 0 ? true : this.name.includes(element.name)) 
-                                                                        && (empty_agenda || empty_staff || empty_admin 
-                                                                            ? ((empty_agenda ? (element.agenda == '' ? true : false) : false) 
-                                                                              || (empty_staff ? (element.agenda != '' && element.staff_day_salary == '' ? true : false) : false) 
-                                                                              || (empty_admin ? (element.agenda != '' && element.admin_day_salary == '' ? true : false) : false)) 
-                                                                            : true) 
-                                                                        && (agenda.length === 0 ? true : agenda.includes(element.agenda))))
-          if (this.items.length !== 0) {
-            fetch_data = fetch_data.concat(this.items)
+          // const empty_agenda = this.agenda.includes('空きスケジュール')
+          // const empty_staff = this.agenda.includes('スタッフ日給未入力')
+          // const empty_admin = this.agenda.includes('管理者日給未入力')
+          // const agenda = this.agenda.filter(element => element != '空きスケジュール' && element != 'スタッフ日給未入力' && element != '管理者日給未入力')
+          // var fetch_data = this.$store.getters.calendar_events.filter(element => !((element.date == this.date)
+          //                                                               && (this.client.length === 0 ? true : this.client.includes(element.client)) 
+          //                                                               && (this.name.length === 0 ? true : this.name.includes(element.name)) 
+          //                                                               && (empty_agenda || empty_staff || empty_admin 
+          //                                                                   ? ((empty_agenda ? (element.agenda == '' ? true : false) : false) 
+          //                                                                     || (empty_staff ? (element.agenda != '' && element.staff_day_salary == '' ? true : false) : false) 
+          //                                                                     || (empty_admin ? (element.agenda != '' && element.admin_day_salary == '' ? true : false) : false)) 
+          //                                                                   : true) 
+          //                                                               && (agenda.length === 0 ? true : agenda.includes(element.agenda))))
+          var fetch_data = this.$store.getters.calendar_events.filter(element => element.date != this.date)
+          if (response.data.data) {
+            fetch_data = fetch_data.concat(response.data.data)
           }
           this.$store.commit('set_calendar_events', fetch_data)
         }
@@ -702,6 +703,20 @@ export default {
     },
     add() {
       const data = JSON.parse(JSON.stringify(this.add_item))
+
+      const client = this.$store.getters.client_agenda
+      data.start_time = data.start_time == '' ? '' : this.make_colon(data.start_time)
+      data.end_time = data.end_time == '' ? '' :  this.make_colon(data.end_time)
+      data.admin_total_time = data.admin_total_time == '' ? '' : parseFloat(data.admin_total_time).toFixed(2)
+      data.total_time = data.total_time == '' ? '' : parseFloat(data.total_time).toFixed(2)
+      var find = client.find(obj => obj.agenda == data.agenda)
+      if (find != undefined) {
+        data.client = find.client
+        data.admin_hour_salary = data.admin_hour_salary == '' ? find.hour_salary : data.admin_hour_salary
+        data.admin_day_salary = data.admin_day_salary == '' ?  find.day_salary : data.admin_day_salary
+        data.staff_hour_salary = data.staff_hour_salary == '' ? find.staff_hour_salary : data.staff_hour_salary
+        data.staff_day_salary = data.staff_day_salary == '' ?  find.staff_day_salary : data.staff_day_salary
+      }
       this.items.push(data)
       this.add_dialog = false
     },
