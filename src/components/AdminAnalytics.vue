@@ -208,14 +208,14 @@ export default {
     this.root_folder = this.$store.getters.root_folder
     this.data = JSON.parse(JSON.stringify(this.$store.getters.calendar_events))
     this.data = this.data.filter(element => (this.client.length === 0 ? true : this.client.includes(element.client)))
-    this.data = this.data.filter(obj => obj.agenda != '' && (obj.staff_day_salary != '' || obj.admin_day_salary != ''));
+    this.data = this.data.filter(obj => obj.agenda !== '' && (obj.staff_day_salary !== '' || obj.admin_day_salary !== ''));
     let name_items = []
     let agenda_items = []
     this.data.map(element => {
-      element.admin_day_salary = element.admin_day_salary == '' ? '' : element.admin_day_salary * element.overlap
-      element.admin_expense = element.admin_expense == '' ? '' : element.admin_expense * element.overlap
-      element.staff_day_salary = element.staff_day_salary == '' ? '' : element.staff_day_salary * element.overlap
-      element.staff_expense = element.staff_expense == '' ? '' : element.staff_expense * element.overlap
+      element.admin_day_salary = element.admin_day_salary === '' ? '' : element.admin_day_salary * element.overlap
+      element.admin_expense = element.admin_expense === '' ? '' : element.admin_expense * element.overlap
+      element.staff_day_salary = element.staff_day_salary === '' ? '' : element.staff_day_salary * element.overlap
+      element.staff_expense = element.staff_expense === '' ? '' : element.staff_expense * element.overlap
 
       name_items = name_items.concat(element.name)
       agenda_items = agenda_items.concat(element.agenda)
