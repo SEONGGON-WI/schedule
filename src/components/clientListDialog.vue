@@ -310,7 +310,7 @@ export default {
     remove_item: {client:'', agenda: ''},
     rules:{
       required: v => v != '' || '時間の様式に合わせてください。',
-      positive: v => v > 0 || v == '' || '正の整数を指定'
+      positive: v => v >= 0 || v == '' || '正の整数を指定'
     },
     valid: true,
     edit_valid: true,
