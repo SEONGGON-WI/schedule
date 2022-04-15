@@ -99,6 +99,14 @@
             disable-pagination
             disable-sort
           >
+            <template v-slot:item.tax_status="{ item }">
+              <v-checkbox 
+                class="checkbox mt-4 mb-4"
+                hide-details
+               :input-value="item.tax_status == '1' ? true : false" 
+               @change="set_tax_status(item)"
+              ></v-checkbox>
+            </template>
             <template v-slot:item.date="{ item }">
               <div>{{ get_date(item.date) }}</div>
             </template>
@@ -161,6 +169,7 @@ export default {
   ],
   data: () => ({
     header: [
+      { value:"tax_status", text:"", width: "5%", align: 'center'},
       { value:"date", text:"日付", width: "10%", align: 'center'},
       { value:"client", text:"顧客", width: "10%", align: 'start'},
       { value:"agenda", text:"案件", width: "15%", align: 'start'},
@@ -319,6 +328,8 @@ export default {
       let data = []
       this.analytics_data.map((element, index) => {
         data[index] = {
+          _id: element._id,
+          tax_status: element.tax_status,
           status: element.status,
           name: element.name,
           date: element.date,
@@ -351,6 +362,9 @@ export default {
     set_status(item) {
       item.status = item.status == '1' ? '0' : '1'
       this.get_salary()
+    },
+    set_tax_status(item) {
+      item.tax_status = item.tax_status == '1' ? '0' : '1'
     },
     admin_background(item) {
       return item.admin_day_salary == '' ? 'empty_salary' : 'filled_salary' ;
