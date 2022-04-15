@@ -16,8 +16,10 @@ try {
   $index = 0;
   if ($event != []) {
     foreach ($event as $values) {
-      $sql = "UPDATE schedule SET status = '{$values['status']}' WHERE name = '{$values['name']}' AND date = '{$values['date']}' AND _id = '{$values['id']}'";
+      $sql = "UPDATE schedule SET status = '{$values['status']}' WHERE name = '{$values['name']}' AND date = '{$values['date']}' AND _id = '{$values['_id']}'";
       $dbConnect->mysql->query($sql);
+      $tax_sql = "UPDATE schedule SET tax_status = '{$values['tax_status']}' WHERE name = '{$values['name']}' AND date = '{$values['date']}' AND _id = '{$values['_id']}'";
+      $dbConnect->mysql->query($tax_sql);
       $index ++;
     }
     if ($index == 0) {
