@@ -13,7 +13,7 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"日付","クライアント","案件名","名前","開始","終了","時間","時間(30分=0,5)","時給","日給","経費","合計","人数",,"時間(30分=0,5)","時給","日給","合計","経費","日払い","支払い額","利益"'. "\r\n";
+    $csv = '"日付","クライアント","案件名","名前","開始","終了","時間","時間(30分=0.5)","時給","人数","合計","非課税","経費","総合計",,"時間(30分=0.5)","時給","人数","合計","非課税","経費","日払い","支払い額","利益"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     foreach ($data as $value) {
@@ -33,15 +33,36 @@ try {
         $admin_clock_time = '';
       }
 
-      if ($value['admin_day_salary']) {
-        $admin_total_salary = (int)$value['admin_day_salary'] * (int)$value['overlap'];
+      $admin_total_salary = '';
+      $admin_non_tax_total_salary = '';
+      if ($value['tax_status'] != 1) {
+        if ($value['admin_day_salary']) {
+          $admin_total_salary = (int)$value['admin_day_salary'] * (int)$value['overlap'];
+        } else {
+          $admin_total_salary = '';
+        }
       } else {
-        $admin_total_salary = '';
+        if ($value['admin_day_salary']) {
+          $admin_non_tax_total_salary = (int)$value['admin_day_salary'] * (int)$value['overlap'];
+        } else {
+          $admin_non_tax_total_salary = '';
+        }
       }
-      if ($value['staff_day_salary']) {
-        $staff_total_salary = (int)$value['staff_day_salary'] * (int)$value['overlap'];
+
+      $staff_total_salary = '';
+      $staff_non_tax_total_salary = '';
+      if ($value['tax_status'] != 1) {
+        if ($value['staff_day_salary'] != '') {
+          $staff_total_salary = (int)$value['staff_day_salary'] * (int)$value['overlap'];
+        } else {
+          $staff_total_salary = '';
+        }
       } else {
-        $staff_total_salary = '';
+        if ($value['staff_day_salary'] != '') {
+          $staff_non_tax_total_salary = (int)$value['staff_day_salary'] * (int)$value['overlap'];
+        } else {
+          $staff_non_tax_total_salary = '';
+        }
       }
 
       if ($value['admin_expense']) {
@@ -64,10 +85,15 @@ try {
       if ($value['admin_day_salary'] != '' ) {
         $value['admin_day_salary'] = number_format((int)$value['admin_day_salary']);
       }
-      if ($admin_total_salary != '' ) {
+
+      if ($admin_total_salary != '') {
         $admin_total = $admin_total_salary;
         $admin_total_salary = number_format((int)$admin_total_salary);
+      } else if ($admin_non_tax_total_salary != '') {
+        $admin_total = $admin_non_tax_total_salary;
+        $admin_non_tax_total_salary = number_format((int)$admin_non_tax_total_salary);
       }
+      
       if ($admin_total_expense != '' ) {
         $admin_total = $admin_total + $admin_total_expense;
         $admin_total_expense = number_format((int)$admin_total_expense);
@@ -79,10 +105,15 @@ try {
       if ($value['staff_day_salary'] != '' ) {
         $value['staff_day_salary'] = number_format((int)$value['staff_day_salary']);
       }
-      if ($staff_total_salary != '' ) {
+
+      if ($staff_total_salary != '') {
         $staff_total = $staff_total_salary;
         $staff_total_salary = number_format((int)$staff_total_salary);
+      } else if ($admin_non_tax_total_salary != '') {
+        $staff_total = $staff_non_tax_total_salary;
+        $staff_non_tax_total_salary = number_format((int)$staff_non_tax_total_salary);
       }
+
       if ($staff_total_expense != '' ) {
         $staff_total = $staff_total + $staff_total_expense;
         $staff_total_expense = number_format((int)$staff_total_expense);
@@ -108,16 +139,18 @@ try {
           . $admin_clock_time . '","'
           . $value['admin_total_time'] . '","'
           . $value['admin_hour_salary'] . '","'
-          . $value['admin_day_salary'] . '","'
-          . $value['admin_expense'] . '","'
-          . $admin_total . '","'
           . $value['overlap'] . '","'
+          . $admin_total_salary . '","'
+          . $admin_non_tax_total_salary . '","'
+          . $admin_total_expense . '","'
+          . $admin_total . '","'
           . '","'
           . $value['total_time'] . '","'
           . $value['staff_hour_salary'] . '","'
-          . $value['staff_day_salary'] . '","'
+          . $value['overlap'] . '","'
           . $staff_total_salary . '","'
-          . $value['staff_expense'] . '","'
+          . $staff_non_tax_total_salary . '","'
+          . $staff_total_expense . '","'
           . $paid . '","'
           . $staff_total . '","'
           . $profit . '"'
