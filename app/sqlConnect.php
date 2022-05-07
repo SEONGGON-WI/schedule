@@ -5,6 +5,7 @@ class mysqlConnect {
   protected $user = 'kusimusou_admin';
   protected $password = 'Nao0919722832';
   protected $dbName = 'kusimusou_schedule';
+  // protected $dbName = 'kusimusou_management';
 
   public function __construct() {
     $this->mysql = new mysqli($this->host, $this->user, $this->password, $this->dbName);
@@ -27,7 +28,7 @@ class mysqlConnect {
   }
 
   public function getSchedule($name, $start_date, $end_date) {
-    $query = "SELECT _id, name, date, agenda, start_time, end_time, total_time, admin_total_time, staff_hour_salary, staff_day_salary, staff_expense FROM schedule WHERE name = '$name' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
+    $query = "SELECT _id, name, date, agenda, start_time, end_time, total_time, admin_total_time, admin_hour_salary, admin_day_salary, staff_hour_salary, staff_day_salary, staff_expense FROM schedule WHERE name = '$name' AND date >= '$start_date' AND date <= '$end_date' ORDER BY date";
     $result = $this->mysql->query($query);
     if ($result->num_rows > 0) {
       $i = 0;
@@ -195,7 +196,7 @@ class mysqlConnect {
     $query = "CREATE TABLE IF NOT EXISTS schedule (";
     $query = $query."_id INT auto_increment ,";
     $query = $query."status BOOLEAN not null,";
-    $query = $query."tex_status BOOLEAN not null,";
+    $query = $query."tax_status BOOLEAN not null,";
     $query = $query."name varchar(32) not null,";
     $query = $query."date DATE not null,";
     $query = $query."client TEXT not null,";
