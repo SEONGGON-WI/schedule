@@ -170,15 +170,15 @@ export default {
   data: () => ({
     header: [
       { value:"tax_status", text:"", width: "5%", align: 'center'},
-      { value:"date", text:"日付", width: "10%", align: 'center'},
+      { value:"date", text:"日付", width: "8%", align: 'center'},
       { value:"client", text:"顧客", width: "10%", align: 'start'},
-      { value:"agenda", text:"案件", width: "15%", align: 'start'},
-      { value:"name", text:"名前", width: "15%", align: 'start'},
+      { value:"agenda", text:"案件", width: "14%", align: 'start'},
+      { value:"name", text:"名前", width: "14%", align: 'start'},
       { value:"overlap", text:"人数", width: "10%", align: 'center'},
       { value:"admin_total_time", text:"時間", width: "10%", align: 'center'},
       { value:"admin_hour_salary", text:"時給", width: "10%", align: 'center'},
       { value:"admin_day_salary", text:"合計", width: "10%", align: 'center'},
-      { value:"admin_expense", text:"経費", width: "10%", align: 'center'},
+      { value:"admin_expense", text:"経費", width: "9%", align: 'center'},
     ],
     headers: [
       { value:"status", text:"", width: "5%", align: 'center'},

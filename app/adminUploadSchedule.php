@@ -11,8 +11,8 @@ try {
     $client = [];
   }
   if ($client != []) {
-    $sql = "UPDATE schedule SET client = '' WHERE date >= '$start_date' AND date <= '$end_date'";
-    $dbConnect->mysql->query($sql);
+    // $sql = "UPDATE schedule SET client = '' WHERE date >= '$start_date' AND date <= '$end_date'";
+    // $dbConnect->mysql->query($sql);
     foreach ($client as $values) {
       $client_sql = "UPDATE schedule SET client = '{$values['client']}' WHERE agenda = '{$values['agenda']}' AND date >= '$start_date' AND date <= '$end_date'";
       $dbConnect->mysql->query($client_sql);
