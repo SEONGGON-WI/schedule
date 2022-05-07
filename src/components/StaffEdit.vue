@@ -250,6 +250,9 @@ export default {
         time = (end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 - 1
         time = Number(time).toFixed(2)
         admin_time = (Number(parseFloat(time) + 1).toFixed(2))
+        if (item.admin_hour_salary != '') {
+          item.admin_day_salary = Math.floor(item.admin_hour_salary * admin_time)
+        }
         var time_difference = parseFloat(item.total_time) - parseFloat(time)
         if (time_difference <= 2 || time_difference >= -2) {
           item.admin_total_time = Number(item.admin_total_time).toFixed(2)
