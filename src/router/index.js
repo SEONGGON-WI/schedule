@@ -12,7 +12,7 @@ const routes = [
   // {path: '/admin', name: 'admin', component: Admin},
   {path: '/staff', name: 'staff', component: () => import ('@/views/Staff.vue')},
   {path: '/admin', redirect: {name: 'staff'}},
-  {path: '/master', name: 'master', component: () => import ('@/views/master.vue')},
+  {path: '/management', name: 'admin', component: () => import ('@/views/management.vue')},
 
   // {path: '/admin', name: 'admin', component: () => import(/* webpackChunkName: "about" */ '../views/Admin.vue')},
 // route level code-splitting
