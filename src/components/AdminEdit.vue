@@ -237,7 +237,7 @@
               スケジュール登録
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn class="mx-2 botton_size" color="yellow darken-4" @click="add" :disabled="!add_valid || add_item.name == '' || add_item.agenda == ''">
+            <v-btn class="mx-2 botton_size" color="yellow darken-4" @click="add" :disabled="!add_valid || add_item.name == ''">
               <v-icon>add</v-icon>登録
             </v-btn>
             <v-btn class="error mx-2 botton_size" @click="add_dialog = false">
@@ -589,17 +589,26 @@ export default {
     async edit() {
       const client = this.$store.getters.client_agenda
       this.items.map(element => {
-        element.start_time = element.start_time == '' ? '' : this.make_colon(element.start_time)
-        element.end_time = element.end_time == '' ? '' :  this.make_colon(element.end_time)
-        element.admin_total_time = element.admin_total_time == '' ? '' : parseFloat(element.admin_total_time).toFixed(2)
-        element.total_time = element.total_time == '' ? '' : parseFloat(element.total_time).toFixed(2)
-        var find = client.find(obj => obj.agenda == element.agenda)
-        if (find != undefined) {
-          element.client = find.client
-          element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
-          element.admin_day_salary = element.admin_day_salary == '' ?  find.day_salary : element.admin_day_salary
-          element.staff_hour_salary = element.staff_hour_salary == '' ? find.staff_hour_salary : element.staff_hour_salary
-          element.staff_day_salary = element.staff_day_salary == '' ?  find.staff_day_salary : element.staff_day_salary
+        if (element.agenda !== '') {
+          element.client = ''
+          element.start_time = element.start_time == '' ? '' : this.make_colon(element.start_time)
+          element.end_time = element.end_time == '' ? '' :  this.make_colon(element.end_time)
+          element.admin_total_time = element.admin_total_time == '' ? '' : parseFloat(element.admin_total_time).toFixed(2)
+          element.total_time = element.total_time == '' ? '' : parseFloat(element.total_time).toFixed(2)
+          var find = client.find(obj => obj.agenda == element.agenda)
+          if (find != undefined) {
+            element.client = find.client
+            element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
+            element.admin_day_salary = element.admin_day_salary == '' ?  find.day_salary : element.admin_day_salary
+            element.staff_hour_salary = element.staff_hour_salary == '' ? find.staff_hour_salary : element.staff_hour_salary
+            element.staff_day_salary = element.staff_day_salary == '' ?  find.staff_day_salary : element.staff_day_salary
+          }
+        } else {
+          element.client = ''
+          element.admin_hour_salary = ''
+          element.admin_day_salary = ''
+          element.staff_hour_salary = ''
+          element.staff_day_salary = ''
         }
       })
       const url = this.root_folder + "/app/adminEditSchedule.php";
@@ -705,6 +714,7 @@ export default {
       const data = JSON.parse(JSON.stringify(this.add_item))
 
       const client = this.$store.getters.client_agenda
+      data.client = ''
       data.start_time = data.start_time == '' ? '' : this.make_colon(data.start_time)
       data.end_time = data.end_time == '' ? '' :  this.make_colon(data.end_time)
       data.admin_total_time = data.admin_total_time == '' ? '' : parseFloat(data.admin_total_time).toFixed(2)
