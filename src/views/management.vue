@@ -178,11 +178,8 @@
               @change="fetch"
             >
               <template v-slot:event="{ event }">
-                <div class="pt-1 ml-1" v-if="event.agenda == ''">
+                <div class="event_message pt-1 ml-1">
                   {{ event.name }}
-                </div>
-                <div class="pt-1 ml-1" v-else>
-                  {{ event.name }} - {{ event.agenda }}
                 </div>
               </template>
             </v-calendar>
@@ -238,6 +235,9 @@
 </v-app>
 </template>
 <style lang="scss">
+.event_message {
+  font-size : 20px !important;
+}
 .v-textarea .v-input__control .v-input__slot .v-text-field__slot textarea{
   font-size : 25px !important;
 }
