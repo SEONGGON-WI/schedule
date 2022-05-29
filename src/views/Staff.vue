@@ -236,20 +236,16 @@ export default {
       this.search()
     },
     select({ date }) {
-      if (date <= this.month) {
-        return
-      }
       let index = this.calendar_events.findIndex(obj => obj.date == date);
       if (index >= 0) {
         if (this.calendar_events[index].agenda == '') {
           this.calendar_events.splice(index, 1);
-          return;
-        } else {
+        } else if (date >= this.month) {
           this.edit_items = JSON.parse(JSON.stringify(this.calendar_events.filter(element => element.date === date)))
           this.edit_date = date
           this.edit_show = true;
-          return;
         }
+        return
       }
       if (this.id == '' || this.password == '') {
         return;
