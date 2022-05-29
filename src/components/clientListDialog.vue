@@ -114,10 +114,13 @@
               ></v-text-field>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn class="info mx-2 my-3" icon color="white" @click="edit(item)">
+              <v-btn class="info mx-1 my-3" icon color="white" @click="applyClient(item)">
+                <v-icon>check</v-icon>
+              </v-btn>
+              <v-btn class="info mx-1 my-3" icon color="white" @click="edit(item)">
                 <v-icon>edit</v-icon>
               </v-btn>
-              <v-btn class="error mx-2 my-3" icon color="white" @click="remove_check(item)">
+              <v-btn class="error mx-1 my-3" icon color="white" @click="remove_check(item)">
                 <v-icon>delete</v-icon>
               </v-btn>
             </template>
@@ -265,13 +268,13 @@ export default {
   data: () => ({
     items: [],
     headers: [
-      { value:"client", text:"顧客", width: "15%", align: 'start'},
-      { value:"agenda", text:"案件名", width: "26%", align: 'start'},
+      { value:"client", text:"顧客", width: "12%", align: 'start'},
+      { value:"agenda", text:"案件名", width: "24%", align: 'start'},
       { value:"hour_salary", text:"時給", width: "11%", align: 'start'},
       { value:"day_salary", text:"日給", width: "11%", align: 'start'},
       { value:"staff_hour_salary", text:"スタッフ時給", width: "11%", align: 'start'},
       { value:"staff_day_salary", text:"スタッフ日給", width: "11%", align: 'start'},
-      { value:"action", text:"編集", width:"15%", align: 'center', sortable: false}
+      { value:"action", text:"編集", width:"20%", align: 'center', sortable: false}
     ],
     header: [
       { value:"client", text:"クライアント", width: "40%", align: 'start'},
@@ -421,15 +424,19 @@ export default {
         }
       }.bind(this))
     },
-    async applyClient() {
+    async applyClient(client = {}) {
       const url = this.root_folder + "/app/adminUploadSchedule.php";
       const data = {
         start_date: this.date.start_date,
         end_date: this.date.end_date,
+        client: client,
+        select_mode: client['agenda'] !== undefined ? true : false 
       }
       await axios.post(url, data).then(function(response) {
         if (response.data.status == false) {
           this.alert(response.data.message);
+        } else {
+          this.edit_condition = true
         }
       }.bind(this))
     },
