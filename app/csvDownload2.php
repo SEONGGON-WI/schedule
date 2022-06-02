@@ -4,7 +4,7 @@ $response = json_decode(file_get_contents('php://input'), true);
 $start_date = $response['start_date'];
 $end_date = $response['end_date'];
 $client = $response['client'];
-$agenda = '';
+$agenda = $response['agenda'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
@@ -127,6 +127,9 @@ try {
           }
         }
         $month = explode("-", $start_date);
+        if ((int)$month[1] < 10) {
+          $month[1] = substr($month[1], 1);
+        }
         $working_day = $month[1]."/";
         foreach ($table as $element) {
           $day = [];
@@ -150,7 +153,7 @@ try {
             . '","'
             . '","'
             . $admin_expense . '","'
-            . "'". $working_day . ',"'
+            . "'". $working_day . '","'
             . '"'
             . "\r\n";
       }
