@@ -4,44 +4,72 @@ $response = json_decode(file_get_contents('php://input'), true);
 $start_date = $response['start_date'];
 $end_date = $response['end_date'];
 $client = $response['client'];
+$agenda = '';
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $data = $dbConnect->getCsv2($start_date, $end_date, $client);
+  $data = $dbConnect->getCsv2($start_date, $end_date, $client, $agenda);
 
   if (!empty($data)) {
     header("Content-Type: application/octet-stream");
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"摘要","種別","数量","単位","数量","単位","単価","金額","備考"'. "\r\n";
+    $csv = '"摘要","数量","単位","数量","単位","単価","非課税","金額","備考"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
+    $csv .= '"'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '"'
+        . "\r\n";
+
+    $total_salary = 0;
     foreach ($data as $value) {
       $day = [];
       $day = explode("-", $value['date']);
+      if ((int)$day[1] < 10) {
+        $day[1] = substr($day[1], 1);
+      }
+      if ((int)$day[2] < 10) {
+        $day[2] = substr($day[2], 1);
+      }
       $working_day = $day[1]."/".$day[2];
-    
-      if ($value['admin_day_salary'] != '' ) {
-        $admin_salary = number_format((int)$value['admin_day_salary']);
+
+      $admin_salary = '';
+      $admin_non_tax_salary = '';
+
+      if ($value['tax_status'] != 1) {
+        if ($value['admin_day_salary'] != '') {
+          $admin_salary = number_format((int)$value['admin_day_salary']);
+        }
       } else {
-        $admin_salary = '';
+        if ($value['admin_day_salary'] != '') {
+          $admin_non_tax_salary = number_format((int)$value['admin_day_salary']);
+        }
       }
 
       if ($value['admin_day_salary'] != '') {
         $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
+        $total_salary += (int)$value['admin_day_salary'] * (int)$value['cnt'];
       } else {
         $admin_total_salary = '';
       }
 
       $csv .= '"'
           . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
-          . '","'
           . $value['cnt'] . '","'
           . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
           . '"1,"'
           . mb_convert_encoding('日', 'SJIS', 'UTF-8') . '","'
           . $admin_salary . '","'
+          . $admin_non_tax_salary . '","'
           . $admin_total_salary . '","'
           . "'". $working_day . '"'
           . "\r\n";
@@ -59,6 +87,18 @@ try {
         . '"'
         . "\r\n";
 
+    $csv .= '"'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . number_format($total_salary) . '","'
+        . '"'
+        . "\r\n";
+  
     $csv .= '"'
         . '","'
         . '","'
@@ -104,14 +144,14 @@ try {
         }
         $csv .= '"'
             . '","'
-            . '","'
             . $value['cnt'] . '","'
             . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
             . '","'
             . '","'
             . '","'
             . $admin_expense . '","'
-            . "'". $working_day . '"'
+            . "'". $working_day . ',"'
+            . '"'
             . "\r\n";
       }
     }
