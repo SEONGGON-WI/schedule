@@ -455,6 +455,9 @@ export default {
       }.bind(this))
     },
     get_events_items() {
+      this.client = []
+      this.name = []
+      this.agenda = []
       const data = this.$store.getters.calendar_events
       let name_items = []
       let agenda_items = []
@@ -589,15 +592,15 @@ export default {
       }.bind(this))
     },
     async csv_download2() {
-      if (this.client.length === 0 || this.agenda.length === 0 || this.client.length >= 2 || this.agenda.length >= 0) {
+      if ((this.client.length === 0 && this.agenda.length === 0) || (this.client.length >= 2 || this.agenda.length >= 2)) {
         return
       }
-      if (['空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力'].include(this.agenda[0])) {
+      if (['空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力'].includes(this.agenda[0])) {
         return
       }
       this.csvdownloading = true
-      const client = this.client[0] === 0 ? '' : this.client[0]
-      const agenda = this.agenda[0] === 0 ? '' : this.agenda[0]
+      const client = this.client.length === 0 ? '' : this.client[0]
+      const agenda = this.agenda.length === 0 ? '' : this.agenda[0]
       var name = client + "_" + agenda
       var file_name = "請求書_" + name + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
       var config = {
