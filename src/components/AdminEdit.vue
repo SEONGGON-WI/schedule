@@ -442,11 +442,13 @@
   </v-dialog>
 </template>
 <script>
+import Alert from '@/components/alert.vue';
 import AdminDialog from '@/components/AdminDialog.vue';
 import axios from 'axios';
 export default {
   name: "adminedit",
   components: {
+    Alert,
     AdminDialog,
   },
   props: [
@@ -553,14 +555,14 @@ export default {
       if (item.admin_hour_salary == '' || item.admin_total_time == '') {
         return ''
       }
-      let salary = Math.floor(item.admin_hour_salary * item.admin_total_time)
+      let salary = Math.round(item.admin_hour_salary * item.admin_total_time)
       return String(salary)
     },
     get_staff_day_salary(item) {
       if (item.staff_hour_salary == '' || item.total_time == '') {
         return ''
       }
-      let salary = Math.floor(item.staff_hour_salary * item.total_time)
+      let salary = Math.round(item.staff_hour_salary * item.total_time)
       return String(salary)
     },
     async get_event() {

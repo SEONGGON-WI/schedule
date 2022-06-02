@@ -254,13 +254,13 @@
 </style>
 <script>
 import AdminDialog from '@/components/AdminDialog.vue';
-import alert from './alert.vue';
+import Alert from '@/components/alert.vue';
 import axios from 'axios';
 export default {
   name: "clientlistdialog",
   components: {
     AdminDialog,
-    alert,
+    Alert,
   },
   props: [
     'agenda_items', 'date'
@@ -436,6 +436,7 @@ export default {
         if (response.data.status == false) {
           this.alert(response.data.message);
         } else {
+          this.alert('反映しました。')
           this.edit_condition = true
         }
       }.bind(this))

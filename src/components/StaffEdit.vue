@@ -251,7 +251,7 @@ export default {
         time = Number(time).toFixed(2)
         admin_time = (Number(parseFloat(time) + 1).toFixed(2))
         if (item.admin_hour_salary != '') {
-          item.admin_day_salary = Math.floor(item.admin_hour_salary * admin_time)
+          item.admin_day_salary = Math.round(item.admin_hour_salary * admin_time)
         }
         var time_difference = parseFloat(item.total_time) - parseFloat(time)
         if (time_difference <= 2 || time_difference >= -2) {
@@ -266,7 +266,7 @@ export default {
       if (item.staff_hour_salary == '' || item.total_time == '') {
         return ''
       }
-      let salary = Math.floor(item.staff_hour_salary * item.total_time)
+      let salary = Math.round(item.staff_hour_salary * item.total_time)
       return String(salary)
     },
     enter(index) {
