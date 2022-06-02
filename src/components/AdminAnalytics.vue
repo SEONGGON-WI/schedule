@@ -7,7 +7,7 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-title class="mx-3">
-            {{ tab == 1 ? total_salary : admin_total_salary }}
+            {{ tab == 1 ? (total_salary + ' + ' + total_expense) : (admin_total_salary + ' + ' + admin_total_expense) }}
           </v-toolbar-title>
           <v-toolbar-title class="mx-3">
             {{ total_agenda }}
@@ -75,7 +75,7 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="3" class="name_agenda pt-3 pl-8">
-          {{ tab == 1 ? pay_total_salary : '' }}
+          {{ tab == 1 ? pay_total_salary : admin_total }}
         </v-col>
         <v-col cols="4" class="name_agenda pt-3 pr-2">
           {{ tab == 1 ? paid_total_salary : '' }}
@@ -210,7 +210,10 @@ export default {
     paid_status: '',
     paid_calculate: '',
     total_salary: '',
+    total_expense: '',
     admin_total_salary: '',
+    admin_total_expense: '',
+    admin_total: '',
     upload_condition: false,
   }),
   created() {
@@ -254,15 +257,19 @@ export default {
       var paid_total_salary = 0
       var paid_status = 0
       var total_salary = 0
+      var total_expense = 0
       var admin_total_salary = 0
+      var admin_total_expense = 0
       this.analytics_data.map(item => {
         var expense = item.staff_expense != '' ? item.staff_expense : 0
         var admin_expense = item.admin_expense != '' ? item.admin_expense : 0
         if (item.staff_day_salary != '') {
-          total_salary = total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
+          total_salary = total_salary + parseInt(item.staff_day_salary)
+          total_expense = total_expense + parseInt(expense)
         }
         if (item.admin_day_salary != '') {
-          admin_total_salary = admin_total_salary + parseInt(item.admin_day_salary) + parseInt(admin_expense)
+          admin_total_salary = admin_total_salary + parseInt(item.admin_day_salary)
+          admin_total_expense = admin_total_expense + parseInt(admin_expense)
         }
         if (item.status == 0 && item.staff_day_salary != '') {
           pay_total_salary = pay_total_salary + parseInt(item.staff_day_salary) + parseInt(expense)
@@ -272,7 +279,10 @@ export default {
         }
       })
       this.total_salary = "￥" + total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.total_expense = "￥" + total_expense.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.admin_total = "￥" + (admin_total_salary + admin_total_expense).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.admin_total_salary = "￥" + admin_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.admin_total_expense = "￥" + admin_total_expense.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.pay_total_salary = "￥" + pay_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.paid_total_salary = "￥" + paid_total_salary.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       if (paid_status != 0) {
