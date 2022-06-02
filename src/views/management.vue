@@ -100,7 +100,7 @@
                   height="30"
                   class="mt-6"
                   v-model="name" 
-                  :items="name_items"
+                  :items="get_name_items"
                   label="名前"
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
@@ -131,7 +131,7 @@
                   height="30"
                   class="mt-6"
                   v-model="agenda" 
-                  :items="agenda_items"
+                  :items="get_agenda_items"
                   label="案件"
                   @change="search"
                   :menu-props="{ maxHeight: '800' }"
@@ -366,6 +366,37 @@ export default {
     get_agenda() {
       return this.calendar_events.length + "件";
     },
+    get_agenda_items() {
+      const data = this.calendar_events
+      let agenda_items = []
+      data.map((element, index) => {
+        agenda_items[index] = element.agenda
+      })
+      const agenda_items_set = new Set(agenda_items)
+      agenda_items = [...agenda_items_set].sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })
+      const index = this.agenda_items.indexOf('')
+      if (index != -1) {
+        agenda_items.splice(agenda_items.indexOf(''),1)
+      }
+      agenda_items.unshift('空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
+
+      return agenda_items
+    },
+    get_name_items() {
+      const data = this.calendar_events
+      let name_items = []
+      data.map((element, index) => {
+        name_items[index] = element.name
+      })
+      const name_items_set = new Set(name_items)
+      name_items = [...name_items_set].sort(function (a, b) {
+        return a.localeCompare(b, 'ja')
+      })
+
+      return name_items
+    },
   },
   methods: {
     menu_action(type) {
@@ -415,8 +446,6 @@ export default {
           } else {
             this.$store.commit('set_fetch_calendar_events', [])
             this.$store.commit('set_calendar_events', []);
-            this.name_items = []
-            this.agenda_items = []
             this.calendar_events = [];
             if (response.data.status == false) {
               this.alert(response.data.message);
@@ -560,26 +589,31 @@ export default {
       }.bind(this))
     },
     async csv_download2() {
-      if (this.client.length === 0) {
+      if (this.client.length === 0 || this.agenda.length === 0 || this.client.length >= 2 || this.agenda.length >= 0) {
         return
       }
-      this.client.map(async client => {
-        var file_name = "請求書_" + client + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
-        var config = {
-          responseType: "blob",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        };
-        this.csvdownloading = true
-        var data = {
-          start_date: this.search_date.start_date,
-          end_date: this.search_date.end_date,
-          client: client
-        }
-        var url = this.root_folder + "/app/csvDownload2.php"
-        await axios.post(url, data, config).then(function (response) {
-          this.downloadCSV(file_name, response)
-        }.bind(this))
-      })
+      if (['空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力'].include(this.agenda[0])) {
+        return
+      }
+      this.csvdownloading = true
+      const client = this.client[0] === 0 ? '' : this.client[0]
+      const agenda = this.agenda[0] === 0 ? '' : this.agenda[0]
+      var name = client + "_" + agenda
+      var file_name = "請求書_" + name + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+      var config = {
+        responseType: "blob",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      };
+      var url = this.root_folder + "/app/csvDownload2.php"
+      var data = {
+        start_date: this.search_date.start_date,
+        end_date: this.search_date.end_date,
+        client: client,
+        agenda: agenda
+      }
+      await axios.post(url, data, config).then(function (response) {
+        this.downloadCSV(file_name, response)
+      }.bind(this))
     },
     downloadCSV(file_name, res) {
       var blob = new Blob([res.data], { type: "text/csv" });
