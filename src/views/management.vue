@@ -367,29 +367,51 @@ export default {
       return this.calendar_events.length + "件";
     },
     get_agenda_items() {
-      const data = this.calendar_events
+      let data = this.$store.getters.calendar_events
       let agenda_items = []
-      data.map((element, index) => {
-        agenda_items[index] = element.agenda
-      })
+      if (this.name.length === 0 && this.client.length !== 0) {
+        data.map(element => {
+          if (this.client.includes(element.client)) {
+            agenda_items.push(element.agenda)
+          }
+        })
+      } else if (this.name.length !== 0) {
+        data.map(element => {
+          if (this.name.includes(element.name)) {
+            agenda_items.push(element.agenda)
+          }
+          })
+      } else {
+        data.map((element, index) => {
+          agenda_items[index] = element.agenda
+        })  
+      }
       const agenda_items_set = new Set(agenda_items)
       agenda_items = [...agenda_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
       })
-      const index = this.agenda_items.indexOf('')
+      const index = agenda_items.findIndex(element => element === '')
       if (index != -1) {
-        agenda_items.splice(agenda_items.indexOf(''),1)
+        agenda_items.splice(index, 1)
       }
       agenda_items.unshift('空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
 
       return agenda_items
     },
     get_name_items() {
-      const data = this.calendar_events
+      let data = this.$store.getters.calendar_events
       let name_items = []
-      data.map((element, index) => {
-        name_items[index] = element.name
-      })
+      if (this.client.length !== 0) {
+        data.map(element => {
+          if (this.client.includes(element.client)) {
+            name_items.push(element.name)
+          }
+        })
+      } else {
+        data = data.map((element, index) => {
+          name_items[index] = element.name
+        })  
+      }
       const name_items_set = new Set(name_items)
       name_items = [...name_items_set].sort(function (a, b) {
         return a.localeCompare(b, 'ja')
@@ -661,7 +683,7 @@ export default {
     },
     async reload() {
       await this.get_data()
-      await this.search()
+      await this.clear()
     },
     clear() {
       this.client = []
