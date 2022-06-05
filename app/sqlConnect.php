@@ -143,15 +143,15 @@ class mysqlConnect {
   }
 
   public function getCsv2($start_date, $end_date, $client, $agenda) {
-    $sql = "SELECT tax_status, date, client, agenda, admin_day_salary, COUNT(overlap) AS cnt FROM schedule ";
+    $sql = "SELECT tax_status, date, client, agenda, admin_day_salary, admin_hour_salary, admin_total_time, SUM(overlap) AS cnt FROM schedule ";
     if ($agenda == '') {
-      $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
+      $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_day_salary != '' ";
     } else if ($client == '') {
-      $sql = $sql."WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
+      $sql = $sql."WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_day_salary != '' ";
     } else {
-      $sql = $sql."WHERE client = '$client' AND agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' ";
+      $sql = $sql."WHERE client = '$client' AND agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' admin_day_salary != '' ";
     }
-    $sql = $sql."GROUP BY date, agenda, admin_day_salary ";
+    $sql = $sql."GROUP BY date, agenda, admin_day_salary, admin_hour_salary ";
     $sql = $sql."ORDER BY client, agenda, date";
 
     $result = $this->mysql->query($sql);
@@ -169,7 +169,7 @@ class mysqlConnect {
   }
 
   public function getCsv3($start_date, $end_date, $client) {
-    $sql = "SELECT client, agenda, admin_expense, COUNT(overlap) AS cnt FROM schedule ";
+    $sql = "SELECT client, agenda, admin_expense, SUM(overlap) AS cnt FROM schedule ";
     $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_expense != '' ";
     $sql = $sql."GROUP BY agenda, admin_expense ";
     $sql = $sql."ORDER BY date";
