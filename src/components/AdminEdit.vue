@@ -627,7 +627,6 @@ export default {
             this.items = this.items.concat(this.remove_item)
           }
         } else {
-          this.alert("登録しました。")
           this.edit_condition = true
           // const empty_agenda = this.agenda.includes('空きスケジュール')
           // const empty_staff = this.agenda.includes('スタッフ日給未入力')
