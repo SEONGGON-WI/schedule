@@ -534,6 +534,12 @@ export default {
         this.calendar_events = this.$store.getters.fetch_calendar_events
         return
       }
+      const sort_list = [
+        {key:'date', type: 1},
+        {key:'agenda', type: 1},
+        {key:'admin_day_salary', type: 2},
+        {key:'staff_day_salary', type: 2},
+      ]
       const empty_agenda = this.agenda.includes('空きスケジュール')
       const empty_staff = this.agenda.includes('スタッフ日給未入力')
       const empty_admin = this.agenda.includes('管理者日給未入力')
@@ -545,7 +551,7 @@ export default {
                                                           || (empty_staff ? (element.agenda != '' && element.staff_day_salary == '' ? true : false) : false) 
                                                           || (empty_admin ? (element.agenda != '' && element.admin_day_salary == '' ? true : false) : false)) 
                                                         : true) 
-                                                    && (agenda.length === 0 ? true : agenda.includes(element.agenda)))
+                                                    && (agenda.length === 0 ? true : agenda.includes(element.agenda))).sort(this.sort_by(sort_list))
       fetch_data.map(element => {
         if ((element.date <= this.today) && (element.staff_day_salary != '')) {
           element.color = this.colors[2]
@@ -686,22 +692,40 @@ export default {
       await this.clear()
     },
     clear() {
-      this.client = []
-      this.name = []
-      this.agenda = []
       this.search();
     },
     setToday() {
       this.calendar = ''
     },
     prevDate() {
+      this.client = []
+      this.name = []
+      this.agenda = []
       this.$refs.calendar.prev()
     },
     nextDate() {
+      this.client = []
+      this.name = []
+      this.agenda = []
       this.$refs.calendar.next()
     },
     get_event_color(event) {
       return event.color;
+    },
+    sort_by: function(orderlist) {
+        return (a, b) => {
+          for (let i=0; i<orderlist.length; i++) {
+            if (orderlist[i].type == 1) {
+              if (a[orderlist[i].key] < b[orderlist[i].key]) return -1 ;
+              if (a[orderlist[i].key] > b[orderlist[i].key]) return -1 * -1;
+            } else {
+              if (a[orderlist[i].key] < b[orderlist[i].key]) return 1 ;
+              if (a[orderlist[i].key] > b[orderlist[i].key]) return 1 * -1;
+            }
+          }
+          return 0;
+        }
+      // .sort(this.sort_by(this.sort_params))
     },
   }
 }
