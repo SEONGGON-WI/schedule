@@ -14,10 +14,10 @@
         </v-card-title>
 
         <v-card-text class="pa-0">
-          <v-row>
+          <v-row no-gutters>
             <v-col cols="3">
               <v-textarea
-                class="pt-1 pl-2"
+                class="pt-1 ml-2"
                 v-model="client"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                 label="クライアント名を入力"
@@ -31,7 +31,7 @@
             </v-col>
             <v-col cols="9">
               <v-autocomplete
-                class="pr-2"
+                class="mr-2"
                 v-model="agenda" 
                 ref="agenda_filed"
                 :items="calculate_agenda"
@@ -48,10 +48,10 @@
             </v-col>
           </v-row>
           <v-form ref="form" v-model="valid">
-          <v-row>
+          <v-row no-gutters>
             <v-col cols="3">
               <v-text-field
-                class="pl-2"
+                class="ml-2"
                 v-model="hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -82,7 +82,7 @@
             </v-col>
             <v-col cols="3">
               <v-text-field
-                class="pr-2"
+                class="mr-2"
                 v-model="staff_day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -91,10 +91,12 @@
                 hide-details
               ></v-text-field>              
             </v-col>
-            <v-col cols="1"></v-col>
-            <v-spacer></v-spacer>
-            <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0 || !valid"><v-icon>cloud_upload</v-icon>登録</v-btn>
-            <v-btn outlined class="success ma-2 mr-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>
+            <v-col cols="12">
+              <div style="float:right;">
+                <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0 || !valid"><v-icon>cloud_upload</v-icon>登録</v-btn>
+                <v-btn outlined class="success ma-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>  
+              </div>
+            </v-col>
           </v-row>
           </v-form>
           <v-data-table 

@@ -61,7 +61,7 @@
           </v-card-title>
           <v-card-text>
             <v-form ref="form" v-model="valid">
-            <v-row>
+            <v-row no-gutters>
               <v-col cols="6">
                 <v-text-field
                   v-model="staff_name"
