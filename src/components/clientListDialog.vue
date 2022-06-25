@@ -17,7 +17,7 @@
           <v-row no-gutters>
             <v-col cols="3">
               <v-textarea
-                class="pt-1 ml-2"
+                class="pt-1 pl-2"
                 v-model="client"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                 label="クライアント名を入力"
@@ -31,7 +31,7 @@
             </v-col>
             <v-col cols="9">
               <v-autocomplete
-                class="mr-2"
+                class="pr-2"
                 v-model="agenda" 
                 ref="agenda_filed"
                 :items="calculate_agenda"
@@ -51,7 +51,7 @@
           <v-row no-gutters>
             <v-col cols="3">
               <v-text-field
-                class="ml-2"
+                class="pl-2"
                 v-model="hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -82,7 +82,7 @@
             </v-col>
             <v-col cols="3">
               <v-text-field
-                class="mr-2"
+                class="pr-2"
                 v-model="staff_day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
