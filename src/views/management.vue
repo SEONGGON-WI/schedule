@@ -80,6 +80,15 @@
                     <v-list-item
                       ripple
                       @mousedown.prevent
+                      @click="select_client"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>一括選択</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
                       @click="reset_client"
                     >
                     </v-list-item>
@@ -111,6 +120,15 @@
                     <v-list-item
                       ripple
                       @mousedown.prevent
+                      @click="select_name"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>一括選択</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
                       @click="reset_name"
                     >
                     </v-list-item>
@@ -139,6 +157,15 @@
                   multiple
                 >
                   <template v-slot:prepend-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
+                      @click="select_agenda"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>一括選択</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
                     <v-list-item
                       ripple
                       @mousedown.prevent
@@ -477,9 +504,6 @@ export default {
       }.bind(this))
     },
     get_events_items() {
-      this.client = []
-      this.name = []
-      this.agenda = []
       const data = this.$store.getters.calendar_events
       let name_items = []
       let agenda_items = []
@@ -665,15 +689,34 @@ export default {
       }
       this.csvdownloading = false
     },
+    select_client() {
+      this.$nextTick(() => {
+        this.client = this.client_items
+        this.search()
+      })
+    },
     reset_client () {
       this.$nextTick(() => {
         this.client = []
         this.search()
       })
     },
+    select_name() {
+      this.$nextTick(() => {
+        this.name = this.get_name_items
+        this.search()
+      })
+    },
     reset_name () {
       this.$nextTick(() => {
         this.name = []
+        this.search()
+      })
+    },
+    select_agenda() {
+      this.$nextTick(() => {
+        const agenda = JSON.parse(JSON.stringify(this.get_agenda_items))
+        this.agenda = agenda.slice(3)
         this.search()
       })
     },
@@ -689,9 +732,12 @@ export default {
     },
     async reload() {
       await this.get_data()
-      await this.clear()
+      await this.search();
     },
     clear() {
+      this.client = []
+      this.name = []
+      this.agenda = []
       this.search();
     },
     setToday() {
