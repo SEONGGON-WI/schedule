@@ -59,13 +59,8 @@ tbody tr td {
 
 .custom_dialog {
   max-height: 80% !important;
-  width: 95% !important;
   position: fixed !important;
   top: 10% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  align-content: normal !important;
   justify-content: normal !important;
 }
 
@@ -73,12 +68,7 @@ tbody tr td {
   .custom_dialog {
     max-height: 80% !important;
     position: fixed !important;
-    width: 90% !important;
     top: 10% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    align-content: normal !important;
     justify-content: normal !important;
   }
 }

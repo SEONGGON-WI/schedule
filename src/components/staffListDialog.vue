@@ -1,7 +1,7 @@
 <template>
-  <v-dialog content-class="custom_dialog" v-model="dialog" persistent>
-    <v-container class="pa-0" fluid>
+  <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable>
       <v-card color="grey lighten-4">
+        <v-card-title class="pa-0">
         <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2">
             スタッフ管理
@@ -11,6 +11,8 @@
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
+        </v-card-title>
+        <v-card-text class="pa-0">
           <v-data-table 
             item-class="mt-2"
             name="staff-list-table"
@@ -39,11 +41,11 @@
               </v-btn>
             </template>
           </v-data-table>
+        </v-card-text>
       </v-card>
-    </v-container>
-    <v-dialog v-model="edit_dialog" persistent width="70%">
-      <v-container class="pa-0" fluid>
+    <v-dialog v-model="edit_dialog" persistent width="70%" scrollable>
         <v-card color="grey lighten-4">
+          <v-card-title class="pa-0">
           <v-toolbar color="primary" dark>
             <v-toolbar-title class="mx-2">
               クライアント編集
@@ -56,6 +58,7 @@
               <v-icon>cancel</v-icon>キャンセル
             </v-btn>
           </v-toolbar>
+          </v-card-title>
           <v-card-text>
             <v-form ref="form" v-model="valid">
             <v-row>
@@ -83,7 +86,6 @@
             </v-form>
           </v-card-text>
         </v-card>
-      </v-container>
     </v-dialog>
     <alert
       @close="alert_show = false"

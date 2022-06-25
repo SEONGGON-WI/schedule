@@ -1,7 +1,7 @@
 <template>
-  <v-dialog content-class="custom_dialog" v-model="dialog" persistent>
-    <v-container class="pa-0" fluid>
+  <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable>
       <v-card color="grey lighten-4">
+        <v-card-title class="pa-0">
         <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2 ">
             クライアント管理
@@ -11,12 +11,13 @@
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
+        </v-card-title>
 
-        <v-card-text>
+        <v-card-text class="pa-0">
           <v-row>
             <v-col cols="3">
               <v-textarea
-                class="pt-1"
+                class="pt-1 pl-2"
                 v-model="client"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                 label="クライアント名を入力"
@@ -30,6 +31,7 @@
             </v-col>
             <v-col cols="9">
               <v-autocomplete
+                class="pr-2"
                 v-model="agenda" 
                 ref="agenda_filed"
                 :items="calculate_agenda"
@@ -49,6 +51,7 @@
           <v-row>
             <v-col cols="3">
               <v-text-field
+                class="pl-2"
                 v-model="hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -79,6 +82,7 @@
             </v-col>
             <v-col cols="3">
               <v-text-field
+                class="pr-2"
                 v-model="staff_day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -90,10 +94,9 @@
             <v-col cols="1"></v-col>
             <v-spacer></v-spacer>
             <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0 || !valid"><v-icon>cloud_upload</v-icon>登録</v-btn>
-            <v-btn outlined class="success ma-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>
+            <v-btn outlined class="success ma-2 mr-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>
           </v-row>
           </v-form>
-        </v-card-text>
           <v-data-table 
             :key="toggle_key"
             name="client-list-table"
@@ -125,11 +128,11 @@
               </v-btn>
             </template>
           </v-data-table>
+        </v-card-text>
       </v-card>
-    </v-container>
-    <v-dialog v-model="edit_dialog" persistent width="70%">
-      <v-container class="pa-0" fluid>
+    <v-dialog v-model="edit_dialog" persistent width="70%" scrollable>
         <v-card color="grey lighten-4">
+          <v-card-title class="pa-0">
           <v-toolbar color="primary" dark>
             <v-toolbar-title class="px-2">
               クライアント管理
@@ -142,6 +145,8 @@
               <v-icon>cancel</v-icon>キャンセル
             </v-btn>
           </v-toolbar>
+          </v-card-title>
+          <v-card-text class="pa-0">
             <v-row no-gutters class="mb-2">
               <v-col cols="12" class="name_agenda pt-3 pl-8">
                 <div>{{ edit_item.agenda }}</div>
@@ -231,8 +236,8 @@
             </template>
           </v-data-table>
           </v-form>
+          </v-card-text>
         </v-card>
-      </v-container>
     </v-dialog>
     <alert
       v-if="alert_show"

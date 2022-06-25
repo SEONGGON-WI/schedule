@@ -1,6 +1,7 @@
 <template>
   <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable> 
     <v-card color="grey lighten-4">
+      <v-card-title class="pa-0">
       <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2">
             {{ date }}
@@ -22,6 +23,7 @@
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
+      </v-card-title>
       <v-card-text class="pa-0">
       <v-row no-gutters class="mb-3">
         <v-col cols="2" class="name_agenda pt-3 pl-8">

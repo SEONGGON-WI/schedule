@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent>
-    <v-container class="pa-0" fluid>
+  <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.mobile ? '100%' : '80%'" persistent scrollable>
       <v-card color="grey lighten-4">
+        <v-card-title class="pa-0">
         <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2">
             {{ date }}
@@ -14,6 +14,8 @@
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
+        </v-card-title>
+        <v-card-text class="pa-0">
         <v-row no-gutters>
           <v-col cols="3" class="name_agenda pt-3 pl-8">
             <div>{{ items[edit_index].name }}</div>
@@ -172,8 +174,8 @@
           </template>
         </v-data-table>
         </v-form>
+        </v-card-text>
       </v-card>
-    </v-container>
   </v-dialog>
 </template>
 <script>

@@ -1,7 +1,7 @@
 <template>
   <v-dialog content-class="custom_dialog" v-model="dialog" persistent scrollable>
-    <v-container class="pa-0" fluid>
       <v-card color="grey lighten-4">
+        <v-card-title class="pa-0">
         <v-toolbar color="primary" dark>
           <v-toolbar-title class="mx-2">
             {{ date }}
@@ -22,7 +22,8 @@
             <v-icon>cancel</v-icon>キャンセル
           </v-btn>
         </v-toolbar>
-
+        </v-card-title>
+        <v-card-text class="pa-0">
         <v-tabs v-model="tab" grow>
           <v-tab v-for="item in tab_item" :key="item">
             {{ item }}
@@ -227,11 +228,12 @@
             </v-data-table>
           </v-form>
         </v-tabs-items>
+        </v-card-text>
       </v-card>
-    </v-container>
-    <v-dialog v-model="add_dialog" persistent width="95%">
-      <v-container class="pa-0" fluid>
+    
+    <v-dialog v-model="add_dialog" persistent width="95%" scrollable>
         <v-card color="grey lighten-4">
+          <v-card-title class="pa-0">
           <v-toolbar color="primary" dark>
             <v-toolbar-title class="px-2">
               スケジュール登録
@@ -244,6 +246,8 @@
               <v-icon>cancel</v-icon>キャンセル
             </v-btn>
           </v-toolbar>
+          </v-card-title>
+          <v-card-text class="pa-0">
             <v-row no-gutters class="mb-2">
               <v-col cols="12" class="name_agenda pt-3 pl-8">
                 <div>{{ date }}</div>
@@ -424,8 +428,8 @@
             </v-data-table>
           </v-form>
         </v-tabs-items>
+          </v-card-text>
         </v-card>
-      </v-container>
     </v-dialog>
 
     <alert
