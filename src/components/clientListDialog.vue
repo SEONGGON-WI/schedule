@@ -14,10 +14,10 @@
         </v-card-title>
 
         <v-card-text class="pa-0">
-          <v-row no-gutters>
-            <v-col cols="3">
+          <v-row no-gutters class="pt-4">
+            <v-col cols="3" class="px-2">
               <v-textarea
-                class="pt-1 pl-2"
+                class="pt-0"
                 v-model="client"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'" 
                 label="クライアント名を入力"
@@ -29,9 +29,8 @@
                 clearable
               ></v-textarea>
             </v-col>
-            <v-col cols="9">
+            <v-col cols="9" class="px-2">
               <v-autocomplete
-                class="pr-2"
                 v-model="agenda" 
                 ref="agenda_filed"
                 :items="calculate_agenda"
@@ -48,10 +47,9 @@
             </v-col>
           </v-row>
           <v-form ref="form" v-model="valid">
-          <v-row no-gutters>
-            <v-col cols="3">
+          <v-row no-gutters class="pt-4">
+            <v-col cols="3" class="px-2">
               <v-text-field
-                class="pl-2"
                 v-model="hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -60,7 +58,7 @@
                 hide-details
               ></v-text-field>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="3" class="px-2">
               <v-text-field
                 v-model="day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
@@ -70,7 +68,7 @@
                 hide-details
               ></v-text-field>              
             </v-col>
-            <v-col cols="3">
+            <v-col cols="3" class="px-2">
               <v-text-field
                 v-model="staff_hour_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
@@ -80,9 +78,8 @@
                 hide-details
               ></v-text-field>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="3" class="px-2">
               <v-text-field
-                class="pr-2"
                 v-model="staff_day_salary"
                 :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                 :rules="[rules.positive]"
@@ -91,7 +88,7 @@
                 hide-details
               ></v-text-field>              
             </v-col>
-            <v-col cols="12">
+            <v-col cols="12" class="pt-4">
               <div style="float:right;">
                 <v-btn outlined class="info ma-2" color="white" @click="confirm('set')" :disabled="client == '' || agenda.length == 0 || !valid"><v-icon>cloud_upload</v-icon>登録</v-btn>
                 <v-btn outlined class="success ma-2" color="white" @click="confirm('apply')"><v-icon>autorenew</v-icon>反映</v-btn>  
