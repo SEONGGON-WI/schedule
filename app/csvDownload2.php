@@ -15,11 +15,21 @@ try {
     header("Content-Disposition: attachment; filename=チェックルールマスタ.csv");
     header("Content-Transfer-Encoding: binary");
 
-    $csv = '"摘要","数量","単位","数量","単位","単価","非課税","金額","備考"'. "\r\n";
+    $csv = '"摘要","数量","単位","数量","単位","単価","金額","備考"'. "\r\n";
     $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
     $csv .= '"'
         . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '","'
+        . '"'
+        . "\r\n";
+
+      $csv2 = '"'
         . '","'
         . '","'
         . '","'
@@ -43,7 +53,6 @@ try {
       $working_day = $day[1]."/".$day[2];
 
       $admin_salary = '';
-      $admin_non_tax_salary = '';
 
       if ($value['admin_hour_salary'] != '') {
         $type = '時';
@@ -61,7 +70,6 @@ try {
                 . $time . '","'
                 . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
                 . $admin_salary . '","'
-                . $admin_non_tax_salary . '","'
                 . $admin_total_salary . '","'
                 . "'". $working_day . '"'
                 . "\r\n";
@@ -73,27 +81,39 @@ try {
         $time = '1';
         if ($value['tax_status'] != 1) {
           $admin_salary = number_format((int)$value['admin_day_salary']);
+          $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
+          $total_salary += (int)$value['admin_day_salary'] * (int)$value['cnt'];
+          $csv .= '"'
+              . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
+              . $value['cnt'] . '","'
+              . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
+              . $time . '","'
+              . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
+              . $admin_salary . '","'
+              . $admin_total_salary . '","'
+              . "'". $working_day . '"'
+              . "\r\n";
         } else {
-          $admin_non_tax_salary = number_format((int)$value['admin_day_salary']);
+          $admin_salary = number_format((int)$value['admin_day_salary']);
+          $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
+          $total_salary += (int)$value['admin_day_salary'] * (int)$value['cnt'];
+          $csv2 .= '"'
+              . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
+              . $value['cnt'] . '","'
+              . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
+              . $time . '","'
+              . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
+              . $admin_salary . '","'
+              . $admin_total_salary . '","'
+              . "'". $working_day . '"'
+              . "\r\n";
         }
-        $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
-        $total_salary += (int)$value['admin_day_salary'] * (int)$value['cnt'];
-        $csv .= '"'
-            . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
-            . $value['cnt'] . '","'
-            . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
-            . $time . '","'
-            . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
-            . $admin_salary . '","'
-            . $admin_non_tax_salary . '","'
-            . $admin_total_salary . '","'
-            . "'". $working_day . '"'
-            . "\r\n";
       }
     }
 
+    $csv .= $csv2;
+
     $csv .= '"'
-        . '","'
         . '","'
         . '","'
         . '","'
@@ -105,7 +125,6 @@ try {
         . "\r\n";
 
     $csv .= '"'
-        . '","'
         . '","'
         . '","'
         . '","'
@@ -117,7 +136,6 @@ try {
         . "\r\n";
   
     $csv .= '"'
-        . '","'
         . '","'
         . '","'
         . '","'
