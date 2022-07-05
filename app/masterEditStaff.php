@@ -11,7 +11,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditStaff, $current_name, $name\n");
+  @fwrite($log,"$time, masterEditStaff, $current_name, $name\n");
   @fclose($log);
   $dbConnect = new mysqlConnect();
   if ($current_name != $name) {
@@ -34,7 +34,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditStaff, $e\n");
+  @fwrite($log,"$time, masterEditStaff, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '登録にエラーが発生しました。'));
 }

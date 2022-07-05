@@ -1,9 +1,11 @@
 <?php
 include 'defaultValue.php';
 include 'sqlConnect.php';
+$response = json_decode(file_get_contents('php://input'), true);
+$start_date = $response['start_date'];
 try {
   $dbConnect = new mysqlConnect();
-  $data = $dbConnect->getStaff();
+  $data = $dbConnect->getClient($start_date);
 
   if (!empty($data)) {
     $result = json_encode(array('status' => true , 'data' => $data));
@@ -16,9 +18,9 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminGetStaff, $e\n");
+  @fwrite($log,"$time, masterGetClient, $e\n");
   @fclose($log);
-  $result = json_encode(array('status' => false , 'message' => 'スタッフ情報獲得にエラーが発生しました。'));
+  $result = json_encode(array('status' => false , 'message' => 'クライアントリスト獲得にエラーが発生しました。'));
 }
 $dbConnect->dbClose();
 echo($result);

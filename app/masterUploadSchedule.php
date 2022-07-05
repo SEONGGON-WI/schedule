@@ -68,7 +68,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminUploadSchedule, $e\n");
+  @fwrite($log,"$time, masterUploadSchedule, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '反映にエラーが発生しました。'));
 }

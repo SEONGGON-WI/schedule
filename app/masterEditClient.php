@@ -10,28 +10,24 @@ $staff_hour_salary = $response['staff_hour_salary'];
 $staff_day_salary = $response['staff_day_salary'];
 include 'sqlConnect.php';
 try {
+  $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
+  $time = date('Y/m/d-H:i');
+  $logDate = date('Ymd');
+  $path = $rootPath.$logDate.".txt";
+  $log = @fopen($path,"a+");
+  @fwrite($log,"$time, masterEditClient, $client, $start_date, $agenda, $hour_salary, $day_salary, $staff_hour_salary, $staff_day_salary\n");
+  @fclose($log);
   $dbConnect = new mysqlConnect();
-  $index = 0;
-  $client = trim($client);
-  $sql = "INSERT IGNORE INTO client ( date, client, agenda, hour_salary, day_salary, staff_hour_salary, staff_day_salary ) VALUES ";
-  foreach ($agenda as $values) {
-    $sql_value = "( '{$start_date}', '{$client}', '{$values}', '{$hour_salary}', '{$day_salary}', '{$staff_hour_salary}', '{$staff_day_salary}' )";
-    $query = $sql.$sql_value;
-    $dbConnect->mysql->query($query);
-    $index++;
-  }
-  if ($index == 0) {
-    $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
-  } else {
-    $result = json_encode(array('status' => true));
-  }
+  $sql = "UPDATE client SET hour_salary = '$hour_salary', day_salary = '$day_salary', staff_hour_salary = '$staff_hour_salary', staff_day_salary = '$staff_day_salary', client = '$client' WHERE agenda = '$agenda' AND date = '$start_date'";
+  $dbConnect->mysql->query($sql);
+  $result = json_encode(array('status' => true));  
 } catch(Exception $e) {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
   $time = date('Y/m/d-H:i');
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminUploadClient, $e\n");
+  @fwrite($log,"$time, masterEditClient, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '登録にエラーが発生しました。'));
 }

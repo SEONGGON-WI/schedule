@@ -57,7 +57,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditSchedule, $e\n");
+  @fwrite($log,"$time, masterEditSchedule, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '登録にエラーが発生しました。'));
 }

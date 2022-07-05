@@ -50,7 +50,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminGetSchedule, $e\n");
+  @fwrite($log,"$time, masterGetSchedule, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => 'データ更新にエラーが発生しました。'));
 }

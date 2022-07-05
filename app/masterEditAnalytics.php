@@ -10,7 +10,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditAnalytics, $date\n");
+  @fwrite($log,"$time, masterEditAnalytics, $date\n");
   @fclose($log);
 
   $index = 0;
@@ -32,7 +32,7 @@ try {
   }
 
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditAnalytics, $index\n");
+  @fwrite($log,"$time, masterEditAnalytics, $index\n");
   @fclose($log);
 } catch(Exception $e) {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
@@ -40,7 +40,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminEditSchedule, $e\n");
+  @fwrite($log,"$time, masterEditAnalytics, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '登録を失敗しました。'));
 }

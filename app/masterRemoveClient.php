@@ -1,7 +1,10 @@
 <?php
 include 'defaultValue.php';
 $response = json_decode(file_get_contents('php://input'), true);
-$name = $response['name'];
+$start_date = $response['start_date'];
+$end_date = $response['end_date'];
+$client = $response['client'];
+$agenda = $response['agenda'];
 include 'sqlConnect.php';
 try {
   $rootPath = $_SERVER['DOCUMENT_ROOT'].$root_folder;
@@ -9,12 +12,12 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath.$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminRemoveStaff, $name\n");
+  @fwrite($log,"$time, masterRemoveClient, $client, $agenda, $start_date\n");
   @fclose($log);
   $dbConnect = new mysqlConnect();
-  $del = "DELETE FROM manager WHERE name = '$name'";
-  $dbConnect->mysql->query($del);
-  $del = "DELETE FROM schedule WHERE name = '$name' AND agenda = ''";
+  $sql = "UPDATE schedule SET admin_hour_salary = '', admin_day_salary = '', staff_hour_salary = '', staff_day_salary = '', client = '', status  = 0, tax_status= 0 WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
+  $dbConnect->mysql->query($sql);
+  $del = "DELETE FROM client WHERE client = '$client' AND agenda = '$agenda' AND date = '$start_date'";
   $dbConnect->mysql->query($del);
   $result = json_encode(array('status' => true));
 } catch(Exception $e) {
@@ -23,7 +26,7 @@ try {
   $logDate = date('Ymd');
   $path = $rootPath."error_".$logDate.".txt";
   $log = @fopen($path,"a+");
-  @fwrite($log,"$time, adminRemoveStaff, $e\n");
+  @fwrite($log,"$time, masterRemoveClient, $e\n");
   @fclose($log);
   $result = json_encode(array('status' => false , 'message' => '削除にエラーが発生しました。'));
 }
