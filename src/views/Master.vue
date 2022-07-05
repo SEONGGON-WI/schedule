@@ -333,7 +333,7 @@ import DeleteDialog from '@/components/DeleteDialog.vue';
 import axios from 'axios';
 
 export default {
-  name: 'admin',
+  name: 'master',
   components: {
     alert,
     AdminEdit,
@@ -484,7 +484,7 @@ export default {
       this.get_client()
     },
     async get_data() {
-      const url = this.root_folder + "/app/adminGetSchedule.php";
+      const url = this.root_folder + "/app/masterGetSchedule.php";
       const data = this.search_date;
       await axios.post(url, data).then(function(response) {
         if (response.data.status) {
@@ -526,7 +526,7 @@ export default {
       this.agenda_items.unshift('空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力')
     },
     async get_client() {
-      const url = this.root_folder + "/app/adminGetClient.php";
+      const url = this.root_folder + "/app/masterGetClient.php";
       const data = {
         start_date: this.search_date.start_date
       }
