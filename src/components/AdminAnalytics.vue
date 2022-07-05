@@ -336,7 +336,7 @@ export default {
       this.get_salary()
     },
     upload() {
-      const url = this.root_folder + "/app/adminEditAnalytics.php";
+      const url = this.root_folder + "/app/masterEditAnalytics.php";
       let data = []
       this.analytics_data.map((element, index) => {
         data[index] = {

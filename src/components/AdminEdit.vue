@@ -617,7 +617,7 @@ export default {
           element.staff_day_salary = ''
         }
       })
-      const url = this.root_folder + "/app/adminEditSchedule.php";
+      const url = this.root_folder + "/app/masterEditSchedule.php";
       const data = {
         date: this.date,
         event: this.items,

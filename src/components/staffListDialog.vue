@@ -160,7 +160,7 @@ export default {
   },
   methods: {
     fetch_data() {
-      const url = this.root_folder + "/app/adminGetStaff.php";
+      const url = this.root_folder + "/app/masterGetStaff.php";
       const data = {}
       axios.post(url, data).then(function(response) {
         if (response.data.status == true && response.data.data != '') {
@@ -185,7 +185,7 @@ export default {
         this.edit_dialog = false
         return
       }
-      const url = this.root_folder + "/app/adminEditStaff.php";
+      const url = this.root_folder + "/app/masterEditStaff.php";
       const data = {
         current_name: this.current_staff_name,
         name: this.staff_name.replace(/^\s+|\s+$/gm,''),
@@ -211,7 +211,7 @@ export default {
       this.remove_dialog = true
     },  
     remove() {
-      const url = this.root_folder + "/app/adminRemoveStaff.php";
+      const url = this.root_folder + "/app/masterRemoveStaff.php";
       const data = {
         name: this.remove_item.name,
       }

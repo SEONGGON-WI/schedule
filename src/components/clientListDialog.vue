@@ -397,7 +397,7 @@ export default {
       this.confirm_dialog = false
     },
     setClient() {
-      const url = this.root_folder + "/app/adminUploadClient.php";
+      const url = this.root_folder + "/app/masterUploadClient.php";
       const data = {
         start_date: this.date.start_date,
         client: this.client,
@@ -429,7 +429,7 @@ export default {
       }.bind(this))
     },
     async applyClient(client = {}) {
-      const url = this.root_folder + "/app/adminUploadSchedule.php";
+      const url = this.root_folder + "/app/masterUploadSchedule.php";
       const data = {
         start_date: this.date.start_date,
         end_date: this.date.end_date,
@@ -477,7 +477,7 @@ export default {
       this.confirm('remove')
     },  
     removeClient() {
-      const url = this.root_folder + "/app/adminRemoveClient.php";
+      const url = this.root_folder + "/app/masterRemoveClient.php";
       const data = {
         start_date: this.date.start_date,
         end_date: this.date.end_date,

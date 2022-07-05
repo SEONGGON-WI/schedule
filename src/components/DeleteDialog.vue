@@ -99,7 +99,7 @@ export default {
     },  
     remove() {
       if (this.delete_mode === 'space') {
-        const url = this.root_folder + "/app/adminRemoveData.php";
+        const url = this.root_folder + "/app/masterRemoveData.php";
         const data = {
           date: (this.pick_date + "-01")
         }
