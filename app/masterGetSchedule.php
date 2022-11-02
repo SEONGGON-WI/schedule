@@ -31,9 +31,10 @@ try {
   $delete_path = $rootPath.$deleteName;
 
   if (!file_exists($backup_path)) {
-    $time = date('Y-m-');
-    $current_start = $time.'01';
-    $current_end = $time.'31';
+    $time1 = date('Y-m-',strtotime("-1 month"));
+    $time2 = date('Y-m-');
+    $current_start = $time1.'01';
+    $current_end = $time2.'31';
     $backup_data = $dbConnect->getAdmin($current_start, $current_end);
     $json_data = json_encode($backup_data);
     $log = @fopen($backup_path,"w+");
