@@ -91,10 +91,8 @@
               <template v-slot:item.admin_day_salary="{ item }">
                 <v-text-field
                   v-if="item.admin_total_time != ''"
+                  :lang="$vuetify.breakpoint.mobile ? 'en' : 'ja'"
                   :value="item.admin_day_salary = get_admin_day_salary(item)"
-                  dense
-                  filled
-                  readonly
                   class="py-3 my-4"
                   label="日給"
                   single-line
@@ -556,11 +554,19 @@ export default {
   },
   methods: {
     get_admin_day_salary(item) {
-      if (item.admin_hour_salary == '' || item.admin_total_time == '') {
-        return ''
+      if (item.admin_hour_salary && item.admin_total_time) {
+        let salary = Math.round(item.admin_hour_salary * item.admin_total_time)
+        return String(salary)
       }
-      let salary = Math.round(item.admin_hour_salary * item.admin_total_time)
-      return String(salary)
+
+      const client = this.$store.getters.client_agenda
+      if (item.agenda) {
+        var find = client.find(obj => obj.agenda == item.agenda)
+        if (find && find.day_salary) {
+          return String(find.day_salary)
+        }
+      }
+      return ''
     },
     get_staff_day_salary(item) {
       if (item.staff_hour_salary == '' || item.total_time == '') {
