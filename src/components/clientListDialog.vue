@@ -116,9 +116,6 @@
               ></v-text-field>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn class="info mx-1 my-3" icon color="white" @click="applyClient(item)">
-                <v-icon>check</v-icon>
-              </v-btn>
               <v-btn class="info mx-1 my-3" icon color="white" @click="edit(item)">
                 <v-icon>edit</v-icon>
               </v-btn>
@@ -428,13 +425,12 @@ export default {
         }
       }.bind(this))
     },
-    async applyClient(client = {}) {
+    async applyClient() {
       const url = this.root_folder + "/app/masterUploadSchedule.php";
       const data = {
         start_date: this.date.start_date,
         end_date: this.date.end_date,
         client: client,
-        select_mode: client['agenda'] !== undefined ? true : false 
       }
       await axios.post(url, data).then(function(response) {
         if (response.data.status == false) {
@@ -450,9 +446,10 @@ export default {
       this.edit_dialog = true
     },
     edit_client() {
-      const url = this.root_folder + "/app/adminEditClient.php";
+      const url = this.root_folder + "/app/masterEditClient.php";
       const data = {
         start_date: this.date.start_date,
+        end_date: this.date.end_date,
         client: this.edit_item.client,
         agenda: this.edit_item.agenda,
         hour_salary: this.edit_item.hour_salary,
