@@ -348,7 +348,8 @@ export default {
       { icon: "people", text: "スタッフ管理", action: "staff"},
       { icon: "delete", text: "データ削除", action: "remove"},
       { icon: "cloud_download", text: "経理表出力", action: "download"},
-      { icon: "cloud_download", text: "請求書出力", action: "download2"}
+      { icon: "cloud_download", text: "請求書出力", action: "download2"},
+      { icon: "cloud_download", text: "請求書出力（別）", action: "download3"},
     ],
     client_show: false,
     staff_show: false,
@@ -468,6 +469,10 @@ export default {
 
         case 'download2':
           this.csv_download2()
+          break;
+
+        case 'download3':
+          this.csv_download3()
           break;
         
         default:
@@ -639,6 +644,33 @@ export default {
       this.csvdownloading = true
       const url = this.root_folder + "/app/csvDownload.php"
       const data = this.search_date
+      await axios.post(url, data, config).then(function (response) {
+        this.downloadCSV(file_name, response)
+      }.bind(this))
+    },
+    async csv_download3() {
+      if ((this.client.length === 0 && this.agenda.length === 0) || (this.client.length >= 2 || this.agenda.length >= 2)) {
+        return
+      }
+      if (['空きスケジュール', 'スタッフ日給未入力', '管理者日給未入力'].includes(this.agenda[0])) {
+        return
+      }
+      this.csvdownloading = true
+      const client = this.client.length === 0 ? '' : this.client[0]
+      const agenda = this.agenda.length === 0 ? '' : this.agenda[0]
+      var name = client + "_" + agenda
+      var file_name = "請求書_" + name + "_" + this.$refs.calendar.lastStart.year + "_" + this.$refs.calendar.lastStart.month + ".csv"
+      var config = {
+        responseType: "blob",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      };
+      var url = this.root_folder + "/app/csvDownload3.php"
+      var data = {
+        start_date: this.search_date.start_date,
+        end_date: this.search_date.end_date,
+        client: client,
+        agenda: agenda
+      }
       await axios.post(url, data, config).then(function (response) {
         this.downloadCSV(file_name, response)
       }.bind(this))
