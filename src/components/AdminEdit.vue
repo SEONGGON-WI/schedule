@@ -569,7 +569,7 @@ export default {
       return ''
     },
     get_staff_day_salary(item) {
-      if (item.staff_hour_salary == '' || item.total_time == '') {
+      if (item.staff_hour_salary === '' || item.total_time === '') {
         return ''
       }
       let salary = Math.round(item.staff_hour_salary * item.total_time)
@@ -592,8 +592,8 @@ export default {
                                                 && (this.name.length === 0 ? true : this.name.includes(element.name)) 
                                                 && (empty_agenda || empty_staff || empty_admin 
                                                     ? ((empty_agenda ? (element.agenda == '' ? true : false) : false) 
-                                                      || (empty_staff ? (element.agenda != '' && element.staff_day_salary == '' ? true : false) : false) 
-                                                      || (empty_admin ? (element.agenda != '' && element.admin_day_salary == '' ? true : false) : false)) 
+                                                      || (empty_staff ? (element.agenda != '' && element.staff_day_salary === '' ? true : false) : false) 
+                                                      || (empty_admin ? (element.agenda != '' && element.admin_day_salary === '' ? true : false) : false)) 
                                                     : true) 
                                                 && (agenda.length === 0 ? true : agenda.includes(element.agenda)))
       this.items = fetch_data.sort(this.sort_by(sort_list))
@@ -603,17 +603,17 @@ export default {
       this.items.map(element => {
         if (element.agenda !== '') {
           element.client = ''
-          element.start_time = element.start_time == '' ? '' : this.make_colon(element.start_time)
-          element.end_time = element.end_time == '' ? '' :  this.make_colon(element.end_time)
+          element.start_time = element.start_time === '' ? '' : this.make_colon(element.start_time)
+          element.end_time = element.end_time === '' ? '' :  this.make_colon(element.end_time)
           element.admin_total_time = element.admin_total_time == '' ? '' : parseFloat(element.admin_total_time).toFixed(2)
-          element.total_time = element.total_time == '' ? '' : parseFloat(element.total_time).toFixed(2)
+          element.total_time = element.total_time === '' ? '' : parseFloat(element.total_time).toFixed(2)
           var find = client.find(obj => obj.agenda == element.agenda)
           if (find != undefined) {
             element.client = find.client
-            element.admin_hour_salary = element.admin_hour_salary == '' ? find.hour_salary : element.admin_hour_salary
-            element.admin_day_salary = element.admin_day_salary == '' ?  find.day_salary : element.admin_day_salary
-            element.staff_hour_salary = element.staff_hour_salary == '' ? find.staff_hour_salary : element.staff_hour_salary
-            element.staff_day_salary = element.staff_day_salary == '' ?  find.staff_day_salary : element.staff_day_salary
+            element.admin_hour_salary = element.admin_hour_salary === '' ? find.hour_salary : element.admin_hour_salary
+            element.admin_day_salary = element.admin_day_salary === '' ?  find.day_salary : element.admin_day_salary
+            element.staff_hour_salary = element.staff_hour_salary === '' ? find.staff_hour_salary : element.staff_hour_salary
+            element.staff_day_salary = element.staff_day_salary === '' ?  find.staff_day_salary : element.staff_day_salary
           }
         } else {
           element.client = ''
@@ -726,17 +726,17 @@ export default {
 
       const client = this.$store.getters.client_agenda
       data.client = ''
-      data.start_time = data.start_time == '' ? '' : this.make_colon(data.start_time)
-      data.end_time = data.end_time == '' ? '' :  this.make_colon(data.end_time)
-      data.admin_total_time = data.admin_total_time == '' ? '' : parseFloat(data.admin_total_time).toFixed(2)
-      data.total_time = data.total_time == '' ? '' : parseFloat(data.total_time).toFixed(2)
+      data.start_time = data.start_time === '' ? '' : this.make_colon(data.start_time)
+      data.end_time = data.end_time === '' ? '' :  this.make_colon(data.end_time)
+      data.admin_total_time = data.admin_total_time === '' ? '' : parseFloat(data.admin_total_time).toFixed(2)
+      data.total_time = data.total_time === '' ? '' : parseFloat(data.total_time).toFixed(2)
       var find = client.find(obj => obj.agenda == data.agenda)
       if (find != undefined) {
         data.client = find.client
-        data.admin_hour_salary = data.admin_hour_salary == '' ? find.hour_salary : data.admin_hour_salary
-        data.admin_day_salary = data.admin_day_salary == '' ?  find.day_salary : data.admin_day_salary
-        data.staff_hour_salary = data.staff_hour_salary == '' ? find.staff_hour_salary : data.staff_hour_salary
-        data.staff_day_salary = data.staff_day_salary == '' ?  find.staff_day_salary : data.staff_day_salary
+        data.admin_hour_salary = data.admin_hour_salary === '' ? find.hour_salary : data.admin_hour_salary
+        data.admin_day_salary = data.admin_day_salary === '' ?  find.day_salary : data.admin_day_salary
+        data.staff_hour_salary = data.staff_hour_salary === '' ? find.staff_hour_salary : data.staff_hour_salary
+        data.staff_day_salary = data.staff_day_salary === '' ?  find.staff_day_salary : data.staff_day_salary
       }
       this.items.push(data)
       this.add_dialog = false
