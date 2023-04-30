@@ -168,9 +168,15 @@ class mysqlConnect {
     return $table;
   }
 
-  public function getCsv3($start_date, $end_date, $client) {
+  public function getCsv3($start_date, $end_date, $client, $agenda) {
     $sql = "SELECT client, agenda, admin_expense, SUM(overlap) AS cnt FROM schedule ";
-    $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_expense != '' ";
+    if ($agenda == '') {
+      $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_expense != '' ";
+    } else if ($client == '') {
+      $sql = $sql."WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND admin_expense != '' ";
+    } else {
+      $sql = $sql."WHERE client = '$client' AND agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND admin_expense != '' ";
+    }
     $sql = $sql."GROUP BY agenda, admin_expense ";
     $sql = $sql."ORDER BY date";
 
@@ -193,9 +199,9 @@ class mysqlConnect {
     if ($agenda == '') {
       $sql = $sql."WHERE client = '$client' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_day_salary != '' ";
     } else if ($client == '') {
-      $sql = $sql."WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' AND admin_day_salary != '' ";
+      $sql = $sql."WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND admin_day_salary != '' ";
     } else {
-      $sql = $sql."WHERE client = '$client' AND agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND agenda != '' admin_day_salary != '' ";
+      $sql = $sql."WHERE client = '$client' AND agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date' AND admin_day_salary != '' ";
     }
     $sql = $sql."GROUP BY tax_status, agenda, admin_day_salary, admin_hour_salary ";
     $sql = $sql."ORDER BY client, agenda, date";

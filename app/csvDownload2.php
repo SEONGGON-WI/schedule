@@ -8,7 +8,7 @@ $agenda = $response['agenda'];
 include 'sqlConnect.php';
 try {
   $dbConnect = new mysqlConnect();
-  $data = $dbConnect->getCsv2($start_date, $end_date, $client, $agenda);
+  $data = $dbConnect->getCsv4($start_date, $end_date, $client, $agenda);
 
   if (!empty($data)) {
     header("Content-Type: application/octet-stream");
@@ -42,40 +42,71 @@ try {
 
     $total_salary = 0;
     foreach ($data as $value) {
-      $day = [];
-      $day = explode("-", $value['date']);
-      if ((int)$day[1] < 10) {
-        $day[1] = substr($day[1], 1);
+      $sql = "SELECT date FROM schedule ";
+      $sql = $sql."WHERE tax_status = '{$value['tax_status']}' AND date >= '$start_date' AND date <= '$end_date' AND client = '{$value['client']}' AND agenda = '{$value['agenda']}' ";
+      $sql = $sql."AND admin_hour_salary = '{$value['admin_hour_salary']}' AND admin_day_salary = '{$value['admin_day_salary']}' ";
+      $sql = $sql."GROUP BY date ";
+      $sql = $sql."ORDER BY date";
+      $table = [];
+      $result = $dbConnect->mysql->query($sql);
+      if ($result->num_rows > 0) {
+        $index = 0;
+        while($row = $result->fetch_assoc()) {
+          $table[$index] = $row;
+          $index++;
+        }
       }
-      if ((int)$day[2] < 10) {
-        $day[2] = substr($day[2], 1);
+      $month = explode("-", $start_date);
+      if ((int)$month[1] < 10) {
+        $month[1] = substr($month[1], 1);
       }
-      $working_day = $day[1]."/".$day[2];
+      $working_day = $month[1]."/";
+      foreach ($table as $element) {
+        $day = [];
+        $day = explode("-", $element['date']);
+        if ((int)$day[2] < 10) {
+          $day[2] = substr($day[2], 1);
+        }
+        $working_day .= $day[2].",";
+      }
+      $working_day = substr($working_day, 0, -1);
 
       $admin_salary = '';
 
       if ($value['admin_hour_salary'] != '') {
         $type = '時間';
         $time = $value['admin_total_time'];
-        if ($value['cnt'] !== '') {
-          $i = 0;
-          while ($i < (int)$value['cnt']) {
-            $admin_salary = number_format((int)$value['admin_hour_salary']);
-            $admin_total_salary = number_format((int)$value['admin_day_salary']);
-            $total_salary += (int)$value['admin_day_salary'];
-            $csv .= '"'
-                . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
-                . '"1,"'
-                . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
-                . $time . '","'
-                . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
-                . $admin_salary . '","'
-                . $admin_total_salary . '","'
-                . "'". $working_day . '"'
-                . "\r\n";
-            $i += 1;
-          }
+        if ($value['tax_status'] != 1) {
+          $admin_salary = number_format((int)$value['admin_hour_salary']);
+          $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
+          $total_salary += (int)$value['admin_day_salary'] * (int)$value['cnt'];
+          $csv .= '"'
+              . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
+              . $value['cnt'] . '","'
+              . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
+              . $time . '","'
+              . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
+              . $admin_salary . '","'
+              . $admin_total_salary . '","'
+              . "'". $working_day . '"'
+              . "\r\n";
+        } else {
+          $admin_salary = number_format((int)$value['admin_hour_salary']);
+          $admin_total_salary = number_format((int)$value['admin_day_salary'] * (int)$value['cnt']);
+          $total_salary += (int)$value['admin_day_salary'] * (int)$value['cnt'];
+          $csv2 .= '"'
+              . mb_convert_encoding($value['agenda'], 'SJIS', 'UTF-8') . '","'
+              . $value['cnt'] . '","'
+              . mb_convert_encoding('名', 'SJIS', 'UTF-8') . '","'
+              . $time . '","'
+              . mb_convert_encoding($type, 'SJIS', 'UTF-8') . '","'
+              . $admin_salary . '","'
+              . $admin_total_salary . '","'
+              . "'". $working_day . '"'
+              . "\r\n";
         }
+
+
       } else {
         $type = '日'; 
         $time = '1';
@@ -176,7 +207,7 @@ try {
         . '"'
         . "\r\n";
 
-    $data = $dbConnect->getCsv3($start_date, $end_date, $client);
+    $data = $dbConnect->getCsv5($start_date, $end_date, $client, $agenda);
     if (!empty($data)) {
       foreach ($data as $value) {
         $sql = "SELECT date FROM schedule ";

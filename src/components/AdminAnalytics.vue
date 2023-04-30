@@ -321,7 +321,7 @@ export default {
         {key:'staff_day_salary', type: 2},
       ]
       const data = JSON.parse(JSON.stringify(this.data))
-      let fetch_data = data.filter(element => element.agenda != '' && (element.staff_day_salary != '' || element.admin_day_salary != '')
+      let fetch_data = data.filter(element => element.agenda != '' && (element.staff_day_salary !== '' || element.admin_day_salary !== '')
                                     && (this.differ_agenda.length === 0 ? true : this.differ_agenda.includes(element.agenda))
                                     && (this.differ_name.length === 0 ? true : this.differ_name.includes(element.name))).sort(this.sort_by(sort_list))
       if (this.differ_name.length === 0 && this.differ_agenda.length === 0) {
