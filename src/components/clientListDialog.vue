@@ -334,8 +334,8 @@ export default {
     calculate_agenda() {
       let list = []
       this.agenda_list.map(element => {
-        if (this.items.find(e => e.agenda == element) == undefined) {
-          if (element != '') {
+        if (!this.items.find(e => e.agenda == element)) {
+          if (element !== '') {
             list.push(element)  
           }
         }
@@ -430,7 +430,7 @@ export default {
       const data = {
         start_date: this.date.start_date,
         end_date: this.date.end_date,
-        client: client,
+        client: this.client,
       }
       await axios.post(url, data).then(function(response) {
         if (response.data.status == false) {
