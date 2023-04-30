@@ -582,7 +582,7 @@ export default {
                                                         : true) 
                                                     && (agenda.length === 0 ? true : agenda.includes(element.agenda))).sort(this.sort_by(sort_list))
       fetch_data.map(element => {
-        if ((element.date <= this.today) && (element.staff_day_salary != '')) {
+        if ((element.date <= this.today) && (element.staff_day_salary !== '')) {
           element.color = this.colors[2]
         } else if (element.agenda != '') {
           element.color = this.colors[1]
