@@ -23,19 +23,19 @@ try {
   $dbConnect->mysql->query($sql);
 
   if ($hour_salary != '') {
-    $hour_sql = "UPDATE schedule SET admin_hour_salary = $hour_salary WHERE agenda = '$agenda' AND admin_hour_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
+    $hour_sql = "UPDATE schedule SET admin_hour_salary = $hour_salary WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
     $dbConnect->mysql->query($hour_sql);
   }
   if ($day_salary != '') {
-    $day_sql = "UPDATE schedule SET admin_day_salary = $day_salary WHERE agenda = '$agenda' AND admin_day_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
+    $day_sql = "UPDATE schedule SET admin_day_salary = $day_salary WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
     $dbConnect->mysql->query($day_sql);  
   } 
   if ($staff_hour_salary != '') {
-    $staff_hour_sql = "UPDATE schedule SET staff_hour_salary = $staff_hour_salary WHERE agenda = '$agenda' AND staff_hour_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
+    $staff_hour_sql = "UPDATE schedule SET staff_hour_salary = $staff_hour_salary WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
     $dbConnect->mysql->query($staff_hour_sql);  
   }
   if ($staff_day_salary != '') {
-    $staff_day_sql = "UPDATE schedule SET staff_day_salary = $staff_day_salary WHERE agenda = '$agenda' AND staff_day_salary = '' AND date >= '$start_date' AND date <= '$end_date'";
+    $staff_day_sql = "UPDATE schedule SET staff_day_salary = $staff_day_salary WHERE agenda = '$agenda' AND date >= '$start_date' AND date <= '$end_date'";
     $dbConnect->mysql->query($staff_day_sql);  
   }
   $result = json_encode(array('status' => true));
